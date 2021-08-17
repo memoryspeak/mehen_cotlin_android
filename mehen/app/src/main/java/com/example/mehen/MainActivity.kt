@@ -2,6 +2,7 @@ package com.example.mehen
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.util.Log
 
 private const val TAG = "MainActivity"
