@@ -17,6 +17,7 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
     private val greenColor = Color.parseColor("#00FF00")
     private val redColor = Color.parseColor("#FF1493")
     private val lightColor = Color.parseColor("#FFDEAD")
+    private val blackColor = Color.parseColor("#000000")
 
     override fun onDraw(canvas: Canvas?) {
         canvas ?: return
@@ -27,19 +28,29 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
         originY = (height - mehenBoardSide)/2f
 
         drawMehenBoard(canvas)
-
-        //canvas?.drawRect(originX, originY, originX + cellSide, originY + cellSide, paint)
     }
 
     private fun drawMehenBoard(canvas: Canvas){
-        for (row in 0 until 8) {
-            for (col in 0 until 8) {
+        for (row in 0 until 8){
+            for (col in 0 until 8){
+                //fill
                 paint.color = redColor
+                paint.style = Paint.Style.FILL
                 canvas.drawRect(
-                    originX + col*cellSide,
-                    originY + row*cellSide,
-                    originX + (col+1)*cellSide,
-                    originY + (row+1)*cellSide,
+                    originX + col * cellSide,
+                    originY + row * cellSide,
+                    originX + (col + 1) * cellSide,
+                    originY + (row + 1) * cellSide,
+                    paint
+                )
+                //stroke
+                paint.color = blackColor
+                paint.style = Paint.Style.STROKE
+                canvas.drawRect(
+                    originX + col * cellSide,
+                    originY + row * cellSide,
+                    originX + (col + 1) * cellSide,
+                    originY + (row + 1) * cellSide,
                     paint
                 )
             }
