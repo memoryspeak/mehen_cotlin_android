@@ -1,13 +1,43 @@
 package com.example.mehen
 
 class MehenModel {
+    var piecesBox = mutableSetOf<MehenPiece>()
+
+    init {
+        piecesBox.add(MehenPiece(0, 0, MehenPlayer.WHITE, MehenRank.WALKER))
+        piecesBox.add(MehenPiece(0, 7, MehenPlayer.BLACK, MehenRank.LION))
+    }
+
+    private fun pieceAt(col: Int, row: Int) : MehenPiece? {
+        for (piece in piecesBox) {
+            if (col == piece.col && row == piece.row) {
+                return piece
+            }
+        }
+        return null
+    }
 
     override fun toString(): String {
         var desc = " \n"
         for (row in 7 downTo 0) {
             desc += "$row"
             for (col in 0..7) {
-                desc += " ."
+                val piece = pieceAt(col, row)
+                if (piece == null) {
+                    desc += " ."
+                } else {
+                    val white = piece.player == MehenPlayer.WHITE
+                    desc += " "
+                    desc += when (piece.rank) {
+                        MehenRank.WALKER -> {
+                            if (white) "o" else "O"
+                        }
+                        MehenRank.LION -> {
+                            if (white) "x" else "X"
+                        }
+                    }
+                }
+
             }
             desc += "\n"
         }
