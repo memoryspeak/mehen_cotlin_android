@@ -4,8 +4,13 @@ class MehenModel {
     var piecesBox = mutableSetOf<MehenPiece>()
 
     init {
-        piecesBox.add(MehenPiece(0, 0, MehenPlayer.WHITE, MehenRank.WALKER))
-        piecesBox.add(MehenPiece(0, 7, MehenPlayer.BLACK, MehenRank.LION))
+        reset()
+        //piecesBox.add(MehenPiece(0, 0, MehenPlayer.WHITE, MehenRank.WALKER))
+        //piecesBox.add(MehenPiece(0, 7, MehenPlayer.BLACK, MehenRank.LION))
+    }
+
+    private fun reset() {
+        piecesBox.removeAll(piecesBox)
     }
 
     private fun pieceAt(col: Int, row: Int) : MehenPiece? {
@@ -30,10 +35,10 @@ class MehenModel {
                     desc += " "
                     desc += when (piece.rank) {
                         MehenRank.WALKER -> {
-                            if (white) "o" else "O"
+                            if (white) "o" else "x"
                         }
                         MehenRank.LION -> {
-                            if (white) "x" else "X"
+                            if (white) "O" else "X"
                         }
                     }
                 }
