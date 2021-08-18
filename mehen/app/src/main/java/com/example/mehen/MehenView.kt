@@ -122,21 +122,37 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
         //draw lines
         paintLine.color = blackColor
         paintLine.strokeWidth = 10f
-        canvas.drawLine(originX+8*cellSide, originY, originX+cellSide/2, originY, paintLine)
-        
-        canvas.drawLine(originX, originY+cellSide/2, originX, originY+15*cellSide/2, paintLine)
+        paintLine.style = Paint.Style.STROKE
+        canvas.drawLine(originX+8*cellSide, originY+0*cellSide, originX+cellSide/2, originY, paintLine)
+        canvas.drawArc(originX+0*cellSide, originY+0*cellSide, originX+1*cellSide, originY+1*cellSide, 180f, 90f, false, paintLine)
+        canvas.drawLine(originX+0*cellSide, originY+cellSide/2, originX+0*cellSide, originY+15*cellSide/2, paintLine)
+        canvas.drawArc(originX+0*cellSide, originY+7*cellSide, originX+cellSide, originY+8*cellSide, 90f, 90f, false, paintLine)
         canvas.drawLine(originX+cellSide/2, originY+cellSide*8, originX+15*cellSide/2, originY+cellSide*8, paintLine)
+        canvas.drawArc(originX+7*cellSide, originY+7*cellSide, originX+8*cellSide, originY+8*cellSide, 0f, 90f, false, paintLine)
         canvas.drawLine(originX+cellSide*8, originY+15*cellSide/2, originX+8*cellSide, originY+3*cellSide/2, paintLine)
+        canvas.drawArc(originX+7*cellSide, originY+1*cellSide, originX+8*cellSide, originY+2*cellSide, -90f, 90f, false, paintLine)
         canvas.drawLine(originX+cellSide*8, originY+cellSide, originX+3*cellSide/2, originY+cellSide, paintLine)
+        canvas.drawArc(originX+1*cellSide, originY+1*cellSide, originX+2*cellSide, originY+2*cellSide, 180f, 90f, false, paintLine)
         canvas.drawLine(originX+cellSide, originY+3*cellSide/2, originX+cellSide, originY+13*cellSide/2, paintLine)
+        canvas.drawArc(originX+1*cellSide, originY+6*cellSide, originX+2*cellSide, originY+7*cellSide, 90f, 90f, false, paintLine)
         canvas.drawLine(originX+3*cellSide/2, originY+7*cellSide, originX+13*cellSide/2, originY+7*cellSide, paintLine)
+        canvas.drawArc(originX+6*cellSide, originY+6*cellSide, originX+7*cellSide, originY+7*cellSide, 0f, 90f, false, paintLine)
         canvas.drawLine(originX+7*cellSide, originY+13*cellSide/2, originX+7*cellSide, originY+5*cellSide/2, paintLine)
+        canvas.drawArc(originX+6*cellSide, originY+2*cellSide, originX+7*cellSide, originY+3*cellSide, -90f, 90f, false, paintLine)
         canvas.drawLine(originX+13*cellSide/2, originY+2*cellSide, originX+5*cellSide/2, originY+2*cellSide, paintLine)
+        canvas.drawArc(originX+2*cellSide, originY+2*cellSide, originX+3*cellSide, originY+3*cellSide, 180f, 90f, false, paintLine)
         canvas.drawLine(originX+2*cellSide, originY+5*cellSide/2, originX+2*cellSide, originY+11*cellSide/2, paintLine)
+        canvas.drawArc(originX+2*cellSide, originY+5*cellSide, originX+3*cellSide, originY+6*cellSide, 90f, 90f, false, paintLine)
         canvas.drawLine(originX+5*cellSide/2, originY+6*cellSide, originX+11*cellSide/2, originY+6*cellSide, paintLine)
+        canvas.drawArc(originX+5*cellSide, originY+5*cellSide, originX+6*cellSide, originY+6*cellSide, 0f, 90f, false, paintLine)
         canvas.drawLine(originX+6*cellSide, originY+11*cellSide/2, originX+6*cellSide, originY+7*cellSide/2, paintLine)
+        canvas.drawArc(originX+5*cellSide, originY+3*cellSide, originX+6*cellSide, originY+4*cellSide, -90f, 90f, false, paintLine)
         canvas.drawLine(originX+11*cellSide/2, originY+3*cellSide, originX+7*cellSide/2, originY+3*cellSide, paintLine)
+        canvas.drawArc(originX+3*cellSide, originY+3*cellSide, originX+4*cellSide, originY+4*cellSide, 180f, 90f, false, paintLine)
         canvas.drawLine(originX+3*cellSide, originY+7*cellSide/2, originX+3*cellSide, originY+9*cellSide/2, paintLine)
+        canvas.drawArc(originX+3*cellSide, originY+4*cellSide, originX+4*cellSide, originY+5*cellSide, 90f, 90f, false, paintLine)
         canvas.drawLine(originX+7*cellSide/2, originY+5*cellSide, originX+9*cellSide/2, originY+5*cellSide, paintLine)
+        canvas.drawArc(originX+4*cellSide, originY+4*cellSide, originX+5*cellSide, originY+5*cellSide, -90f, 180f, false, paintLine)
+        canvas.drawLine(originX+4*cellSide, originY+4*cellSide, originX+9*cellSide/2, originY+4*cellSide, paintLine)
     }
 }
