@@ -98,6 +98,7 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
     }
 
     private fun drawMehenBoard(canvas: Canvas){
+        //draw squares
         for (i in mehenList){
             //fill
             paint.color = i[2]
@@ -118,8 +119,24 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
                 originY+(1+i[0])*cellSide,
                 paint)
         }
+        //draw lines
         paintLine.color = blackColor
         paintLine.strokeWidth = 10f
-        canvas.drawLine(originX, originY, originX+8*cellSide, originY+8*cellSide, paintLine)
+        canvas.drawLine(originX+8*cellSide, originY, originX+cellSide/2, originY, paintLine)
+        
+        canvas.drawLine(originX, originY+cellSide/2, originX, originY+15*cellSide/2, paintLine)
+        canvas.drawLine(originX+cellSide/2, originY+cellSide*8, originX+15*cellSide/2, originY+cellSide*8, paintLine)
+        canvas.drawLine(originX+cellSide*8, originY+15*cellSide/2, originX+8*cellSide, originY+3*cellSide/2, paintLine)
+        canvas.drawLine(originX+cellSide*8, originY+cellSide, originX+3*cellSide/2, originY+cellSide, paintLine)
+        canvas.drawLine(originX+cellSide, originY+3*cellSide/2, originX+cellSide, originY+13*cellSide/2, paintLine)
+        canvas.drawLine(originX+3*cellSide/2, originY+7*cellSide, originX+13*cellSide/2, originY+7*cellSide, paintLine)
+        canvas.drawLine(originX+7*cellSide, originY+13*cellSide/2, originX+7*cellSide, originY+5*cellSide/2, paintLine)
+        canvas.drawLine(originX+13*cellSide/2, originY+2*cellSide, originX+5*cellSide/2, originY+2*cellSide, paintLine)
+        canvas.drawLine(originX+2*cellSide, originY+5*cellSide/2, originX+2*cellSide, originY+11*cellSide/2, paintLine)
+        canvas.drawLine(originX+5*cellSide/2, originY+6*cellSide, originX+11*cellSide/2, originY+6*cellSide, paintLine)
+        canvas.drawLine(originX+6*cellSide, originY+11*cellSide/2, originX+6*cellSide, originY+7*cellSide/2, paintLine)
+        canvas.drawLine(originX+11*cellSide/2, originY+3*cellSide, originX+7*cellSide/2, originY+3*cellSide, paintLine)
+        canvas.drawLine(originX+3*cellSide, originY+7*cellSide/2, originX+3*cellSide, originY+9*cellSide/2, paintLine)
+        canvas.drawLine(originX+7*cellSide/2, originY+5*cellSide, originX+9*cellSide/2, originY+5*cellSide, paintLine)
     }
 }
