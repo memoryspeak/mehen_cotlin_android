@@ -34,7 +34,7 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
         for (row in 0 until 8){
             for (col in 0 until 8){
                 //fill
-                paint.color = redColor
+                paint.color = lightColor
                 paint.style = Paint.Style.FILL
                 canvas.drawRect(
                     originX + col * cellSide,
