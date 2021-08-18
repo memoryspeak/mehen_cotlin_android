@@ -31,13 +31,13 @@ class MehenModel {
                 if (piece == null) {
                     desc += " ."
                 } else {
-                    val white = piece.player == MehenPlayer.WHITE
+                    val white = piece.player == Player.WHITE
                     desc += " "
-                    desc += when (piece.rank) {
-                        MehenRank.WALKER -> {
+                    desc += when (piece.mehenman) {
+                        Mehenman.WALKER -> {
                             if (white) "o" else "x"
                         }
-                        MehenRank.LION -> {
+                        Mehenman.LION -> {
                             if (white) "O" else "X"
                         }
                     }

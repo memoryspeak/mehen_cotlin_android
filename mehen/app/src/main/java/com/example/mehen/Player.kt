@@ -1,6 +1,6 @@
 package com.example.mehen
 
-enum class MehenPlayer {
+enum class Player {
     WHITE,
     BLACK,
 }

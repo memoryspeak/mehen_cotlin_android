@@ -1,9 +1,7 @@
 package com.example.mehen
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
+import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
 import kotlin.math.min
@@ -85,6 +83,37 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
         listOf(4, 3, lightColor),
         listOf(4, 4, greenColor),
     )
+    private val imgResIDs = setOf(
+        R.drawable.blue_lion,
+        R.drawable.blue_lion_tap,
+        R.drawable.blue_walker,
+        R.drawable.blue_walker_tap,
+        R.drawable.yellow_lion,
+        R.drawable.yellow_lion_tap,
+        R.drawable.yellow_walker,
+        R.drawable.yellow_walker_tap,
+        R.drawable.lion,
+    )
+    private val bitmaps = mutableMapOf<Int, Bitmap>()
+
+    private var movingPieceBitmap: Bitmap? = null
+    private var movingPiece: MehenPiece? = null
+    private var fromCol: Int = -1
+    private var fromRow: Int = -1
+    private var movingPieceX = -1f
+    private var movingPieceY = -1f
+
+    var mehenDelegate: MehenDelegate? = null
+
+    init {
+        loadBitmaps()
+    }
+
+//    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+//        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+//        val smaller = min(widthMeasureSpec, heightMeasureSpec)
+//        setMeasuredDimension(smaller, smaller)
+//    }
 
     override fun onDraw(canvas: Canvas?) {
         canvas ?: return
@@ -96,6 +125,11 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
 
         drawMehenBoard(canvas)
     }
+
+    private fun loadBitmaps() =
+        imgResIDs.forEach { imgResID ->
+            bitmaps[imgResID] = BitmapFactory.decodeResource(resources, imgResID)
+        }
 
     private fun drawMehenBoard(canvas: Canvas){
         //draw squares

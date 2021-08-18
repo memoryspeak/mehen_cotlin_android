@@ -1,6 +1,6 @@
 package com.example.mehen
 
-enum class MehenRank {
+enum class Mehenman {
     WALKER,
     LION,
 }
