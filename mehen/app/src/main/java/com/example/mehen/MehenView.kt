@@ -3,6 +3,7 @@ package com.example.mehen
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
+import android.view.MotionEvent
 import android.view.View
 import kotlin.math.min
 
@@ -124,6 +125,38 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
         originY = (height - mehenBoardSide)/2f
 
         drawMehenBoard(canvas)
+    }
+
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        event ?: return false
+
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> {
+                fromCol = ((event.x - originX) / cellSide).toInt()
+                fromRow = 7 - ((event.y - originY) / cellSide).toInt()
+
+                mehenDelegate?.pieceAt(Square(fromCol, fromRow))?.let {
+                    movingPiece = it
+                    movingPieceBitmap = bitmaps[it.resID]
+                }
+            }
+            MotionEvent.ACTION_MOVE -> {
+                movingPieceX = event.x
+                movingPieceY = event.y
+                invalidate()
+            }
+            MotionEvent.ACTION_UP -> {
+                val col = ((event.x - originX) / cellSide).toInt()
+                val row = 7 - ((event.y - originY) / cellSide).toInt()
+                if (fromCol != col || fromRow != row) {
+                    mehenDelegate?.movePiece(Square(fromCol, fromRow), Square(col, row))
+                }
+                movingPiece = null
+                movingPieceBitmap = null
+                invalidate()
+            }
+        }
+        return true
     }
 
     private fun loadBitmaps() =
