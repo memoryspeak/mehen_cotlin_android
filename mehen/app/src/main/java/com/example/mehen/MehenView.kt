@@ -14,8 +14,9 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
     private var originY = 200f
     private var cellSide = 130f
     private val paint = Paint()
-    private val greenColor = Color.parseColor("#00FF7F")
-    private val redColor = Color.parseColor("#FF69B4")
+    private val paintLine = Paint()
+    private val greenColor = Color.parseColor("#008000")
+    private val redColor = Color.parseColor("#FF0000")
     private val lightColor = Color.parseColor("#FFDEAD")
     private val blackColor = Color.parseColor("#000000")
     private val mehenList = listOf(
@@ -117,5 +118,8 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
                 originY+(1+i[0])*cellSide,
                 paint)
         }
+        paintLine.color = blackColor
+        paintLine.strokeWidth = 10f
+        canvas.drawLine(originX, originY, originX+8*cellSide, originY+8*cellSide, paintLine)
     }
 }
