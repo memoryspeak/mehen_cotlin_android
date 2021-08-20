@@ -73,6 +73,10 @@ object MehenGame {
 
     fun reset() {
         clear()
+        for (i in 0 until 6) {
+            addPiece(MehenPiece(i, 1, Player.WHITE, Mehenman.WALKER, R.drawable.yellow_walker))
+            addPiece(MehenPiece(i, 6, Player.BLACK, Mehenman.WALKER, R.drawable.blue_walker))
+        }
     }
 
     fun pieceAt(square: Square): MehenPiece? {
