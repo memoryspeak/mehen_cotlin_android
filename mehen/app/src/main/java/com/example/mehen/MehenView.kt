@@ -6,11 +6,12 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import kotlin.math.min
+import kotlin.math.max
 
 class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
     private val scaleFactor = 1.0f
     private var originX = 20f
-    private var originY = 200f
+    private var originY = 20f
     private var cellSide = 130f
     private val paint = Paint()
     private val paintLine = Paint()
@@ -130,7 +131,8 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         val smaller = min(widthMeasureSpec, heightMeasureSpec)
-        setMeasuredDimension(smaller, smaller)
+        val bigger = 5*smaller/4
+        setMeasuredDimension(smaller, bigger)
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -139,7 +141,7 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
         val mehenBoardSide = min(width, height)*scaleFactor
         cellSide = mehenBoardSide/8f
         originX = (width - mehenBoardSide)/2f
-        originY = (height - mehenBoardSide)/2f
+        originY = (height - mehenBoardSide-2*cellSide)/2f
 
         drawMehenBoard(canvas)
         drawPieces(canvas)
@@ -151,7 +153,7 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 fromCol = ((event.x - originX) / cellSide).toInt()
-                fromRow = 7 - ((event.y - originY) / cellSide).toInt()
+                fromRow = 9 - ((event.y - originY) / cellSide).toInt()
 
                 mehenDelegate?.pieceAt(Square(fromCol, fromRow))?.let {
                     movingPiece = it
@@ -165,7 +167,7 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
             }
             MotionEvent.ACTION_UP -> {
                 val col = ((event.x - originX) / cellSide).toInt()
-                val row = 7 - ((event.y - originY) / cellSide).toInt()
+                val row = 9 - ((event.y - originY) / cellSide).toInt()
                 if (fromCol != col || fromRow != row) {
                     mehenDelegate?.movePiece(Square(fromCol, fromRow), Square(col, row))
                 }
