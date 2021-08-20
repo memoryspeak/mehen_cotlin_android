@@ -9,6 +9,8 @@ import kotlin.math.min
 import kotlin.math.max
 
 class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
+    private val pieceSize = 0.8f
+    private val pieceSizeToTouch = 0.6f
     private val scaleFactor = 1.0f
     private var originX = 20f
     private var originY = 20f
@@ -192,10 +194,10 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
                 it,
                 null,
                 RectF(
-                    movingPieceX - cellSide/2,
-                    movingPieceY - cellSide/2,
-                    movingPieceX + cellSide/2,
-                    movingPieceY + cellSide/2),
+                    movingPieceX - cellSide*pieceSizeToTouch/2,
+                    movingPieceY - cellSide*pieceSizeToTouch/2,
+                    movingPieceX + cellSide*pieceSizeToTouch/2,
+                    movingPieceY + cellSide*pieceSizeToTouch/2),
                 paint)
         }
     }
@@ -204,10 +206,10 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
         canvas.drawBitmap(
             bitmaps[resID]!!,
             null, RectF(
-                originX + col * cellSide,
-                originY + (9 - row) * cellSide,
-                originX + (col + 1) * cellSide,
-                originY + ((9 - row) + 1) * cellSide),
+                originX + col * cellSide + cellSide/(10*pieceSize),
+                originY + (9 - row) * cellSide + cellSide/(10*pieceSize),
+                originX + (col + 1) * cellSide - cellSide/(10*pieceSize),
+                originY + ((9 - row) + 1) * cellSide - cellSide/(10*pieceSize)),
             paint)
 
     private fun loadBitmaps() =
