@@ -174,7 +174,14 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
     }
 
     private fun drawPieceAt(canvas: Canvas, col: Int, row: Int, resID: Int) =
-        canvas.drawBitmap(bitmaps[resID]!!, null, RectF(originX + col * cellSide,originY + (7 - row) * cellSide,originX + (col + 1) * cellSide,originY + ((7 - row) + 1) * cellSide), paint)
+        canvas.drawBitmap(
+            bitmaps[resID]!!,
+            null, RectF(
+                originX + col * cellSide,
+                originY + (7 - row) * cellSide,
+                originX + (col + 1) * cellSide,
+                originY + ((7 - row) + 1) * cellSide),
+            paint)
 
     private fun loadBitmaps() =
         imgResIDs.forEach { imgResID ->
