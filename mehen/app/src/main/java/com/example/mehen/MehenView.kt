@@ -9,8 +9,8 @@ import kotlin.math.min
 import kotlin.math.max
 
 class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
-    private val pieceSize = 0.8f
-    private val pieceSizeToTouch = 0.6f
+    private val pieceSize = 0.9f
+    private val pieceSizeToTouch = 0.7f
     private val scaleFactor = 1.0f
     private var originX = 20f
     private var originY = 20f
@@ -18,6 +18,7 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
     private val paint = Paint()
     private val paintLine = Paint()
     private val transparentColor = Color.parseColor("#00FFDEAD")
+    private val whiteColor = Color.parseColor("#FFFFFF")
     private val greenColor = Color.parseColor("#008000")
     private val redColor = Color.parseColor("#FF0000")
     private val lightColor = Color.parseColor("#FFDEAD")
@@ -230,7 +231,11 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
                 originY+(1+i[0])*cellSide,
                 paint)
             //stroke
-            paint.color = blackColor
+            if (i[2] != transparentColor){
+                paint.color = blackColor
+            } else {
+                paint.color = whiteColor
+            }
             paint.style = Paint.Style.STROKE
             canvas.drawRect(
                 originX+(i[1])*cellSide,
