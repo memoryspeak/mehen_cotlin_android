@@ -17,21 +17,23 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
     private var cellSide = 130f
     private val paint = Paint()
     private val paintLine = Paint()
-    private val transparentColor = Color.parseColor("#00FFDEAD")
     private val whiteColor = Color.parseColor("#FFFFFF")
     private val greenColor = Color.parseColor("#008000")
     private val redColor = Color.parseColor("#FF0000")
     private val lightColor = Color.parseColor("#FFDEAD")
     private val blackColor = Color.parseColor("#000000")
+    private val blueColor = Color.parseColor("#1E90FF")
+    private val yellowColor = Color.parseColor("#FFFF00")
+    private val outBoardColor = whiteColor
     private val mehenList = listOf(
-        listOf(0, 7, transparentColor),
-        listOf(0, 6, transparentColor),
-        listOf(0, 5, transparentColor),
-        listOf(0, 4, transparentColor),
-        listOf(0, 3, transparentColor),
-        listOf(0, 2, transparentColor),
-        listOf(0, 1, transparentColor),
-        listOf(0, 0, transparentColor),
+        listOf(0, 7, outBoardColor),
+        listOf(0, 6, blueColor),
+        listOf(0, 5, outBoardColor),
+        listOf(0, 4, outBoardColor),
+        listOf(0, 3, outBoardColor),
+        listOf(0, 2, outBoardColor),
+        listOf(0, 1, outBoardColor),
+        listOf(0, 0, outBoardColor),
         listOf(1, 7, lightColor),
         listOf(1, 6, lightColor),
         listOf(1, 5, lightColor),
@@ -96,14 +98,14 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
         listOf(4, 3, greenColor),
         listOf(5, 3, lightColor),
         listOf(5, 4, greenColor),
-        listOf(9, 0, transparentColor),
-        listOf(9, 1, transparentColor),
-        listOf(9, 2, transparentColor),
-        listOf(9, 3, transparentColor),
-        listOf(9, 4, transparentColor),
-        listOf(9, 5, transparentColor),
-        listOf(9, 6, transparentColor),
-        listOf(9, 7, transparentColor),
+        listOf(9, 0, outBoardColor),
+        listOf(9, 1, outBoardColor),
+        listOf(9, 2, outBoardColor),
+        listOf(9, 3, outBoardColor),
+        listOf(9, 4, outBoardColor),
+        listOf(9, 5, outBoardColor),
+        listOf(9, 6, yellowColor),
+        listOf(9, 7, outBoardColor),
     )
     private val imgResIDs = setOf(
         R.drawable.blue_lion,
@@ -231,10 +233,10 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
                 originY+(1+i[0])*cellSide,
                 paint)
             //stroke
-            if (i[2] != transparentColor){
+            if (i[2] != outBoardColor && i[2] != yellowColor && i[2] != blueColor){
                 paint.color = blackColor
             } else {
-                paint.color = whiteColor
+                paint.color = i[2]
             }
             paint.style = Paint.Style.STROKE
             canvas.drawRect(

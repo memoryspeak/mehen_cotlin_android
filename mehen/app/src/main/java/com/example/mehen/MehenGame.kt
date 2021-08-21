@@ -71,9 +71,11 @@ object MehenGame {
     }
 
     fun canMove(from: Square, to: Square): Boolean {
-        if (from.col == to.col && from.row == to.row) {
-            return  false
-        }
+        if (from.col == to.col && from.row == to.row) { return  false }
+        else if (7 == to.col && 0 == to.row) { return  false }
+        else if (7 == to.col && 9 == to.row) { return  false }
+        else if (6 == to.col && 0 == to.row) { return  false }
+        else if (6 == to.col && 9 == to.row) { return  false }
         val movingPiece = pieceAt(from) ?: return false
         return when(movingPiece.mehenman) {
             Mehenman.WALKER -> canWalkerMove(from, to)
@@ -117,7 +119,7 @@ object MehenGame {
     private fun pieceAt(col: Int, row: Int): MehenPiece? {
         for (piece in piecesBox) {
             if (col == piece.col && row == piece.row) {
-                return  piece
+                return piece
             }
         }
         return null
