@@ -7,6 +7,7 @@ import android.view.MotionEvent
 import android.view.View
 import kotlin.math.min
 import kotlin.math.max
+import kotlin.random.Random
 
 class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
     private val pieceSize = 0.9f
@@ -117,6 +118,12 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
         R.drawable.yellow_walker,
         R.drawable.yellow_walker_tap,
         R.drawable.lion,
+        R.drawable.dice_roll_1,
+        R.drawable.dice_roll_2,
+        R.drawable.dice_roll_3,
+        R.drawable.dice_roll_4,
+        R.drawable.dice_roll_5,
+        R.drawable.dice_roll_6,
     )
     private val bitmaps = mutableMapOf<Int, Bitmap>()
 
@@ -150,6 +157,7 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
 
         drawMehenBoard(canvas)
         drawPieces(canvas)
+        drawDiceRoll(canvas)
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
@@ -220,6 +228,23 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
             bitmaps[imgResID] = BitmapFactory.decodeResource(resources, imgResID)
         }
 
+    private fun drawDiceRoll(canvas: Canvas){
+        val diceRoll = BitmapFactory.decodeResource(resources, R.drawable.dice_roll_1)
+        canvas.drawBitmap(
+            diceRoll,
+            null,
+            RectF(
+                originX + 7*cellSide,
+                originY,
+                originX + 8*cellSide,
+                originY+cellSide),
+            paint)
+    }
+
+    private fun randomDiceValue(): Int {
+        return Random.nextInt(6) + 1
+    }
+
     private fun drawMehenBoard(canvas: Canvas){
         //draw squares
         for (i in mehenList){
@@ -235,9 +260,7 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
             //stroke
             if (i[2] != outBoardColor && i[2] != yellowColor && i[2] != blueColor){
                 paint.color = blackColor
-            } else {
-                paint.color = i[2]
-            }
+            } else { paint.color = i[2] }
             paint.style = Paint.Style.STROKE
             canvas.drawRect(
                 originX+(i[1])*cellSide,
