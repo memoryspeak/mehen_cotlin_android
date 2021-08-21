@@ -12,6 +12,7 @@ import kotlin.random.Random
 class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
     private val pieceSize = 0.9f
     private val pieceSizeToTouch = 0.7f
+    private val diceRollSize = 0.9f
     private val scaleFactor = 1.0f
     private var originX = 20f
     private var originY = 20f
@@ -118,6 +119,8 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
         R.drawable.yellow_walker,
         R.drawable.yellow_walker_tap,
         R.drawable.lion,
+    )
+    private val imgResIDsOfDiceRoll = listOf(
         R.drawable.dice_roll_1,
         R.drawable.dice_roll_2,
         R.drawable.dice_roll_3,
@@ -126,6 +129,7 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
         R.drawable.dice_roll_6,
     )
     private val bitmaps = mutableMapOf<Int, Bitmap>()
+    private val bitmapsOfDiceRoll = mutableMapOf<Int, Bitmap>()
 
     private var movingPieceBitmap: Bitmap? = null
     private var movingPiece: MehenPiece? = null
@@ -136,9 +140,8 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
 
     var mehenDelegate: MehenDelegate? = null
 
-    init {
-        loadBitmaps()
-    }
+    init { loadBitmaps() }
+    init { loadBitmapsOfDiceRoll() }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
@@ -228,21 +231,29 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
             bitmaps[imgResID] = BitmapFactory.decodeResource(resources, imgResID)
         }
 
+    private fun loadBitmapsOfDiceRoll() {
+        for (i in 0 until 6) {
+            bitmapsOfDiceRoll[i] = BitmapFactory.decodeResource(resources, imgResIDsOfDiceRoll[i])
+        }
+    }
+
     private fun drawDiceRoll(canvas: Canvas){
-        val diceRoll = BitmapFactory.decodeResource(resources, R.drawable.dice_roll_1)
-        canvas.drawBitmap(
-            diceRoll,
-            null,
-            RectF(
-                originX + 7*cellSide,
-                originY,
-                originX + 8*cellSide,
-                originY+cellSide),
-            paint)
+        val diceRoll = (bitmapsOfDiceRoll[randomDiceValue()])
+        if (diceRoll != null) {
+            canvas.drawBitmap(
+                diceRoll,
+                null,
+                RectF(
+                    originX + 7*cellSide + cellSide/(10*diceRollSize),
+                    originY + cellSide/(10*diceRollSize),
+                    originX + 8*cellSide - cellSide/(10*diceRollSize),
+                    originY+cellSide - cellSide/(10*diceRollSize)),
+                paint)
+        }
     }
 
     private fun randomDiceValue(): Int {
-        return Random.nextInt(6) + 1
+        return Random.nextInt(6)
     }
 
     private fun drawMehenBoard(canvas: Canvas){
