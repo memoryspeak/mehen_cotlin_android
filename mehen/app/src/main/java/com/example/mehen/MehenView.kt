@@ -17,6 +17,7 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
     private var originX = 20f
     private var originY = 20f
     private var cellSide = 130f
+    private val textSize = 40f
     private val paint = Paint()
     private val paintLine = Paint()
     private val whiteColor = Color.parseColor("#FFFFFF")
@@ -169,6 +170,8 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
         drawPieces(canvas)
         drawWhiteDiceRoll(canvas)
         drawBlackDiceRoll(canvas)
+        drawWhiteMemory(canvas)
+        drawBlackMemory(canvas)
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
@@ -250,21 +253,25 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
         }
     }
 
-//    private fun drawWhiteMemory(canvas: Canvas){
-//        //val diceRoll = (bitmapsOfDiceRoll[randomDiceValue()])
-//        val diceRollWhite = (bitmapsOfDiceRoll[whiteValueDiceRoll])
-//        if (diceRollWhite != null) {
-//            canvas.drawBitmap(
-//                diceRollWhite,
-//                null,
-//                RectF(
-//                    originX + 7*cellSide + cellSide/(10*diceRollSize),
-//                    originY + 9*cellSide + cellSide/(10*diceRollSize),
-//                    originX + 8*cellSide - cellSide/(10*diceRollSize),
-//                    originY + 10*cellSide - cellSide/(10*diceRollSize)),
-//                paint)
-//        }
-//    }
+    private fun drawWhiteMemory(canvas: Canvas){
+        paint.color = blackColor
+        paint.textSize = textSize
+        paint.textAlign = Paint.Align.CENTER
+        canvas.drawText(
+            "+${whiteValueDiceRoll+1}",
+            originX + 13*cellSide/2,
+            originY + 19*cellSide/2 + textSize/2, paint)
+    }
+
+    private fun drawBlackMemory(canvas: Canvas){
+        paint.color = blackColor
+        paint.textSize = textSize
+        paint.textAlign = Paint.Align.CENTER
+        canvas.drawText(
+            "+${blackValueDiceRoll+1}",
+            originX + 13*cellSide/2,
+            originY + cellSide/2 + textSize/2, paint)
+    }
 
     private fun drawWhiteDiceRoll(canvas: Canvas){
         val diceRollWhite = (bitmapsOfDiceRoll[whiteValueDiceRoll])
