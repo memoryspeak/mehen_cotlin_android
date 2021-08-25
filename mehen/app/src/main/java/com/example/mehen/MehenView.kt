@@ -29,7 +29,7 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
     private val outBoardColor = whiteColor
     private val mehenList = listOf(
         listOf(0, 7, outBoardColor),
-        listOf(0, 6, blueColor),
+        listOf(0, 6, outBoardColor),
         listOf(0, 5, outBoardColor),
         listOf(0, 4, outBoardColor),
         listOf(0, 3, outBoardColor),
@@ -106,7 +106,7 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
         listOf(9, 3, outBoardColor),
         listOf(9, 4, outBoardColor),
         listOf(9, 5, outBoardColor),
-        listOf(9, 6, yellowColor),
+        listOf(9, 6, outBoardColor),
         listOf(9, 7, outBoardColor),
     )
     private val imgResIDs = setOf(
@@ -130,13 +130,20 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
     )
     private val bitmaps = mutableMapOf<Int, Bitmap>()
     private val bitmapsOfDiceRoll = mutableMapOf<Int, Bitmap>()
-
     private var movingPieceBitmap: Bitmap? = null
     private var movingPiece: MehenPiece? = null
     private var fromCol: Int = -1
     private var fromRow: Int = -1
     private var movingPieceX = -1f
     private var movingPieceY = -1f
+    private var canWhiteMove: Boolean = true
+    private var canBlackMove: Boolean = false
+    private var memoryWhite: Int = 0
+    private var memoryBlack: Int = 0
+    private var canWhiteDiceRoll: Boolean = true
+    private var canBlackDiceRoll: Boolean = false
+    private var whiteValueDiceRoll: Int = 5
+    private var blackValueDiceRoll: Int = 5
 
     var mehenDelegate: MehenDelegate? = null
 
@@ -160,7 +167,8 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
 
         drawMehenBoard(canvas)
         drawPieces(canvas)
-        drawDiceRoll(canvas)
+        drawWhiteDiceRoll(canvas)
+        drawBlackDiceRoll(canvas)
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
@@ -175,6 +183,11 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
                     movingPiece = it
                     movingPieceBitmap = bitmaps[it.resID]
                 }
+
+                if (fromCol == 7 && fromRow == 9)
+                    blackValueDiceRoll = randomDiceValue()
+                if (fromCol == 7 && fromRow == 0)
+                    whiteValueDiceRoll = randomDiceValue()
             }
             MotionEvent.ACTION_MOVE -> {
                 movingPieceX = event.x
@@ -237,11 +250,42 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
         }
     }
 
-    private fun drawDiceRoll(canvas: Canvas){
-        val diceRoll = (bitmapsOfDiceRoll[randomDiceValue()])
-        if (diceRoll != null) {
+//    private fun drawWhiteMemory(canvas: Canvas){
+//        //val diceRoll = (bitmapsOfDiceRoll[randomDiceValue()])
+//        val diceRollWhite = (bitmapsOfDiceRoll[whiteValueDiceRoll])
+//        if (diceRollWhite != null) {
+//            canvas.drawBitmap(
+//                diceRollWhite,
+//                null,
+//                RectF(
+//                    originX + 7*cellSide + cellSide/(10*diceRollSize),
+//                    originY + 9*cellSide + cellSide/(10*diceRollSize),
+//                    originX + 8*cellSide - cellSide/(10*diceRollSize),
+//                    originY + 10*cellSide - cellSide/(10*diceRollSize)),
+//                paint)
+//        }
+//    }
+
+    private fun drawWhiteDiceRoll(canvas: Canvas){
+        val diceRollWhite = (bitmapsOfDiceRoll[whiteValueDiceRoll])
+        if (diceRollWhite != null) {
             canvas.drawBitmap(
-                diceRoll,
+                diceRollWhite,
+                null,
+                RectF(
+                    originX + 7*cellSide + cellSide/(10*diceRollSize),
+                    originY + 9*cellSide + cellSide/(10*diceRollSize),
+                    originX + 8*cellSide - cellSide/(10*diceRollSize),
+                    originY + 10*cellSide - cellSide/(10*diceRollSize)),
+                paint)
+        }
+    }
+
+    private fun drawBlackDiceRoll(canvas: Canvas){
+        val diceRollBlack = (bitmapsOfDiceRoll[blackValueDiceRoll])
+        if (diceRollBlack != null) {
+            canvas.drawBitmap(
+                diceRollBlack,
                 null,
                 RectF(
                     originX + 7*cellSide + cellSide/(10*diceRollSize),
