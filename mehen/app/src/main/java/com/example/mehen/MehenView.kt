@@ -124,7 +124,6 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
         R.drawable.dice_roll_5_white,
         R.drawable.dice_roll_6_white,
     )
-
     private val imgResIDsOfDiceRollBlack = listOf(
         R.drawable.dice_roll_1_black,
         R.drawable.dice_roll_2_black,
@@ -145,7 +144,7 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
     private var movingPieceY = -1f
     private var canWhiteMove: Boolean = true
     private var canBlackMove: Boolean = false
-    private var memoryWhite: Int = 0
+    var memoryWhite: Int = 0
     private var memoryBlack: Int = 0
     private var canWhiteDiceRoll: Boolean = true
     private var canBlackDiceRoll: Boolean = false
@@ -175,10 +174,9 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
 
         drawMehenBoard(canvas)
         drawPieces(canvas)
+
         drawWhiteDiceRoll(canvas)
         drawBlackDiceRoll(canvas)
-        drawWhiteMemory(canvas)
-        drawBlackMemory(canvas)
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
@@ -194,10 +192,28 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
                     movingPieceBitmap = bitmaps[it.resID]
                 }
 
-                if (fromCol == 7 && fromRow == 9)
-                    blackValueDiceRoll = randomDiceValue()
-                if (fromCol == 7 && fromRow == 0)
-                    whiteValueDiceRoll = randomDiceValue()
+                if (fromCol == 7 && fromRow == 9) {
+                    if (canBlackDiceRoll) {
+                        blackValueDiceRoll = randomDiceValue()
+                        if (blackValueDiceRoll == 0) {
+                            memoryBlack += 1
+                        } else {
+                            canBlackDiceRoll = false
+                            canWhiteDiceRoll = true
+                        }
+                    }
+                }
+                if (fromCol == 7 && fromRow == 0) {
+                    if (canWhiteDiceRoll) {
+                        whiteValueDiceRoll = randomDiceValue()
+                        if (whiteValueDiceRoll == 0) {
+                            memoryWhite += 1
+                        } else {
+                            canWhiteDiceRoll = false
+                            canBlackDiceRoll = true
+                        }
+                    }
+                }
             }
             MotionEvent.ACTION_MOVE -> {
                 movingPieceX = event.x
@@ -299,6 +315,7 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
                     originY + 10*cellSide - cellSide/(10*diceRollSize)),
                 paint)
         }
+        drawWhiteMemory(canvas)
     }
 
     private fun drawBlackDiceRoll(canvas: Canvas){
@@ -314,6 +331,7 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
                     originY+cellSide - cellSide/(10*diceRollSize)),
                 paint)
         }
+        drawBlackMemory(canvas)
     }
 
     private fun randomDiceValue(): Int {
