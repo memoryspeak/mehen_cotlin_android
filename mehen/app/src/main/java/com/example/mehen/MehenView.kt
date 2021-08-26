@@ -111,15 +111,10 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
         listOf(9, 7, outBoardColor),
     )
     private val imgResIDs = setOf(
-        R.drawable.blue_lion,
-        R.drawable.blue_lion_tap,
-        R.drawable.blue_walker,
-        R.drawable.blue_walker_tap,
-        R.drawable.yellow_lion,
-        R.drawable.yellow_lion_tap,
-        R.drawable.yellow_walker,
-        R.drawable.yellow_walker_tap,
-        R.drawable.lion,
+        R.drawable.white_lion,
+        R.drawable.white_walker,
+        R.drawable.black_lion,
+        R.drawable.black_walker,
     )
     private val imgResIDsOfDiceRoll = listOf(
         R.drawable.dice_roll_1,
@@ -258,7 +253,7 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
         paint.textSize = textSize
         paint.textAlign = Paint.Align.CENTER
         canvas.drawText(
-            "+${whiteValueDiceRoll+1}",
+            "+${memoryWhite}",
             originX + 13*cellSide/2,
             originY + 19*cellSide/2 + textSize/2, paint)
     }
@@ -268,7 +263,7 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
         paint.textSize = textSize
         paint.textAlign = Paint.Align.CENTER
         canvas.drawText(
-            "+${blackValueDiceRoll+1}",
+            "+${memoryBlack}",
             originX + 13*cellSide/2,
             originY + cellSide/2 + textSize/2, paint)
     }

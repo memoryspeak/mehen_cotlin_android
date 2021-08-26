@@ -66,8 +66,8 @@ object MehenGame {
     fun reset() {
         clear()
         for (i in 0 until 6) {
-            addPiece(MehenPiece(i, 0, Player.WHITE, Mehenman.WALKER, R.drawable.yellow_walker))
-            addPiece(MehenPiece(i, 9, Player.BLACK, Mehenman.WALKER, R.drawable.blue_walker))
+            addPiece(MehenPiece(i, 0, Player.WHITE, Mehenman.WALKER, R.drawable.white_lion))
+            addPiece(MehenPiece(i, 9, Player.BLACK, Mehenman.WALKER, R.drawable.black_lion))
         }
     }
 
