@@ -116,16 +116,27 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
         R.drawable.black_lion,
         R.drawable.black_goose,
     )
-    private val imgResIDsOfDiceRoll = listOf(
-        R.drawable.dice_roll_1,
-        R.drawable.dice_roll_2,
-        R.drawable.dice_roll_3,
-        R.drawable.dice_roll_4,
-        R.drawable.dice_roll_5,
-        R.drawable.dice_roll_6,
+    private val imgResIDsOfDiceRollWhite = listOf(
+        R.drawable.dice_roll_1_white,
+        R.drawable.dice_roll_2_white,
+        R.drawable.dice_roll_3_white,
+        R.drawable.dice_roll_4_white,
+        R.drawable.dice_roll_5_white,
+        R.drawable.dice_roll_6_white,
     )
+
+    private val imgResIDsOfDiceRollBlack = listOf(
+        R.drawable.dice_roll_1_black,
+        R.drawable.dice_roll_2_black,
+        R.drawable.dice_roll_3_black,
+        R.drawable.dice_roll_4_black,
+        R.drawable.dice_roll_5_black,
+        R.drawable.dice_roll_6_black,
+    )
+
     private val bitmaps = mutableMapOf<Int, Bitmap>()
-    private val bitmapsOfDiceRoll = mutableMapOf<Int, Bitmap>()
+    private val bitmapsOfDiceRollWhite = mutableMapOf<Int, Bitmap>()
+    private val bitmapsOfDiceRollBlack = mutableMapOf<Int, Bitmap>()
     private var movingPieceBitmap: Bitmap? = null
     private var movingPiece: MehenPiece? = null
     private var fromCol: Int = -1
@@ -144,12 +155,13 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
     var mehenDelegate: MehenDelegate? = null
 
     init { loadBitmaps() }
-    init { loadBitmapsOfDiceRoll() }
+    init { loadBitmapsOfDiceRollWhite() }
+    init { loadBitmapsOfDiceRollBlack() }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         val smaller = min(widthMeasureSpec, heightMeasureSpec)
-        val bigger = 5*smaller/4
+        val bigger = 10*smaller/8
         setMeasuredDimension(smaller, bigger)
     }
 
@@ -242,9 +254,15 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
             bitmaps[imgResID] = BitmapFactory.decodeResource(resources, imgResID)
         }
 
-    private fun loadBitmapsOfDiceRoll() {
+    private fun loadBitmapsOfDiceRollWhite() {
         for (i in 0 until 6) {
-            bitmapsOfDiceRoll[i] = BitmapFactory.decodeResource(resources, imgResIDsOfDiceRoll[i])
+            bitmapsOfDiceRollWhite[i] = BitmapFactory.decodeResource(resources, imgResIDsOfDiceRollWhite[i])
+        }
+    }
+
+    private fun loadBitmapsOfDiceRollBlack() {
+        for (i in 0 until 6) {
+            bitmapsOfDiceRollBlack[i] = BitmapFactory.decodeResource(resources, imgResIDsOfDiceRollBlack[i])
         }
     }
 
@@ -265,11 +283,11 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
         canvas.drawText(
             "+${memoryBlack}",
             originX + 13*cellSide/2,
-            originY + cellSide/2 + textSize/2, paint)
+            originY + 1*cellSide/2 + textSize/2, paint)
     }
 
     private fun drawWhiteDiceRoll(canvas: Canvas){
-        val diceRollWhite = (bitmapsOfDiceRoll[whiteValueDiceRoll])
+        val diceRollWhite = (bitmapsOfDiceRollWhite[whiteValueDiceRoll])
         if (diceRollWhite != null) {
             canvas.drawBitmap(
                 diceRollWhite,
@@ -284,7 +302,7 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
     }
 
     private fun drawBlackDiceRoll(canvas: Canvas){
-        val diceRollBlack = (bitmapsOfDiceRoll[blackValueDiceRoll])
+        val diceRollBlack = (bitmapsOfDiceRollBlack[blackValueDiceRoll])
         if (diceRollBlack != null) {
             canvas.drawBitmap(
                 diceRollBlack,
