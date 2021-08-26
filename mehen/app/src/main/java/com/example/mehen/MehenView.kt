@@ -112,9 +112,9 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
     )
     private val imgResIDs = setOf(
         R.drawable.white_lion,
-        R.drawable.white_walker,
+        R.drawable.white_goose,
         R.drawable.black_lion,
-        R.drawable.black_walker,
+        R.drawable.black_goose,
     )
     private val imgResIDsOfDiceRoll = listOf(
         R.drawable.dice_roll_1,
