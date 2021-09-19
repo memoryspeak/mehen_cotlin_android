@@ -31,6 +31,8 @@ object MehenGame {
 
     fun canMove(from: Square, to: Square): Boolean {
         if (from.col == to.col && from.row == to.row) { return  false }
+        else if (0 > to.row) { return  false }
+        else if (9 < to.row) { return  false }
         else if (7 == to.col && 0 == to.row) { return  false }
         else if (7 == to.col && 9 == to.row) { return  false }
         else if (6 == to.col && 0 == to.row) { return  false }
