@@ -55,10 +55,23 @@ object MehenGame {
         val movingPiece = pieceAt(fromCol, fromRow) ?: return
 
         pieceAt(toCol, toRow)?.let {
-            if (it.player == movingPiece.player) {
-                return
+            if (movingPiece.mehenman == Mehenman.LION){
+                if (movingPiece.player == it.player){
+                    piecesBox.remove(movingPiece)
+                    addPiece(movingPiece.copy(col = toCol, row = toRow))
+                    piecesBox.remove(it)
+                    addPiece(it.copy(col = fromCol, row = fromRow))
+                } else { piecesBox.remove(it) }
+            } else {
+                if (movingPiece.player == it.player){
+                    return
+                } else {
+                    piecesBox.remove(movingPiece)
+                    addPiece(movingPiece.copy(col = toCol, row = toRow))
+                    piecesBox.remove(it)
+                    addPiece(it.copy(col = fromCol, row = fromRow))
+                }
             }
-            piecesBox.remove(it)
         }
 
         piecesBox.remove(movingPiece)

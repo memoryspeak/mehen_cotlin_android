@@ -142,8 +142,8 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
     private var fromRow: Int = -1
     private var movingPieceX = -1f
     private var movingPieceY = -1f
-    var canWhiteMove: Boolean = true
-    var canBlackMove: Boolean = false
+    private var canWhiteMove: Boolean = false
+    private var canBlackMove: Boolean = false
     private var memoryWhite: Int = 0
     private var memoryBlack: Int = 0
     private var canWhiteDiceRoll: Boolean = true
@@ -191,7 +191,7 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
                 fromRow = 9 - ((event.y - originY) / cellSide).toInt()
 
                 mehenDelegate?.pieceAt(Square(fromCol, fromRow))?.let {
-                    if (it.player == Player.WHITE && canWhiteMove == true || it.player == Player.BLACK && canBlackMove == true){
+                    if (it.player == Player.WHITE && canWhiteMove || it.player == Player.BLACK && canBlackMove){
                         movingPiece = it
                         movingPieceBitmap = bitmaps[it.resID]
                     } else return false
@@ -203,10 +203,9 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
                         if (blackValueDiceRoll == 0) {
                             memoryBlack += 1
                         } else {
+                            canBlackMove = true
+                            canWhiteMove = false
                             canBlackDiceRoll = false
-                            canWhiteDiceRoll = true
-                            canBlackMove = false
-                            canWhiteMove = true
                         }
                     }
                 }
@@ -216,12 +215,19 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
                         if (whiteValueDiceRoll == 0) {
                             memoryWhite += 1
                         } else {
+                            canWhiteMove = true
+                            canBlackMove = false
                             canWhiteDiceRoll = false
-                            canBlackDiceRoll = true
-                            canWhiteMove = false
-                            canBlackMove = true
                         }
                     }
+                }
+                if (fromCol == 6 && fromRow == 0 && canBlackMove){
+                    canBlackMove = false
+                    canWhiteDiceRoll = true
+                }
+                if (fromCol == 6 && fromRow == 9 && canWhiteMove){
+                    canWhiteMove = false
+                    canBlackDiceRoll = true
                 }
             }
             MotionEvent.ACTION_MOVE -> {
@@ -241,6 +247,26 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
             }
         }
         return true
+    }
+
+    fun canConfigure(setCanWhiteMove: Boolean,
+                     setCanBlackMove: Boolean,
+                     setMemoryWhite: Int,
+                     setMemoryBlack: Int,
+                     setCanWhiteDiceRoll: Boolean,
+                     setCanBlackDiceRoll: Boolean,
+                     setWhiteValueDiceRoll: Int,
+                     setBlackValueDiceRoll: Int){
+        canWhiteMove = setCanWhiteMove
+        canBlackMove = setCanBlackMove
+        if (setMemoryWhite == 0){ memoryWhite = setMemoryWhite }
+        if (setMemoryWhite == 2) { memoryWhite -= 2 }
+        if (setMemoryBlack == 0){ memoryBlack = setMemoryBlack }
+        if (setMemoryBlack == 2) { memoryBlack -= 2 }
+        canWhiteDiceRoll = setCanWhiteDiceRoll
+        canBlackDiceRoll = setCanBlackDiceRoll
+        if (setWhiteValueDiceRoll == 5){ whiteValueDiceRoll = setWhiteValueDiceRoll }
+        if (setBlackValueDiceRoll == 5){ blackValueDiceRoll = setBlackValueDiceRoll }
     }
 
     private fun drawPieces(canvas: Canvas) {
@@ -312,7 +338,7 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
     }
 
     private fun drawCanWhiteMove(canvas: Canvas){
-        if (canWhiteMove == true) {
+        if (!canWhiteMove && canWhiteDiceRoll || canWhiteMove && !canWhiteDiceRoll) {
             paint.color = greenColor
             paint.style = Paint.Style.FILL
             canvas.drawOval(RectF(
@@ -325,7 +351,7 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
     }
 
     private fun drawCanBlackMove(canvas: Canvas){
-        if (canBlackMove == true) {
+        if (!canBlackMove && canBlackDiceRoll || canBlackMove && !canBlackDiceRoll) {
             paint.color = greenColor
             paint.style = Paint.Style.FILL
             canvas.drawOval(RectF(
