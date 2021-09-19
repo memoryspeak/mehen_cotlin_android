@@ -177,6 +177,9 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
 
         drawWhiteDiceRoll(canvas)
         drawBlackDiceRoll(canvas)
+
+        drawCanWhiteMove(canvas)
+        drawCanBlackMove(canvas)
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
@@ -200,6 +203,8 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
                         } else {
                             canBlackDiceRoll = false
                             canWhiteDiceRoll = true
+                            canBlackMove = false
+                            canWhiteMove = true
                         }
                     }
                 }
@@ -211,6 +216,8 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
                         } else {
                             canWhiteDiceRoll = false
                             canBlackDiceRoll = true
+                            canWhiteMove = false
+                            canBlackMove = true
                         }
                     }
                 }
@@ -300,6 +307,32 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
             "+${memoryBlack}",
             originX + 13*cellSide/2,
             originY + 1*cellSide/2 + textSize/2, paint)
+    }
+
+    private fun drawCanWhiteMove(canvas: Canvas){
+        if (canWhiteMove == true) {
+            paint.color = greenColor
+            paint.style = Paint.Style.FILL
+            canvas.drawOval(RectF(
+                originX + 6*cellSide + 2*cellSide/3,
+                originY + 9*cellSide + 2*cellSide/3,
+                originX + 6*cellSide+5*cellSide/6,
+                originY + 9*cellSide+5*cellSide/6),
+                paint)
+        }
+    }
+
+    private fun drawCanBlackMove(canvas: Canvas){
+        if (canBlackMove == true) {
+            paint.color = greenColor
+            paint.style = Paint.Style.FILL
+            canvas.drawOval(RectF(
+                originX + 6*cellSide + 2*cellSide/3,
+                originY + 0*cellSide + 2*cellSide/3,
+                originX + 6*cellSide+5*cellSide/6,
+                originY + 0*cellSide+5*cellSide/6),
+                paint)
+        }
     }
 
     private fun drawWhiteDiceRoll(canvas: Canvas){
