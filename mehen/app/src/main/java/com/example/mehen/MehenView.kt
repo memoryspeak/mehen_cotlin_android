@@ -142,9 +142,9 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
     private var fromRow: Int = -1
     private var movingPieceX = -1f
     private var movingPieceY = -1f
-    private var canWhiteMove: Boolean = true
-    private var canBlackMove: Boolean = false
-    var memoryWhite: Int = 0
+    var canWhiteMove: Boolean = true
+    var canBlackMove: Boolean = false
+    private var memoryWhite: Int = 0
     private var memoryBlack: Int = 0
     private var canWhiteDiceRoll: Boolean = true
     private var canBlackDiceRoll: Boolean = false
@@ -191,8 +191,10 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
                 fromRow = 9 - ((event.y - originY) / cellSide).toInt()
 
                 mehenDelegate?.pieceAt(Square(fromCol, fromRow))?.let {
-                    movingPiece = it
-                    movingPieceBitmap = bitmaps[it.resID]
+                    if (it.player == Player.WHITE && canWhiteMove == true || it.player == Player.BLACK && canBlackMove == true){
+                        movingPiece = it
+                        movingPieceBitmap = bitmaps[it.resID]
+                    } else return false
                 }
 
                 if (fromCol == 7 && fromRow == 9) {
