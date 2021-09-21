@@ -6,7 +6,6 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import kotlin.math.min
-import kotlin.math.max
 import kotlin.random.Random
 
 class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
@@ -142,14 +141,6 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
     private var fromRow: Int = -1
     private var movingPieceX = -1f
     private var movingPieceY = -1f
-    private var canWhiteMove: Boolean = false
-    private var canBlackMove: Boolean = false
-    private var memoryWhite: Int = 0
-    private var memoryBlack: Int = 0
-    private var canWhiteDiceRoll: Boolean = true
-    private var canBlackDiceRoll: Boolean = false
-    private var whiteValueDiceRoll: Int = 5
-    private var blackValueDiceRoll: Int = 5
 
     var mehenDelegate: MehenDelegate? = null
 
@@ -191,43 +182,43 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
                 fromRow = 9 - ((event.y - originY) / cellSide).toInt()
 
                 mehenDelegate?.pieceAt(Square(fromCol, fromRow))?.let {
-                    if (it.player == Player.WHITE && canWhiteMove || it.player == Player.BLACK && canBlackMove){
+                    if (it.player == Player.WHITE && MehenSingleton.canWhiteMove || it.player == Player.BLACK && MehenSingleton.canBlackMove){
                         movingPiece = it
                         movingPieceBitmap = bitmaps[it.resID]
                     } else return false
                 }
 
                 if (fromCol == 7 && fromRow == 9) {
-                    if (canBlackDiceRoll) {
-                        blackValueDiceRoll = randomDiceValue()
-                        if (blackValueDiceRoll == 0) {
-                            memoryBlack += 1
+                    if (MehenSingleton.canBlackDiceRoll) {
+                        MehenSingleton.blackValueDiceRoll = randomDiceValue()
+                        if (MehenSingleton.blackValueDiceRoll == 0) {
+                            MehenSingleton.memoryBlack +=1
                         } else {
-                            canBlackMove = true
-                            canWhiteMove = false
-                            canBlackDiceRoll = false
+                            MehenSingleton.canBlackMove = true
+                            MehenSingleton.canWhiteMove = false
+                            MehenSingleton.canBlackDiceRoll = false
                         }
                     }
                 }
                 if (fromCol == 7 && fromRow == 0) {
-                    if (canWhiteDiceRoll) {
-                        whiteValueDiceRoll = randomDiceValue()
-                        if (whiteValueDiceRoll == 0) {
-                            memoryWhite += 1
+                    if (MehenSingleton.canWhiteDiceRoll) {
+                        MehenSingleton.whiteValueDiceRoll = randomDiceValue()
+                        if (MehenSingleton.whiteValueDiceRoll == 0) {
+                            MehenSingleton.memoryWhite += 1
                         } else {
-                            canWhiteMove = true
-                            canBlackMove = false
-                            canWhiteDiceRoll = false
+                            MehenSingleton.canWhiteMove = true
+                            MehenSingleton.canBlackMove = false
+                            MehenSingleton.canWhiteDiceRoll = false
                         }
                     }
                 }
-                if (fromCol == 6 && fromRow == 0 && canBlackMove){
-                    canBlackMove = false
-                    canWhiteDiceRoll = true
+                if (fromCol == 6 && fromRow == 0 && MehenSingleton.canBlackMove){
+                    MehenSingleton.canBlackMove = false
+                    MehenSingleton.canWhiteDiceRoll = true
                 }
-                if (fromCol == 6 && fromRow == 9 && canWhiteMove){
-                    canWhiteMove = false
-                    canBlackDiceRoll = true
+                if (fromCol == 6 && fromRow == 9 && MehenSingleton.canWhiteMove){
+                    MehenSingleton.canWhiteMove = false
+                    MehenSingleton.canBlackDiceRoll = true
                 }
             }
             MotionEvent.ACTION_MOVE -> {
@@ -247,26 +238,6 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
             }
         }
         return true
-    }
-
-    fun canConfigure(setCanWhiteMove: Boolean,
-                     setCanBlackMove: Boolean,
-                     setMemoryWhite: Int,
-                     setMemoryBlack: Int,
-                     setCanWhiteDiceRoll: Boolean,
-                     setCanBlackDiceRoll: Boolean,
-                     setWhiteValueDiceRoll: Int,
-                     setBlackValueDiceRoll: Int){
-        canWhiteMove = setCanWhiteMove
-        canBlackMove = setCanBlackMove
-        if (setMemoryWhite == 0){ memoryWhite = setMemoryWhite }
-        if (setMemoryWhite == 2) { memoryWhite -= 2 }
-        if (setMemoryBlack == 0){ memoryBlack = setMemoryBlack }
-        if (setMemoryBlack == 2) { memoryBlack -= 2 }
-        canWhiteDiceRoll = setCanWhiteDiceRoll
-        canBlackDiceRoll = setCanBlackDiceRoll
-        if (setWhiteValueDiceRoll == 5){ whiteValueDiceRoll = setWhiteValueDiceRoll }
-        if (setBlackValueDiceRoll == 5){ blackValueDiceRoll = setBlackValueDiceRoll }
     }
 
     private fun drawPieces(canvas: Canvas) {
@@ -322,7 +293,7 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
         paint.textSize = textSize
         paint.textAlign = Paint.Align.CENTER
         canvas.drawText(
-            "+${memoryWhite}",
+            "+${MehenSingleton.memoryWhite}",
             originX + 13*cellSide/2,
             originY + 19*cellSide/2 + textSize/2, paint)
     }
@@ -332,13 +303,13 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
         paint.textSize = textSize
         paint.textAlign = Paint.Align.CENTER
         canvas.drawText(
-            "+${memoryBlack}",
+            "+${MehenSingleton.memoryBlack}",
             originX + 13*cellSide/2,
             originY + 1*cellSide/2 + textSize/2, paint)
     }
 
     private fun drawCanWhiteMove(canvas: Canvas){
-        if (!canWhiteMove && canWhiteDiceRoll || canWhiteMove && !canWhiteDiceRoll) {
+        if (!MehenSingleton.canWhiteMove && MehenSingleton.canWhiteDiceRoll || MehenSingleton.canWhiteMove && !MehenSingleton.canWhiteDiceRoll) {
             paint.color = greenColor
             paint.style = Paint.Style.FILL
             canvas.drawOval(RectF(
@@ -351,7 +322,7 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
     }
 
     private fun drawCanBlackMove(canvas: Canvas){
-        if (!canBlackMove && canBlackDiceRoll || canBlackMove && !canBlackDiceRoll) {
+        if (!MehenSingleton.canBlackMove && MehenSingleton.canBlackDiceRoll || MehenSingleton.canBlackMove && !MehenSingleton.canBlackDiceRoll) {
             paint.color = greenColor
             paint.style = Paint.Style.FILL
             canvas.drawOval(RectF(
@@ -364,7 +335,7 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
     }
 
     private fun drawWhiteDiceRoll(canvas: Canvas){
-        val diceRollWhite = (bitmapsOfDiceRollWhite[whiteValueDiceRoll])
+        val diceRollWhite = (bitmapsOfDiceRollWhite[MehenSingleton.whiteValueDiceRoll])
         if (diceRollWhite != null) {
             canvas.drawBitmap(
                 diceRollWhite,
@@ -380,7 +351,7 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
     }
 
     private fun drawBlackDiceRoll(canvas: Canvas){
-        val diceRollBlack = (bitmapsOfDiceRollBlack[blackValueDiceRoll])
+        val diceRollBlack = (bitmapsOfDiceRollBlack[MehenSingleton.blackValueDiceRoll])
         if (diceRollBlack != null) {
             canvas.drawBitmap(
                 diceRollBlack,

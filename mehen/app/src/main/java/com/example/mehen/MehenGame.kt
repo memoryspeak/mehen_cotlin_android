@@ -84,6 +84,14 @@ object MehenGame {
             addPiece(MehenPiece(i, 0, Player.WHITE, Mehenman.WALKER, R.drawable.white_goose))
             addPiece(MehenPiece(i, 9, Player.BLACK, Mehenman.WALKER, R.drawable.black_goose))
         }
+        MehenSingleton.memoryBlack = 0
+        MehenSingleton.memoryWhite = 0
+        MehenSingleton.canWhiteMove = false
+        MehenSingleton.canBlackMove = false
+        MehenSingleton.canWhiteDiceRoll = true
+        MehenSingleton.canBlackDiceRoll = false
+        MehenSingleton.whiteValueDiceRoll = 5
+        MehenSingleton.blackValueDiceRoll = 5
     }
 
     fun pieceAt(square: Square): MehenPiece? {
