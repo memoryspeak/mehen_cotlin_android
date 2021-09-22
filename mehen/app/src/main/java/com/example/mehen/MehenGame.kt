@@ -76,6 +76,15 @@ object MehenGame {
 
         piecesBox.remove(movingPiece)
         addPiece(movingPiece.copy(col = toCol, row = toRow))
+
+        if (movingPiece.player == Player.BLACK && MehenSingleton.canBlackMove){
+            MehenSingleton.canBlackMove = false
+            MehenSingleton.canWhiteDiceRoll = true
+        }
+        if (movingPiece.player == Player.WHITE && MehenSingleton.canWhiteMove){
+            MehenSingleton.canWhiteMove = false
+            MehenSingleton.canBlackDiceRoll = true
+        }
     }
 
     fun reset() {

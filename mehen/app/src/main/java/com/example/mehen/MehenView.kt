@@ -212,14 +212,14 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
                         }
                     }
                 }
-                if (fromCol == 6 && fromRow == 0 && MehenSingleton.canBlackMove){
-                    MehenSingleton.canBlackMove = false
-                    MehenSingleton.canWhiteDiceRoll = true
-                }
-                if (fromCol == 6 && fromRow == 9 && MehenSingleton.canWhiteMove){
-                    MehenSingleton.canWhiteMove = false
-                    MehenSingleton.canBlackDiceRoll = true
-                }
+//                if (fromCol == 6 && fromRow == 0 && MehenSingleton.canBlackMove){
+//                    MehenSingleton.canBlackMove = false
+//                    MehenSingleton.canWhiteDiceRoll = true
+//                }
+//                if (fromCol == 6 && fromRow == 9 && MehenSingleton.canWhiteMove){
+//                    MehenSingleton.canWhiteMove = false
+//                    MehenSingleton.canBlackDiceRoll = true
+//                }
             }
             MotionEvent.ACTION_MOVE -> {
                 movingPieceX = event.x
