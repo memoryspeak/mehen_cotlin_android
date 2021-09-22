@@ -10,8 +10,9 @@ import kotlin.random.Random
 
 class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
     private val pieceSize = 0.9f
-    private val pieceSizeToTouch = 0.7f
+    private val pieceSizeToTouch = 1.0f
     private val diceRollSize = 0.9f
+    private val dotSize = 0.3f
     private val scaleFactor = 1.0f
     private var originX = 20f
     private var originY = 20f
@@ -171,6 +172,8 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
 
         drawCanWhiteMove(canvas)
         drawCanBlackMove(canvas)
+
+        drawPossibleDots(canvas)
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
@@ -212,14 +215,18 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
                         }
                     }
                 }
-//                if (fromCol == 6 && fromRow == 0 && MehenSingleton.canBlackMove){
-//                    MehenSingleton.canBlackMove = false
-//                    MehenSingleton.canWhiteDiceRoll = true
-//                }
-//                if (fromCol == 6 && fromRow == 9 && MehenSingleton.canWhiteMove){
-//                    MehenSingleton.canWhiteMove = false
-//                    MehenSingleton.canBlackDiceRoll = true
-//                }
+                if (!MehenSingleton.viewPossibleDot){
+                    val key = setOf<Int>(fromRow, fromCol)
+                    MehenSingleton.possibleDots.clear()
+                    movingPiece?.let { MehenSingleton.bindingSquare.get(key)?.let { it1 ->
+                        findPossibleDots(
+                            it1, it.player, it.mehenman)
+                    } }
+                    MehenSingleton.viewPossibleDot = true
+                } else {
+                    MehenSingleton.possibleDots.clear()
+                    MehenSingleton.viewPossibleDot = false
+                }
             }
             MotionEvent.ACTION_MOVE -> {
                 movingPieceX = event.x
@@ -234,6 +241,8 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
                 }
                 movingPiece = null
                 movingPieceBitmap = null
+                MehenSingleton.possibleDots.clear()
+                MehenSingleton.viewPossibleDot = false
                 invalidate()
             }
         }
@@ -364,6 +373,28 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
                 paint)
         }
         drawBlackMemory(canvas)
+    }
+
+    private fun drawPossibleDots(canvas: Canvas){
+        if (MehenSingleton.viewPossibleDot){
+            for (dot in MehenSingleton.possibleDots){
+                if (dot != null){
+                    paint.color = Color.parseColor(dot.dotColor)
+                    paint.style = Paint.Style.FILL
+                    canvas.drawOval(RectF(
+                        originX+(dot.col)*cellSide + cellSide*(1 - dotSize)/2,
+                        originY+(dot.row)*cellSide + cellSide*(1 - dotSize)/2,
+                        originX+(1+dot.col)*cellSide - cellSide*(1 - dotSize)/2,
+                        originY+(1+dot.row)*cellSide - cellSide*(1 - dotSize)/2),
+                        paint)
+                }
+            }
+        }
+    }
+
+    private fun findPossibleDots(position: Int, player: Player, mehenman: Mehenman){
+        //для примера
+        MehenSingleton.possibleDots.add(PossibleDot(6, 5, "#FFFF00"))
     }
 
     private fun randomDiceValue(): Int {
