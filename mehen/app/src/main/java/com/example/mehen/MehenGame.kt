@@ -53,30 +53,91 @@ object MehenGame {
     private fun movePiece(fromCol: Int, fromRow: Int, toCol: Int, toRow: Int) {
         if (fromCol == toCol && fromRow == toRow) return
         val movingPiece = pieceAt(fromCol, fromRow) ?: return
+        val itPiece = pieceAt(toCol, toRow)
 
-        pieceAt(toCol, toRow)?.let {
+        if (itPiece != null){
+            println(itPiece)
             if (movingPiece.mehenman == Mehenman.LION){
-                if (movingPiece.player == it.player){
+                if (movingPiece.player == itPiece.player){
+                    //если встречает своего игрока - меняются местами, иначе - съедает
                     piecesBox.remove(movingPiece)
                     addPiece(movingPiece.copy(col = toCol, row = toRow))
-                    piecesBox.remove(it)
-                    addPiece(it.copy(col = fromCol, row = fromRow))
-                } else { piecesBox.remove(it) }
-            } else {
-                if (movingPiece.player == it.player){
-                    return
+                    piecesBox.remove(itPiece)
+                    addPiece(itPiece.copy(col = fromCol, row = fromRow))
                 } else {
+                    piecesBox.remove(itPiece)
                     piecesBox.remove(movingPiece)
                     addPiece(movingPiece.copy(col = toCol, row = toRow))
-                    piecesBox.remove(it)
-                    addPiece(it.copy(col = fromCol, row = fromRow))
                 }
+            } else {
+                //если ходящий игрок является пешеходом
+                if (toRow == 4 && toCol == 4) {
+                    //если ходим на центральную клетку
+                    if (movingPiece.player == Player.WHITE){
+                        //если ходящий игрок - белый
+                        if (MehenSingleton.memoryWhite >= 2){
+                            //если хватает доп.очков
+                            piecesBox.remove(movingPiece)
+                            addPiece(movingPiece.copy(col = toCol, row = toRow, mehenman = Mehenman.LION, resID = R.drawable.white_lion))
+                            MehenSingleton.memoryWhite -= 2
+                        } else {
+                            //если не хватает доп.очков
+                            piecesBox.remove(movingPiece)
+                            addPiece(movingPiece.copy(col = toCol, row = toRow))
+                        }
+                    } else {
+                        //если ходящий игрок - черный
+                        if (MehenSingleton.memoryBlack >= 2){
+                            //если хватает доп.очков
+                            piecesBox.remove(movingPiece)
+                            addPiece(movingPiece.copy(col = toCol, row = toRow, mehenman = Mehenman.LION, resID = R.drawable.black_lion))
+                            MehenSingleton.memoryBlack -= 2
+                        } else {
+                            //если не хватает доп.очков
+                            piecesBox.remove(movingPiece)
+                            addPiece(movingPiece.copy(col = toCol, row = toRow))
+                        }
+                    }
+                } else {
+                    //если ходим не на центральную клетку
+                    piecesBox.remove(movingPiece)
+                    addPiece(movingPiece.copy(col = toCol, row = toRow))
+                }
+                //в любом случае тот, кто был на клетке, переносится назад
+                piecesBox.remove(itPiece)
+                addPiece(itPiece.copy(col = fromCol, row = fromRow))
+            }
+        } else {
+            if (toRow == 4 && toCol == 4){
+                if (movingPiece.mehenman == Mehenman.LION){
+                    piecesBox.remove(movingPiece)
+                    addPiece(movingPiece.copy(col = toCol, row = toRow))
+                } else {
+                    if (movingPiece.player == Player.WHITE){
+                        if (MehenSingleton.memoryWhite >= 2){
+                            piecesBox.remove(movingPiece)
+                            addPiece(movingPiece.copy(col = toCol, row = toRow, mehenman = Mehenman.LION, resID = R.drawable.white_lion))
+                            MehenSingleton.memoryWhite -= 2
+                        } else {
+                            piecesBox.remove(movingPiece)
+                            addPiece(movingPiece.copy(col = toCol, row = toRow))
+                        }
+                    } else {
+                        if (MehenSingleton.memoryBlack >= 2){
+                            piecesBox.remove(movingPiece)
+                            addPiece(movingPiece.copy(col = toCol, row = toRow, mehenman = Mehenman.LION, resID = R.drawable.black_lion))
+                            MehenSingleton.memoryBlack -= 2
+                        } else {
+                            piecesBox.remove(movingPiece)
+                            addPiece(movingPiece.copy(col = toCol, row = toRow))
+                        }
+                    }
+                }
+            } else {
+                piecesBox.remove(movingPiece)
+                addPiece(movingPiece.copy(col = toCol, row = toRow))
             }
         }
-
-        piecesBox.remove(movingPiece)
-        addPiece(movingPiece.copy(col = toCol, row = toRow))
-
         if (movingPiece.player == Player.BLACK && MehenSingleton.canBlackMove){
             MehenSingleton.canBlackMove = false
             MehenSingleton.canWhiteDiceRoll = true
@@ -103,6 +164,8 @@ object MehenGame {
         MehenSingleton.canBlackDiceRoll = false
         MehenSingleton.whiteValueDiceRoll = 5
         MehenSingleton.blackValueDiceRoll = 5
+        MehenSingleton.possibleDots.clear()
+        MehenSingleton.viewPossibleDot = false
     }
 
     fun pieceAt(square: Square): MehenPiece? {

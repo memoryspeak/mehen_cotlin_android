@@ -20,8 +20,6 @@ object MehenSingleton {
         listOf<Int>(0, 3) to 0,
         listOf<Int>(0, 4) to 0,
         listOf<Int>(0, 5) to 0,
-        listOf<Int>(0, 6) to 0,
-        listOf<Int>(0, 7) to 0,
         listOf<Int>(1, 7) to 1,
         listOf<Int>(1, 6) to 2,
         listOf<Int>(1, 5) to 3,
@@ -91,8 +89,6 @@ object MehenSingleton {
         listOf<Int>(9, 2) to 0,
         listOf<Int>(9, 3) to 0,
         listOf<Int>(9, 4) to 0,
-        listOf<Int>(9, 5) to 0,
-        listOf<Int>(9, 6) to 0,
-        listOf<Int>(9, 7) to 0
+        listOf<Int>(9, 5) to 0
     )
 }
