@@ -231,6 +231,15 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
             MotionEvent.ACTION_MOVE -> {
                 movingPieceX = event.x
                 movingPieceY = event.y
+                if (!MehenSingleton.viewPossibleDot){
+                    val key = listOf<Int>(9 - fromRow, fromCol)
+                    MehenSingleton.possibleDots.clear()
+                    movingPiece?.let { MehenSingleton.bindingSquare[key]?.let { it1 ->
+                        findPossibleDots(
+                            it1, it.player, it.mehenman)
+                    } }
+                    MehenSingleton.viewPossibleDot = true
+                }
                 invalidate()
             }
             MotionEvent.ACTION_UP -> {
@@ -241,8 +250,6 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
                 }
                 movingPiece = null
                 movingPieceBitmap = null
-                MehenSingleton.possibleDots.clear()
-                MehenSingleton.viewPossibleDot = false
                 invalidate()
             }
         }
@@ -395,12 +402,36 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
     private fun findPossibleDots(position: Int, player: Player, mehenman: Mehenman){
         if (mehenman == Mehenman.WALKER){
             if (player == Player.WHITE){
-                val diceRollKeys = MehenSingleton.bindingSquare.filterValues { it == position + MehenSingleton.whiteValueDiceRoll + 1 }.keys
+                var diceRollKeys = MehenSingleton.bindingSquare.filterValues { it == position + MehenSingleton.whiteValueDiceRoll + 1 }.keys
                 for (i in diceRollKeys){
                     MehenSingleton.possibleDots.add(PossibleDot(i[1], i[0], "#FFFFFF"))
                 }
+                if (MehenSingleton.whiteValueDiceRoll == 5){ when (position){
+                    0 -> MehenSingleton.possibleDots.add(PossibleDot(7, 2, "#FFFFFF"))
+                    6 -> MehenSingleton.possibleDots.add(PossibleDot(1, 2, "#FFFFFF"))
+                    12 -> MehenSingleton.possibleDots.add(PossibleDot(1, 4, "#FFFFFF"))
+                    18 -> MehenSingleton.possibleDots.add(PossibleDot(7, 2, "#FFFFFF"))
+                    24 -> MehenSingleton.possibleDots.add(PossibleDot(6, 5, "#FFFFFF"))
+                    28 -> MehenSingleton.possibleDots.add(PossibleDot(6, 3, "#FFFFFF"))
+                    34 -> MehenSingleton.possibleDots.add(PossibleDot(2, 3, "#FFFFFF"))
+                    36 -> {
+                        MehenSingleton.possibleDots.add(PossibleDot(2, 3, "#FFFFFF"))
+                        MehenSingleton.possibleDots.add(PossibleDot(2, 5, "#FFFFFF"))
+                    }
+                    42 -> MehenSingleton.possibleDots.add(PossibleDot(5, 6, "#FFFFFF"))
+                    46 -> {
+                        MehenSingleton.possibleDots.add(PossibleDot(5, 4, "#FFFFFF"))
+                        MehenSingleton.possibleDots.add(PossibleDot(5, 6, "#FFFFFF"))
+                    }
+                    48 -> MehenSingleton.possibleDots.add(PossibleDot(5, 4, "#FFFFFF"))
+                    52 -> MehenSingleton.possibleDots.add(PossibleDot(3, 4, "#FFFFFF"))
+                    54 -> MehenSingleton.possibleDots.add(PossibleDot(3, 4, "#FFFFFF"))
+                    58 -> MehenSingleton.possibleDots.add(PossibleDot(4, 5, "#FFFFFF"))
+                    60 -> MehenSingleton.possibleDots.add(PossibleDot(4, 5, "#FFFFFF"))
+                    62 -> MehenSingleton.possibleDots.add(PossibleDot(4, 5, "#FFFFFF"))
+                } }
                 for (dot in position + MehenSingleton.whiteValueDiceRoll + 2 until position + MehenSingleton.whiteValueDiceRoll + MehenSingleton.memoryWhite + 2){
-                    val keys = MehenSingleton.bindingSquare.filterValues { it == dot }.keys
+                    var keys = MehenSingleton.bindingSquare.filterValues { it == dot }.keys
                     for (i in keys){
                         MehenSingleton.possibleDots.add(PossibleDot(i[1], i[0], "#FFFF00"))
                     }
@@ -411,6 +442,30 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
                 for (i in diceRollKeys){
                     MehenSingleton.possibleDots.add(PossibleDot(i[1], i[0], "#000000"))
                 }
+                if (MehenSingleton.blackValueDiceRoll == 5){ when (position){
+                    0 -> MehenSingleton.possibleDots.add(PossibleDot(7, 2, "#000000"))
+                    6 -> MehenSingleton.possibleDots.add(PossibleDot(1, 2, "#000000"))
+                    12 -> MehenSingleton.possibleDots.add(PossibleDot(1, 4, "#000000"))
+                    18 -> MehenSingleton.possibleDots.add(PossibleDot(7, 2, "#000000"))
+                    24 -> MehenSingleton.possibleDots.add(PossibleDot(6, 5, "#000000"))
+                    28 -> MehenSingleton.possibleDots.add(PossibleDot(6, 3, "#000000"))
+                    34 -> MehenSingleton.possibleDots.add(PossibleDot(2, 3, "#000000"))
+                    36 -> {
+                        MehenSingleton.possibleDots.add(PossibleDot(2, 3, "#000000"))
+                        MehenSingleton.possibleDots.add(PossibleDot(2, 5, "#000000"))
+                    }
+                    42 -> MehenSingleton.possibleDots.add(PossibleDot(5, 6, "#000000"))
+                    46 -> {
+                        MehenSingleton.possibleDots.add(PossibleDot(5, 4, "#000000"))
+                        MehenSingleton.possibleDots.add(PossibleDot(5, 6, "#000000"))
+                    }
+                    48 -> MehenSingleton.possibleDots.add(PossibleDot(5, 4, "#000000"))
+                    52 -> MehenSingleton.possibleDots.add(PossibleDot(3, 4, "#000000"))
+                    54 -> MehenSingleton.possibleDots.add(PossibleDot(3, 4, "#000000"))
+                    58 -> MehenSingleton.possibleDots.add(PossibleDot(4, 5, "#000000"))
+                    60 -> MehenSingleton.possibleDots.add(PossibleDot(4, 5, "#000000"))
+                    62 -> MehenSingleton.possibleDots.add(PossibleDot(4, 5, "#000000"))
+                } }
                 for (dot in position + MehenSingleton.blackValueDiceRoll + 2 until position + MehenSingleton.blackValueDiceRoll + MehenSingleton.memoryBlack + 2){
                     val keys = MehenSingleton.bindingSquare.filterValues { it == dot }.keys
                     for (i in keys){

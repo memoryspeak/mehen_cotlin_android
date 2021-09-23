@@ -85,6 +85,8 @@ object MehenGame {
             MehenSingleton.canWhiteMove = false
             MehenSingleton.canBlackDiceRoll = true
         }
+        MehenSingleton.possibleDots.clear()
+        MehenSingleton.viewPossibleDot = false
     }
 
     fun reset() {
