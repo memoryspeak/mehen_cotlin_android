@@ -13,6 +13,8 @@ object MehenSingleton {
     var viewPossibleDot: Boolean = false
     var possibleDots = mutableListOf<PossibleDot>()
 
+    var outlineList = mutableListOf<Int>()
+
     val bindingSquare = mapOf<List<Int>, Int>(
         listOf<Int>(0, 0) to 0,
         listOf<Int>(0, 1) to 0,

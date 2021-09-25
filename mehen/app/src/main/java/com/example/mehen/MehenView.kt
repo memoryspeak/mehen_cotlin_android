@@ -7,6 +7,10 @@ import android.view.MotionEvent
 import android.view.View
 import kotlin.math.min
 import kotlin.random.Random
+import android.graphics.DashPathEffect
+
+
+
 
 class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
     private val pieceSize = 0.9f
@@ -20,6 +24,7 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
     private val textSize = 40f
     private val paint = Paint()
     private val paintLine = Paint()
+    private val paintOutline = Paint()
     private val whiteColor = Color.parseColor("#FFFFFF")
     private val greenColor = Color.parseColor("#008000")
     private val redColor = Color.parseColor("#FF0000")
@@ -174,6 +179,7 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
         drawCanBlackMove(canvas)
 
         drawPossibleDots(canvas)
+        drawPieceOutline(canvas)
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
@@ -183,15 +189,19 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
             MotionEvent.ACTION_DOWN -> {
                 fromCol = ((event.x - originX) / cellSide).toInt()
                 fromRow = 9 - ((event.y - originY) / cellSide).toInt()
+                MehenSingleton.outlineList.clear()
 
                 mehenDelegate?.pieceAt(Square(fromCol, fromRow))?.let {
                     if (it.player == Player.WHITE && MehenSingleton.canWhiteMove || it.player == Player.BLACK && MehenSingleton.canBlackMove){
                         movingPiece = it
                         movingPieceBitmap = bitmaps[it.resID]
+                        MehenSingleton.outlineList.add(fromCol)
+                        MehenSingleton.outlineList.add(9 - fromRow)
                     } else return false
                 }
 
                 if (fromCol == 7 && fromRow == 9) {
+//                    MehenSingleton.outlineList.clear()
                     if (MehenSingleton.canBlackDiceRoll) {
                         MehenSingleton.blackValueDiceRoll = randomDiceValue()
                         if (MehenSingleton.blackValueDiceRoll == 0) {
@@ -204,6 +214,7 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
                     }
                 }
                 if (fromCol == 7 && fromRow == 0) {
+//                    MehenSingleton.outlineList.clear()
                     if (MehenSingleton.canWhiteDiceRoll) {
                         MehenSingleton.whiteValueDiceRoll = randomDiceValue()
                         if (MehenSingleton.whiteValueDiceRoll == 0) {
@@ -400,91 +411,108 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
         }
     }
 
+    private fun drawPieceOutline(canvas: Canvas){
+        if (MehenSingleton.outlineList.size != 0){
+            val col = MehenSingleton.outlineList[0]
+            val row = MehenSingleton.outlineList[1]
+            paintOutline.color = Color.parseColor("#80B8860B")
+            paintOutline.style = Paint.Style.FILL
+            canvas.drawOval(
+                originX+col*cellSide+cellSide/(10*pieceSize),
+                originY+row*cellSide+cellSide/(10*pieceSize),
+                originX+(col+1)*cellSide-cellSide/(10*pieceSize),
+                originY+(row+1)*cellSide-cellSide/(10*pieceSize),
+                paintOutline)
+        }
+    }
+
     private fun findPossibleDots(position: Int, player: Player, mehenman: Mehenman){
+        val blueDotColor: String = "#E6B8860B"
+        val yellowDotColor: String = "#E6BC8F8F"
         if (mehenman == Mehenman.WALKER){
             if (player == Player.WHITE){
                 for (dot in position + MehenSingleton.whiteValueDiceRoll + 2 until position + MehenSingleton.whiteValueDiceRoll + MehenSingleton.memoryWhite + 2){
                     val keys = MehenSingleton.bindingSquare.filterValues { it == dot }.keys
                     for (i in keys){
-                        MehenSingleton.possibleDots.add(PossibleDot(i[1], i[0], "#FFFF00"))
+                        MehenSingleton.possibleDots.add(PossibleDot(i[1], i[0], yellowDotColor))
                     }
                 }
                 for (dot in position + 1 until position + MehenSingleton.memoryWhite + 1){
                     val whiteDot = position + MehenSingleton.whiteValueDiceRoll + 1
                     if (dot != whiteDot){
                         val keys = MehenSingleton.bindingSquare.filterValues { it == dot }.keys
-                        for (i in keys){ MehenSingleton.possibleDots.add(PossibleDot(i[1], i[0], "#FFFF00")) }
+                        for (i in keys){ MehenSingleton.possibleDots.add(PossibleDot(i[1], i[0], yellowDotColor)) }
                     }
                 }
                 val diceRollKeys = MehenSingleton.bindingSquare.filterValues { it == position + MehenSingleton.whiteValueDiceRoll + 1 }.keys
                 for (i in diceRollKeys){
-                    MehenSingleton.possibleDots.add(PossibleDot(i[1], i[0], "#FFFFFF"))
+                    MehenSingleton.possibleDots.add(PossibleDot(i[1], i[0], blueDotColor))
                 }
                 if (MehenSingleton.whiteValueDiceRoll == 5){ when (position){
-                    0 -> MehenSingleton.possibleDots.add(PossibleDot(7, 2, "#FFFFFF"))
-                    6 -> MehenSingleton.possibleDots.add(PossibleDot(1, 2, "#FFFFFF"))
-                    12 -> MehenSingleton.possibleDots.add(PossibleDot(1, 4, "#FFFFFF"))
-                    18 -> MehenSingleton.possibleDots.add(PossibleDot(7, 2, "#FFFFFF"))
-                    24 -> MehenSingleton.possibleDots.add(PossibleDot(6, 5, "#FFFFFF"))
-                    28 -> MehenSingleton.possibleDots.add(PossibleDot(6, 3, "#FFFFFF"))
-                    34 -> MehenSingleton.possibleDots.add(PossibleDot(2, 3, "#FFFFFF"))
+                    0 -> MehenSingleton.possibleDots.add(PossibleDot(7, 2, blueDotColor))
+                    6 -> MehenSingleton.possibleDots.add(PossibleDot(1, 2, blueDotColor))
+                    12 -> MehenSingleton.possibleDots.add(PossibleDot(1, 4, blueDotColor))
+                    18 -> MehenSingleton.possibleDots.add(PossibleDot(7, 2, blueDotColor))
+                    24 -> MehenSingleton.possibleDots.add(PossibleDot(6, 5, blueDotColor))
+                    28 -> MehenSingleton.possibleDots.add(PossibleDot(6, 3, blueDotColor))
+                    34 -> MehenSingleton.possibleDots.add(PossibleDot(2, 3, blueDotColor))
                     36 -> {
-                        MehenSingleton.possibleDots.add(PossibleDot(2, 3, "#FFFFFF"))
-                        MehenSingleton.possibleDots.add(PossibleDot(2, 5, "#FFFFFF"))
+                        MehenSingleton.possibleDots.add(PossibleDot(2, 3, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(2, 5, blueDotColor))
                     }
-                    42 -> MehenSingleton.possibleDots.add(PossibleDot(5, 6, "#FFFFFF"))
+                    42 -> MehenSingleton.possibleDots.add(PossibleDot(5, 6, blueDotColor))
                     46 -> {
-                        MehenSingleton.possibleDots.add(PossibleDot(5, 4, "#FFFFFF"))
-                        MehenSingleton.possibleDots.add(PossibleDot(5, 6, "#FFFFFF"))
+                        MehenSingleton.possibleDots.add(PossibleDot(5, 4, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(5, 6, blueDotColor))
                     }
-                    48 -> MehenSingleton.possibleDots.add(PossibleDot(5, 4, "#FFFFFF"))
-                    52 -> MehenSingleton.possibleDots.add(PossibleDot(3, 4, "#FFFFFF"))
-                    54 -> MehenSingleton.possibleDots.add(PossibleDot(3, 4, "#FFFFFF"))
-                    58 -> MehenSingleton.possibleDots.add(PossibleDot(4, 5, "#FFFFFF"))
-                    60 -> MehenSingleton.possibleDots.add(PossibleDot(4, 5, "#FFFFFF"))
-                    62 -> MehenSingleton.possibleDots.add(PossibleDot(4, 5, "#FFFFFF"))
+                    48 -> MehenSingleton.possibleDots.add(PossibleDot(5, 4, blueDotColor))
+                    52 -> MehenSingleton.possibleDots.add(PossibleDot(3, 4, blueDotColor))
+                    54 -> MehenSingleton.possibleDots.add(PossibleDot(3, 4, blueDotColor))
+                    58 -> MehenSingleton.possibleDots.add(PossibleDot(4, 5, blueDotColor))
+                    60 -> MehenSingleton.possibleDots.add(PossibleDot(4, 5, blueDotColor))
+                    62 -> MehenSingleton.possibleDots.add(PossibleDot(4, 5, blueDotColor))
                 } }
             } else {
                 for (dot in position + MehenSingleton.blackValueDiceRoll + 2 until position + MehenSingleton.blackValueDiceRoll + MehenSingleton.memoryBlack + 2){
                     val keys = MehenSingleton.bindingSquare.filterValues { it == dot }.keys
                     for (i in keys){
-                        MehenSingleton.possibleDots.add(PossibleDot(i[1], i[0], "#FFFF00"))
+                        MehenSingleton.possibleDots.add(PossibleDot(i[1], i[0], yellowDotColor))
                     }
                 }
                 for (dot in position + 1 until position + MehenSingleton.memoryBlack + 1){
                     val blackDot = position + MehenSingleton.blackValueDiceRoll + 1
                     if (dot != blackDot){
                         val keys = MehenSingleton.bindingSquare.filterValues { it == dot }.keys
-                        for (i in keys){ MehenSingleton.possibleDots.add(PossibleDot(i[1], i[0], "#FFFF00")) }
+                        for (i in keys){ MehenSingleton.possibleDots.add(PossibleDot(i[1], i[0], yellowDotColor)) }
                     }
                 }
                 val diceRollKeys = MehenSingleton.bindingSquare.filterValues { it == position + MehenSingleton.blackValueDiceRoll + 1 }.keys
                 for (i in diceRollKeys){
-                    MehenSingleton.possibleDots.add(PossibleDot(i[1], i[0], "#000000"))
+                    MehenSingleton.possibleDots.add(PossibleDot(i[1], i[0], blueDotColor))
                 }
                 if (MehenSingleton.blackValueDiceRoll == 5){ when (position){
-                    0 -> MehenSingleton.possibleDots.add(PossibleDot(7, 2, "#000000"))
-                    6 -> MehenSingleton.possibleDots.add(PossibleDot(1, 2, "#000000"))
-                    12 -> MehenSingleton.possibleDots.add(PossibleDot(1, 4, "#000000"))
-                    18 -> MehenSingleton.possibleDots.add(PossibleDot(7, 2, "#000000"))
-                    24 -> MehenSingleton.possibleDots.add(PossibleDot(6, 5, "#000000"))
-                    28 -> MehenSingleton.possibleDots.add(PossibleDot(6, 3, "#000000"))
-                    34 -> MehenSingleton.possibleDots.add(PossibleDot(2, 3, "#000000"))
+                    0 -> MehenSingleton.possibleDots.add(PossibleDot(7, 2, blueDotColor))
+                    6 -> MehenSingleton.possibleDots.add(PossibleDot(1, 2, blueDotColor))
+                    12 -> MehenSingleton.possibleDots.add(PossibleDot(1, 4, blueDotColor))
+                    18 -> MehenSingleton.possibleDots.add(PossibleDot(7, 2, blueDotColor))
+                    24 -> MehenSingleton.possibleDots.add(PossibleDot(6, 5, blueDotColor))
+                    28 -> MehenSingleton.possibleDots.add(PossibleDot(6, 3, blueDotColor))
+                    34 -> MehenSingleton.possibleDots.add(PossibleDot(2, 3, blueDotColor))
                     36 -> {
-                        MehenSingleton.possibleDots.add(PossibleDot(2, 3, "#000000"))
-                        MehenSingleton.possibleDots.add(PossibleDot(2, 5, "#000000"))
+                        MehenSingleton.possibleDots.add(PossibleDot(2, 3, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(2, 5, blueDotColor))
                     }
-                    42 -> MehenSingleton.possibleDots.add(PossibleDot(5, 6, "#000000"))
+                    42 -> MehenSingleton.possibleDots.add(PossibleDot(5, 6, blueDotColor))
                     46 -> {
-                        MehenSingleton.possibleDots.add(PossibleDot(5, 4, "#000000"))
-                        MehenSingleton.possibleDots.add(PossibleDot(5, 6, "#000000"))
+                        MehenSingleton.possibleDots.add(PossibleDot(5, 4, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(5, 6, blueDotColor))
                     }
-                    48 -> MehenSingleton.possibleDots.add(PossibleDot(5, 4, "#000000"))
-                    52 -> MehenSingleton.possibleDots.add(PossibleDot(3, 4, "#000000"))
-                    54 -> MehenSingleton.possibleDots.add(PossibleDot(3, 4, "#000000"))
-                    58 -> MehenSingleton.possibleDots.add(PossibleDot(4, 5, "#000000"))
-                    60 -> MehenSingleton.possibleDots.add(PossibleDot(4, 5, "#000000"))
-                    62 -> MehenSingleton.possibleDots.add(PossibleDot(4, 5, "#000000"))
+                    48 -> MehenSingleton.possibleDots.add(PossibleDot(5, 4, blueDotColor))
+                    52 -> MehenSingleton.possibleDots.add(PossibleDot(3, 4, blueDotColor))
+                    54 -> MehenSingleton.possibleDots.add(PossibleDot(3, 4, blueDotColor))
+                    58 -> MehenSingleton.possibleDots.add(PossibleDot(4, 5, blueDotColor))
+                    60 -> MehenSingleton.possibleDots.add(PossibleDot(4, 5, blueDotColor))
+                    62 -> MehenSingleton.possibleDots.add(PossibleDot(4, 5, blueDotColor))
                 } }
             }
         } else {
@@ -492,181 +520,181 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
                 for (dot in position - 2*(MehenSingleton.whiteValueDiceRoll + 1) - MehenSingleton.memoryWhite until position - 2*(MehenSingleton.whiteValueDiceRoll + 1)){
                     val keys = MehenSingleton.bindingSquare.filterValues { it == dot }.keys
                     for (i in keys){
-                        MehenSingleton.possibleDots.add(PossibleDot(i[1], i[0], "#FFFF00"))
+                        MehenSingleton.possibleDots.add(PossibleDot(i[1], i[0], yellowDotColor))
                     }
                 }
                 for (dot in position - MehenSingleton.memoryWhite until position){
                     val whiteDot = position - 2*(MehenSingleton.whiteValueDiceRoll + 1)
                     if (dot != whiteDot){
                         val keys = MehenSingleton.bindingSquare.filterValues { it == dot }.keys
-                        for (i in keys){ MehenSingleton.possibleDots.add(PossibleDot(i[1], i[0], "#FFFF00")) }
+                        for (i in keys){ MehenSingleton.possibleDots.add(PossibleDot(i[1], i[0], yellowDotColor)) }
                     }
                 }
                 val diceRollKeys = MehenSingleton.bindingSquare.filterValues { it == position - 2*(MehenSingleton.whiteValueDiceRoll + 1) }.keys
                 for (i in diceRollKeys){
-                    MehenSingleton.possibleDots.add(PossibleDot(i[1], i[0], "#FFFFFF"))
+                    MehenSingleton.possibleDots.add(PossibleDot(i[1], i[0], blueDotColor))
                 }
                 if (MehenSingleton.whiteValueDiceRoll == 5){ when (position){
                     64 -> {
-                        MehenSingleton.possibleDots.add(PossibleDot(3, 4, "#FFFFFF"))
-                        MehenSingleton.possibleDots.add(PossibleDot(5, 4, "#FFFFFF"))
-                        MehenSingleton.possibleDots.add(PossibleDot(5, 6, "#FFFFFF"))
+                        MehenSingleton.possibleDots.add(PossibleDot(3, 4, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(5, 4, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(5, 6, blueDotColor))
                     }
                     62 -> {
-                        MehenSingleton.possibleDots.add(PossibleDot(2, 3, "#FFFFFF"))
-                        MehenSingleton.possibleDots.add(PossibleDot(2, 5, "#FFFFFF"))
-                        MehenSingleton.possibleDots.add(PossibleDot(4, 5, "#FFFFFF"))
+                        MehenSingleton.possibleDots.add(PossibleDot(2, 3, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(2, 5, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(4, 5, blueDotColor))
                     }
                     60 -> {
-                        MehenSingleton.possibleDots.add(PossibleDot(4, 5, "#FFFFFF"))
-                        MehenSingleton.possibleDots.add(PossibleDot(6, 3, "#FFFFFF"))
-                        MehenSingleton.possibleDots.add(PossibleDot(6, 5, "#FFFFFF"))
+                        MehenSingleton.possibleDots.add(PossibleDot(4, 5, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(6, 3, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(6, 5, blueDotColor))
                     }
                     58 -> {
-                        MehenSingleton.possibleDots.add(PossibleDot(4, 5, "#FFFFFF"))
-                        MehenSingleton.possibleDots.add(PossibleDot(6, 5, "#FFFFFF"))
-                        MehenSingleton.possibleDots.add(PossibleDot(4, 7, "#FFFFFF"))
+                        MehenSingleton.possibleDots.add(PossibleDot(4, 5, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(6, 5, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(4, 7, blueDotColor))
                     }
                     54 -> {
-                        MehenSingleton.possibleDots.add(PossibleDot(1, 4, "#FFFFFF"))
-                        MehenSingleton.possibleDots.add(PossibleDot(3, 4, "#FFFFFF"))
+                        MehenSingleton.possibleDots.add(PossibleDot(1, 4, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(3, 4, blueDotColor))
                     }
                     52 -> {
-                        MehenSingleton.possibleDots.add(PossibleDot(3, 4, "#FFFFFF"))
-                        MehenSingleton.possibleDots.add(PossibleDot(1, 4, "#FFFFFF"))
-                        MehenSingleton.possibleDots.add(PossibleDot(1, 2, "#FFFFFF"))
+                        MehenSingleton.possibleDots.add(PossibleDot(3, 4, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(1, 4, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(1, 2, blueDotColor))
                     }
                     48 -> {
-                        MehenSingleton.possibleDots.add(PossibleDot(5, 4, "#FFFFFF"))
-                        MehenSingleton.possibleDots.add(PossibleDot(7, 2, "#FFFFFF"))
+                        MehenSingleton.possibleDots.add(PossibleDot(5, 4, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(7, 2, blueDotColor))
                     }
                     46 -> {
-                        MehenSingleton.possibleDots.add(PossibleDot(5, 4, "#FFFFFF"))
-                        MehenSingleton.possibleDots.add(PossibleDot(5, 6, "#FFFFFF"))
-                        MehenSingleton.possibleDots.add(PossibleDot(7, 6, "#FFFFFF"))
+                        MehenSingleton.possibleDots.add(PossibleDot(5, 4, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(5, 6, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(7, 6, blueDotColor))
                     }
                     42 -> {
-                        MehenSingleton.possibleDots.add(PossibleDot(5, 6, "#FFFFFF"))
-                        MehenSingleton.possibleDots.add(PossibleDot(3, 8, "#FFFFFF"))
+                        MehenSingleton.possibleDots.add(PossibleDot(5, 6, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(3, 8, blueDotColor))
                     }
                     36 -> {
-                        MehenSingleton.possibleDots.add(PossibleDot(0, 5, "#FFFFFF"))
-                        MehenSingleton.possibleDots.add(PossibleDot(2, 5, "#FFFFFF"))
-                        MehenSingleton.possibleDots.add(PossibleDot(2, 3, "#FFFFFF"))
+                        MehenSingleton.possibleDots.add(PossibleDot(0, 5, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(2, 5, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(2, 3, blueDotColor))
                     }
                     34 -> {
-                        MehenSingleton.possibleDots.add(PossibleDot(2, 1, "#FFFFFF"))
-                        MehenSingleton.possibleDots.add(PossibleDot(2, 3, "#FFFFFF"))
+                        MehenSingleton.possibleDots.add(PossibleDot(2, 1, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(2, 3, blueDotColor))
                     }
                     28 -> {
-                        MehenSingleton.possibleDots.add(PossibleDot(6, 3, "#FFFFFF"))
-                        MehenSingleton.possibleDots.add(PossibleDot(0, 0, "#FFFFFF"))
-                        MehenSingleton.possibleDots.add(PossibleDot(1, 0, "#FFFFFF"))
-                        MehenSingleton.possibleDots.add(PossibleDot(2, 0, "#FFFFFF"))
-                        MehenSingleton.possibleDots.add(PossibleDot(3, 0, "#FFFFFF"))
-                        MehenSingleton.possibleDots.add(PossibleDot(4, 0, "#FFFFFF"))
-                        MehenSingleton.possibleDots.add(PossibleDot(5, 0, "#FFFFFF"))
-                        MehenSingleton.possibleDots.add(PossibleDot(0, 9, "#FFFFFF"))
-                        MehenSingleton.possibleDots.add(PossibleDot(1, 9, "#FFFFFF"))
-                        MehenSingleton.possibleDots.add(PossibleDot(2, 9, "#FFFFFF"))
-                        MehenSingleton.possibleDots.add(PossibleDot(3, 9, "#FFFFFF"))
-                        MehenSingleton.possibleDots.add(PossibleDot(4, 9, "#FFFFFF"))
-                        MehenSingleton.possibleDots.add(PossibleDot(5, 9, "#FFFFFF"))
+                        MehenSingleton.possibleDots.add(PossibleDot(6, 3, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(0, 0, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(1, 0, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(2, 0, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(3, 0, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(4, 0, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(5, 0, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(0, 9, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(1, 9, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(2, 9, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(3, 9, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(4, 9, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(5, 9, blueDotColor))
                     }
-                    24 -> { MehenSingleton.possibleDots.add(PossibleDot(6, 5, "#FFFFFF")) }
-                    18 -> { MehenSingleton.possibleDots.add(PossibleDot(4, 7, "#FFFFFF")) }
-                    12 -> { MehenSingleton.possibleDots.add(PossibleDot(1, 4, "#FFFFFF")) }
-                    6-> { MehenSingleton.possibleDots.add(PossibleDot(1, 2, "#FFFFFF")) }
+                    24 -> { MehenSingleton.possibleDots.add(PossibleDot(6, 5, blueDotColor)) }
+                    18 -> { MehenSingleton.possibleDots.add(PossibleDot(4, 7, blueDotColor)) }
+                    12 -> { MehenSingleton.possibleDots.add(PossibleDot(1, 4, blueDotColor)) }
+                    6-> { MehenSingleton.possibleDots.add(PossibleDot(1, 2, blueDotColor)) }
                 } }
             } else {
                 for (dot in position - 2*(MehenSingleton.blackValueDiceRoll + 1) - MehenSingleton.memoryBlack until position - 2*(MehenSingleton.blackValueDiceRoll + 1)){
                     val keys = MehenSingleton.bindingSquare.filterValues { it == dot }.keys
                     for (i in keys){
-                        MehenSingleton.possibleDots.add(PossibleDot(i[1], i[0], "#FFFF00"))
+                        MehenSingleton.possibleDots.add(PossibleDot(i[1], i[0], yellowDotColor))
                     }
                 }
                 for (dot in position - MehenSingleton.memoryBlack until position){
                     val blackDot = position - 2*(MehenSingleton.blackValueDiceRoll + 1)
                     if (dot != blackDot){
                         val keys = MehenSingleton.bindingSquare.filterValues { it == dot }.keys
-                        for (i in keys){ MehenSingleton.possibleDots.add(PossibleDot(i[1], i[0], "#FFFF00")) }
+                        for (i in keys){ MehenSingleton.possibleDots.add(PossibleDot(i[1], i[0], yellowDotColor)) }
                     }
                 }
                 val diceRollKeys = MehenSingleton.bindingSquare.filterValues { it == position - 2*(MehenSingleton.blackValueDiceRoll + 1) }.keys
                 for (i in diceRollKeys){
-                    MehenSingleton.possibleDots.add(PossibleDot(i[1], i[0], "#000000"))
+                    MehenSingleton.possibleDots.add(PossibleDot(i[1], i[0], blueDotColor))
                 }
                 if (MehenSingleton.blackValueDiceRoll == 5){ when (position){
                     64 -> {
-                        MehenSingleton.possibleDots.add(PossibleDot(3, 4, "#000000"))
-                        MehenSingleton.possibleDots.add(PossibleDot(5, 4, "#000000"))
-                        MehenSingleton.possibleDots.add(PossibleDot(5, 6, "#000000"))
+                        MehenSingleton.possibleDots.add(PossibleDot(3, 4, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(5, 4, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(5, 6, blueDotColor))
                     }
                     62 -> {
-                        MehenSingleton.possibleDots.add(PossibleDot(2, 3, "#000000"))
-                        MehenSingleton.possibleDots.add(PossibleDot(2, 5, "#000000"))
-                        MehenSingleton.possibleDots.add(PossibleDot(4, 5, "#000000"))
+                        MehenSingleton.possibleDots.add(PossibleDot(2, 3, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(2, 5, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(4, 5, blueDotColor))
                     }
                     60 -> {
-                        MehenSingleton.possibleDots.add(PossibleDot(4, 5, "#000000"))
-                        MehenSingleton.possibleDots.add(PossibleDot(6, 3, "#000000"))
-                        MehenSingleton.possibleDots.add(PossibleDot(6, 5, "#000000"))
+                        MehenSingleton.possibleDots.add(PossibleDot(4, 5, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(6, 3, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(6, 5, blueDotColor))
                     }
                     58 -> {
-                        MehenSingleton.possibleDots.add(PossibleDot(4, 5, "#000000"))
-                        MehenSingleton.possibleDots.add(PossibleDot(6, 5, "#000000"))
-                        MehenSingleton.possibleDots.add(PossibleDot(4, 7, "#000000"))
+                        MehenSingleton.possibleDots.add(PossibleDot(4, 5, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(6, 5, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(4, 7, blueDotColor))
                     }
                     54 -> {
-                        MehenSingleton.possibleDots.add(PossibleDot(1, 4, "#000000"))
-                        MehenSingleton.possibleDots.add(PossibleDot(3, 4, "#000000"))
+                        MehenSingleton.possibleDots.add(PossibleDot(1, 4, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(3, 4, blueDotColor))
                     }
                     52 -> {
-                        MehenSingleton.possibleDots.add(PossibleDot(3, 4, "#000000"))
-                        MehenSingleton.possibleDots.add(PossibleDot(1, 4, "#000000"))
-                        MehenSingleton.possibleDots.add(PossibleDot(1, 2, "#000000"))
+                        MehenSingleton.possibleDots.add(PossibleDot(3, 4, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(1, 4, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(1, 2, blueDotColor))
                     }
                     48 -> {
-                        MehenSingleton.possibleDots.add(PossibleDot(5, 4, "#000000"))
-                        MehenSingleton.possibleDots.add(PossibleDot(7, 2, "#000000"))
+                        MehenSingleton.possibleDots.add(PossibleDot(5, 4, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(7, 2, blueDotColor))
                     }
                     46 -> {
-                        MehenSingleton.possibleDots.add(PossibleDot(5, 4, "#000000"))
-                        MehenSingleton.possibleDots.add(PossibleDot(5, 6, "#000000"))
-                        MehenSingleton.possibleDots.add(PossibleDot(7, 6, "#000000"))
+                        MehenSingleton.possibleDots.add(PossibleDot(5, 4, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(5, 6, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(7, 6, blueDotColor))
                     }
                     42 -> {
-                        MehenSingleton.possibleDots.add(PossibleDot(5, 6, "#000000"))
-                        MehenSingleton.possibleDots.add(PossibleDot(3, 8, "#000000"))
+                        MehenSingleton.possibleDots.add(PossibleDot(5, 6, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(3, 8, blueDotColor))
                     }
                     36 -> {
-                        MehenSingleton.possibleDots.add(PossibleDot(0, 5, "#000000"))
-                        MehenSingleton.possibleDots.add(PossibleDot(2, 5, "#000000"))
-                        MehenSingleton.possibleDots.add(PossibleDot(2, 3, "#000000"))
+                        MehenSingleton.possibleDots.add(PossibleDot(0, 5, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(2, 5, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(2, 3, blueDotColor))
                     }
                     34 -> {
-                        MehenSingleton.possibleDots.add(PossibleDot(2, 1, "#000000"))
-                        MehenSingleton.possibleDots.add(PossibleDot(2, 3, "#000000"))
+                        MehenSingleton.possibleDots.add(PossibleDot(2, 1, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(2, 3, blueDotColor))
                     }
                     28 -> {
-                        MehenSingleton.possibleDots.add(PossibleDot(6, 3, "#000000"))
-                        MehenSingleton.possibleDots.add(PossibleDot(0, 0, "#000000"))
-                        MehenSingleton.possibleDots.add(PossibleDot(1, 0, "#000000"))
-                        MehenSingleton.possibleDots.add(PossibleDot(2, 0, "#000000"))
-                        MehenSingleton.possibleDots.add(PossibleDot(3, 0, "#000000"))
-                        MehenSingleton.possibleDots.add(PossibleDot(4, 0, "#000000"))
-                        MehenSingleton.possibleDots.add(PossibleDot(5, 0, "#000000"))
-                        MehenSingleton.possibleDots.add(PossibleDot(0, 9, "#000000"))
-                        MehenSingleton.possibleDots.add(PossibleDot(1, 9, "#000000"))
-                        MehenSingleton.possibleDots.add(PossibleDot(2, 9, "#000000"))
-                        MehenSingleton.possibleDots.add(PossibleDot(3, 9, "#000000"))
-                        MehenSingleton.possibleDots.add(PossibleDot(4, 9, "#000000"))
-                        MehenSingleton.possibleDots.add(PossibleDot(5, 9, "#000000"))
+                        MehenSingleton.possibleDots.add(PossibleDot(6, 3, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(0, 0, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(1, 0, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(2, 0, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(3, 0, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(4, 0, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(5, 0, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(0, 9, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(1, 9, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(2, 9, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(3, 9, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(4, 9, blueDotColor))
+                        MehenSingleton.possibleDots.add(PossibleDot(5, 9, blueDotColor))
                     }
-                    24 -> { MehenSingleton.possibleDots.add(PossibleDot(6, 5, "#000000")) }
-                    18 -> { MehenSingleton.possibleDots.add(PossibleDot(4, 7, "#000000")) }
-                    12 -> { MehenSingleton.possibleDots.add(PossibleDot(1, 4, "#000000")) }
-                    6-> { MehenSingleton.possibleDots.add(PossibleDot(1, 2, "#000000")) }
+                    24 -> { MehenSingleton.possibleDots.add(PossibleDot(6, 5, blueDotColor)) }
+                    18 -> { MehenSingleton.possibleDots.add(PossibleDot(4, 7, blueDotColor)) }
+                    12 -> { MehenSingleton.possibleDots.add(PossibleDot(1, 4, blueDotColor)) }
+                    6-> { MehenSingleton.possibleDots.add(PossibleDot(1, 2, blueDotColor)) }
                 } }
             }
         }

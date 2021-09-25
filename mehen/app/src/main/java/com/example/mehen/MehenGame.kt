@@ -148,6 +148,7 @@ object MehenGame {
         }
         MehenSingleton.possibleDots.clear()
         MehenSingleton.viewPossibleDot = false
+        MehenSingleton.outlineList.clear()
     }
 
     fun reset() {
@@ -166,6 +167,7 @@ object MehenGame {
         MehenSingleton.blackValueDiceRoll = 5
         MehenSingleton.possibleDots.clear()
         MehenSingleton.viewPossibleDot = false
+        MehenSingleton.outlineList.clear()
     }
 
     fun pieceAt(square: Square): MehenPiece? {
