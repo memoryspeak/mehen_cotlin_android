@@ -15,6 +15,8 @@ object MehenSingleton {
 
     var outlineList = mutableListOf<Int>()
 
+    var selectedFigure = mutableListOf<Int>()
+
     val bindingSquare = mapOf<List<Int>, Int>(
         listOf<Int>(0, 0) to 0,
         listOf<Int>(0, 1) to 0,

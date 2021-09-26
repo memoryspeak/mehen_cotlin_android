@@ -190,18 +190,33 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
                 fromCol = ((event.x - originX) / cellSide).toInt()
                 fromRow = 9 - ((event.y - originY) / cellSide).toInt()
                 MehenSingleton.outlineList.clear()
+                MehenSingleton.possibleDots.clear()
 
                 mehenDelegate?.pieceAt(Square(fromCol, fromRow))?.let {
                     if (it.player == Player.WHITE && MehenSingleton.canWhiteMove || it.player == Player.BLACK && MehenSingleton.canBlackMove){
                         movingPiece = it
                         movingPieceBitmap = bitmaps[it.resID]
-                        MehenSingleton.outlineList.add(fromCol)
-                        MehenSingleton.outlineList.add(9 - fromRow)
+                        if (listOf<Int>(fromCol, fromRow) != MehenSingleton.selectedFigure){
+                            MehenSingleton.selectedFigure.clear()
+                            MehenSingleton.selectedFigure.add(fromCol)
+                            MehenSingleton.selectedFigure.add(fromRow)
+                            MehenSingleton.outlineList.add(fromCol)
+                            MehenSingleton.outlineList.add(9 - fromRow)
+                            movingPiece?.let { MehenSingleton.bindingSquare[listOf<Int>(9 - fromRow, fromCol)]?.let { it1 ->
+                                findPossibleDots(
+                                    it1, it.player, it.mehenman)
+                            } }
+                            MehenSingleton.viewPossibleDot = true
+                        } else {
+                            MehenSingleton.viewPossibleDot = !MehenSingleton.viewPossibleDot
+                            if (!MehenSingleton.viewPossibleDot){
+                                MehenSingleton.selectedFigure.clear()
+                            }
+                        }
                     } else return false
                 }
 
                 if (fromCol == 7 && fromRow == 9) {
-//                    MehenSingleton.outlineList.clear()
                     if (MehenSingleton.canBlackDiceRoll) {
                         MehenSingleton.blackValueDiceRoll = randomDiceValue()
                         if (MehenSingleton.blackValueDiceRoll == 0) {
@@ -212,9 +227,9 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
                             MehenSingleton.canBlackDiceRoll = false
                         }
                     }
+                    MehenSingleton.selectedFigure.clear()
                 }
                 if (fromCol == 7 && fromRow == 0) {
-//                    MehenSingleton.outlineList.clear()
                     if (MehenSingleton.canWhiteDiceRoll) {
                         MehenSingleton.whiteValueDiceRoll = randomDiceValue()
                         if (MehenSingleton.whiteValueDiceRoll == 0) {
@@ -225,32 +240,27 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
                             MehenSingleton.canWhiteDiceRoll = false
                         }
                     }
-                }
-                if (!MehenSingleton.viewPossibleDot){
-                    val key = listOf<Int>(9 - fromRow, fromCol)
-                    MehenSingleton.possibleDots.clear()
-                    movingPiece?.let { MehenSingleton.bindingSquare[key]?.let { it1 ->
-                        findPossibleDots(
-                            it1, it.player, it.mehenman)
-                    } }
-                    MehenSingleton.viewPossibleDot = true
-                } else {
-                    MehenSingleton.possibleDots.clear()
-                    MehenSingleton.viewPossibleDot = false
+                    MehenSingleton.selectedFigure.clear()
                 }
             }
             MotionEvent.ACTION_MOVE -> {
+                if (!MehenSingleton.viewPossibleDot){
+                    mehenDelegate?.pieceAt(Square(fromCol, fromRow))?.let {
+                        MehenSingleton.outlineList.clear()
+                        MehenSingleton.selectedFigure.clear()
+                        MehenSingleton.selectedFigure.add(fromCol)
+                        MehenSingleton.selectedFigure.add(fromRow)
+                        MehenSingleton.outlineList.add(fromCol)
+                        MehenSingleton.outlineList.add(9 - fromRow)
+                        movingPiece?.let { MehenSingleton.bindingSquare[listOf<Int>(9 - fromRow, fromCol)]?.let { it1 ->
+                            findPossibleDots(
+                                it1, it.player, it.mehenman)
+                        } }
+                        MehenSingleton.viewPossibleDot = true
+                    }
+                }
                 movingPieceX = event.x
                 movingPieceY = event.y
-                if (!MehenSingleton.viewPossibleDot){
-                    val key = listOf<Int>(9 - fromRow, fromCol)
-                    MehenSingleton.possibleDots.clear()
-                    movingPiece?.let { MehenSingleton.bindingSquare[key]?.let { it1 ->
-                        findPossibleDots(
-                            it1, it.player, it.mehenman)
-                    } }
-                    MehenSingleton.viewPossibleDot = true
-                }
                 invalidate()
             }
             MotionEvent.ACTION_UP -> {
@@ -258,7 +268,6 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
                 val row = 9 - ((event.y - originY) / cellSide).toInt()
                 if (fromCol != col || fromRow != row) {
                     mehenDelegate?.movePiece(Square(fromCol, fromRow), Square(col, row))
-
                 }
                 movingPiece = null
                 movingPieceBitmap = null
@@ -397,16 +406,14 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
     private fun drawPossibleDots(canvas: Canvas){
         if (MehenSingleton.viewPossibleDot){
             for (dot in MehenSingleton.possibleDots){
-                if (dot != null){
-                    paint.color = Color.parseColor(dot.dotColor)
-                    paint.style = Paint.Style.FILL
-                    canvas.drawOval(RectF(
-                        originX+(dot.col)*cellSide + cellSide*(1 - dotSize)/2,
-                        originY+(dot.row)*cellSide + cellSide*(1 - dotSize)/2,
-                        originX+(1+dot.col)*cellSide - cellSide*(1 - dotSize)/2,
-                        originY+(1+dot.row)*cellSide - cellSide*(1 - dotSize)/2),
-                        paint)
-                }
+                paint.color = Color.parseColor(dot.dotColor)
+                paint.style = Paint.Style.FILL
+                canvas.drawOval(RectF(
+                    originX+(dot.col)*cellSide + cellSide*(1 - dotSize)/2,
+                    originY+(dot.row)*cellSide + cellSide*(1 - dotSize)/2,
+                    originX+(1+dot.col)*cellSide - cellSide*(1 - dotSize)/2,
+                    originY+(1+dot.row)*cellSide - cellSide*(1 - dotSize)/2),
+                    paint)
             }
         }
     }

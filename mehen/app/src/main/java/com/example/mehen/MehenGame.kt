@@ -56,10 +56,9 @@ object MehenGame {
         val itPiece = pieceAt(toCol, toRow)
 
         if (itPiece != null){
-            println(itPiece)
             if (movingPiece.mehenman == Mehenman.LION){
                 if (movingPiece.player == itPiece.player){
-                    //если встречает своего игрока - меняются местами, иначе - съедает
+                    //если лев встречает своего игрока - меняются местами, иначе - съедает
                     piecesBox.remove(movingPiece)
                     addPiece(movingPiece.copy(col = toCol, row = toRow))
                     piecesBox.remove(itPiece)
@@ -98,14 +97,18 @@ object MehenGame {
                             addPiece(movingPiece.copy(col = toCol, row = toRow))
                         }
                     }
+                    //в любом случае тот, кто был на клетке, переносится назад
+                    piecesBox.remove(itPiece)
+                    addPiece(itPiece.copy(col = fromCol, row = fromRow))
                 } else {
                     //если ходим не на центральную клетку
-                    piecesBox.remove(movingPiece)
-                    addPiece(movingPiece.copy(col = toCol, row = toRow))
+                    if (movingPiece.player != itPiece.player){
+                        piecesBox.remove(movingPiece)
+                        addPiece(movingPiece.copy(col = toCol, row = toRow))
+                        piecesBox.remove(itPiece)
+                        addPiece(itPiece.copy(col = fromCol, row = fromRow))
+                    } else return
                 }
-                //в любом случае тот, кто был на клетке, переносится назад
-                piecesBox.remove(itPiece)
-                addPiece(itPiece.copy(col = fromCol, row = fromRow))
             }
         } else {
             if (toRow == 4 && toCol == 4){
@@ -168,6 +171,7 @@ object MehenGame {
         MehenSingleton.possibleDots.clear()
         MehenSingleton.viewPossibleDot = false
         MehenSingleton.outlineList.clear()
+        MehenSingleton.selectedFigure.clear()
     }
 
     fun pieceAt(square: Square): MehenPiece? {
