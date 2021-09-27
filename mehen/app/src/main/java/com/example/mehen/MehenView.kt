@@ -434,7 +434,7 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
     }
 
     private fun findPossibleDots(position: Int, player: Player, mehenman: Mehenman){
-        val blueDotColor: String = "#E6B8860B"
+        val blueDotColor: String = "#FF6B8E23"
         val yellowDotColor: String = "#E6BC8F8F"
         if (mehenman == Mehenman.WALKER){
             if (player == Player.WHITE){

@@ -52,6 +52,9 @@ object MehenGame {
 
     private fun movePiece(fromCol: Int, fromRow: Int, toCol: Int, toRow: Int) {
         if (fromCol == toCol && fromRow == toRow) return
+        val setColRow = mutableListOf<List<Int>>()
+        for (item in MehenSingleton.possibleDots){ setColRow.add(listOf<Int>(item.col, item.row)) }
+        if (listOf<Int>(toCol, 9 - toRow) !in setColRow) return
         val movingPiece = pieceAt(fromCol, fromRow) ?: return
         val itPiece = pieceAt(toCol, toRow)
 
