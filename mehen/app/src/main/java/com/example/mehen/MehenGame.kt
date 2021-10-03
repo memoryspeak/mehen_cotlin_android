@@ -57,6 +57,8 @@ object MehenGame {
         if (listOf<Int>(toCol, 9 - toRow) !in setColRow) return
         val movingPiece = pieceAt(fromCol, fromRow) ?: return
         val itPiece = pieceAt(toCol, toRow)
+        val dotFromSquare = MehenSingleton.bindingSquare[listOf(9 - fromRow, fromCol)]?.let { it.toInt() }!!
+        val dotToSquare = MehenSingleton.bindingSquare[listOf(9 - toRow, toCol)]?.let { it.toInt() }!!
 
         if (itPiece != null){
             if (movingPiece.mehenman == Mehenman.LION){
@@ -145,13 +147,56 @@ object MehenGame {
             }
         }
         if (movingPiece.player == Player.BLACK && MehenSingleton.canBlackMove){
+            if (movingPiece.mehenman == Mehenman.WALKER){
+                if (dotToSquare < dotFromSquare + MehenSingleton.blackValueDiceRoll + 1){
+                    MehenSingleton.memoryBlack -= dotToSquare - dotFromSquare
+                } else {
+                    if (dotFromSquare + MehenSingleton.blackValueDiceRoll + 1 != dotToSquare ) {
+                        if (dotFromSquare + MehenSingleton.blackValueDiceRoll + 1 + MehenSingleton.memoryBlack >= dotToSquare){
+                            MehenSingleton.memoryBlack -= dotToSquare - dotFromSquare - MehenSingleton.blackValueDiceRoll - 1
+                        }
+                    }
+                }
+            } else {
+                if (dotToSquare > dotFromSquare - 2*MehenSingleton.blackValueDiceRoll - 2){
+                    MehenSingleton.memoryBlack -= - dotToSquare + dotFromSquare
+                } else {
+                    if (dotFromSquare - 2*MehenSingleton.blackValueDiceRoll - 2 != dotToSquare ) {
+                        if (dotFromSquare - 2*MehenSingleton.blackValueDiceRoll - 2 - MehenSingleton.memoryBlack <= dotToSquare){
+                            MehenSingleton.memoryBlack -= -dotToSquare + dotFromSquare + 2*MehenSingleton.blackValueDiceRoll + 2
+                        }
+                    }
+                }
+            }
             MehenSingleton.canBlackMove = false
             MehenSingleton.canWhiteDiceRoll = true
         }
         if (movingPiece.player == Player.WHITE && MehenSingleton.canWhiteMove){
+            if (movingPiece.mehenman == Mehenman.WALKER){
+                if (dotToSquare < dotFromSquare + MehenSingleton.whiteValueDiceRoll + 1){
+                    MehenSingleton.memoryWhite -= dotToSquare - dotFromSquare
+                } else {
+                    if (dotFromSquare + MehenSingleton.whiteValueDiceRoll + 1 != dotToSquare ) {
+                        if (dotFromSquare + MehenSingleton.whiteValueDiceRoll + 1 + MehenSingleton.memoryWhite >= dotToSquare){
+                            MehenSingleton.memoryWhite -= dotToSquare - dotFromSquare - MehenSingleton.whiteValueDiceRoll - 1
+                        }
+                    }
+                }
+            } else {
+                if (dotToSquare > dotFromSquare - 2*MehenSingleton.whiteValueDiceRoll - 2){
+                    MehenSingleton.memoryWhite -= - dotToSquare + dotFromSquare
+                } else {
+                    if (dotFromSquare - 2*MehenSingleton.whiteValueDiceRoll - 2 != dotToSquare ) {
+                        if (dotFromSquare - 2*MehenSingleton.whiteValueDiceRoll - 2 - MehenSingleton.memoryWhite <= dotToSquare){
+                            MehenSingleton.memoryWhite -= -dotToSquare + dotFromSquare + 2*MehenSingleton.whiteValueDiceRoll + 2
+                        }
+                    }
+                }
+            }
             MehenSingleton.canWhiteMove = false
             MehenSingleton.canBlackDiceRoll = true
         }
+
         MehenSingleton.possibleDots.clear()
         MehenSingleton.viewPossibleDot = false
         MehenSingleton.outlineList.clear()
