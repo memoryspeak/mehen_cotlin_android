@@ -59,6 +59,8 @@ object MehenGame {
         val itPiece = pieceAt(toCol, toRow)
         val dotFromSquare = MehenSingleton.bindingSquare[listOf(9 - fromRow, fromCol)]?.let { it.toInt() }!!
         val dotToSquare = MehenSingleton.bindingSquare[listOf(9 - toRow, toCol)]?.let { it.toInt() }!!
+        var identy: Int = 0
+        for (i in MehenSingleton.possibleDots){ if (i.col == toCol && i.row == 9-toRow && i.dotColor == "#FF6B8E23"){ identy += 1 } }
 
         if (itPiece != null){
             if (movingPiece.mehenman == Mehenman.LION){
@@ -146,24 +148,79 @@ object MehenGame {
                 addPiece(movingPiece.copy(col = toCol, row = toRow))
             }
         }
+
+        if (dotToSquare == 4){
+            val fourPiece: MehenPiece? = pieceAt(toCol, toRow)
+            val twentyTwoPiece: MehenPiece? = pieceAt(7, 1)
+            if (fourPiece != null) {
+                piecesBox.remove(fourPiece)
+                piecesBox.remove(twentyTwoPiece)
+                addPiece(fourPiece.copy(col = 7, row = 1))
+                if (twentyTwoPiece != null) {
+                    addPiece(twentyTwoPiece.copy(col = 4, row = 8))
+                }
+
+            }
+        }
+        if (dotToSquare == 22){
+            val twentyTwoPiece: MehenPiece? = pieceAt(toCol, toRow)
+            val fourPiece: MehenPiece? = pieceAt(4, 8)
+            if (twentyTwoPiece != null){
+                piecesBox.remove(twentyTwoPiece)
+                piecesBox.remove(fourPiece)
+                addPiece(twentyTwoPiece.copy(col = 4, row = 8))
+                if (fourPiece != null){
+                    addPiece(fourPiece.copy(col = 7, row = 1))
+                }
+            }
+        }
+        if (dotFromSquare == 22){
+            val twentyTwoPiece: MehenPiece? = pieceAt(fromCol, fromRow)
+            val fourPiece: MehenPiece? = pieceAt(4, 8)
+            if (fourPiece != null){
+                piecesBox.remove(fourPiece)
+                piecesBox.remove(twentyTwoPiece)
+                addPiece(fourPiece.copy(col = 7, row = 1))
+                if (twentyTwoPiece != null){
+                    addPiece(twentyTwoPiece.copy(col = 4, row = 8))
+                }
+            }
+        }
+        if (dotFromSquare == 4){
+            val fourPiece: MehenPiece? = pieceAt(fromCol, fromRow)
+            val twentyTwoPiece: MehenPiece? = pieceAt(7, 1)
+            if (twentyTwoPiece != null){
+                piecesBox.remove(twentyTwoPiece)
+                piecesBox.remove(fourPiece)
+                addPiece(twentyTwoPiece.copy(col = 4, row = 8))
+                if (fourPiece != null){
+                    addPiece(fourPiece.copy(col = 7, row = 1))
+                }
+            }
+        }
+
         if (movingPiece.player == Player.BLACK && MehenSingleton.canBlackMove){
             if (movingPiece.mehenman == Mehenman.WALKER){
-                if (dotToSquare < dotFromSquare + MehenSingleton.blackValueDiceRoll + 1){
-                    MehenSingleton.memoryBlack -= dotToSquare - dotFromSquare
-                } else {
-                    if (dotFromSquare + MehenSingleton.blackValueDiceRoll + 1 != dotToSquare ) {
-                        if (dotFromSquare + MehenSingleton.blackValueDiceRoll + 1 + MehenSingleton.memoryBlack >= dotToSquare){
-                            MehenSingleton.memoryBlack -= dotToSquare - dotFromSquare - MehenSingleton.blackValueDiceRoll - 1
+                if (identy == 0){
+                    if (dotToSquare < dotFromSquare + MehenSingleton.blackValueDiceRoll + 1){
+                        MehenSingleton.memoryBlack -= dotToSquare - dotFromSquare
+                    } else {
+                        if (dotFromSquare + MehenSingleton.blackValueDiceRoll + 1 != dotToSquare ) {
+                            if (dotFromSquare + MehenSingleton.blackValueDiceRoll + 1 + MehenSingleton.memoryBlack >= dotToSquare){
+                                MehenSingleton.memoryBlack -= dotToSquare - dotFromSquare - MehenSingleton.blackValueDiceRoll - 1
+                            }
                         }
                     }
                 }
             } else {
-                if (dotToSquare > dotFromSquare - 2*MehenSingleton.blackValueDiceRoll - 2){
-                    MehenSingleton.memoryBlack -= - dotToSquare + dotFromSquare
-                } else {
-                    if (dotFromSquare - 2*MehenSingleton.blackValueDiceRoll - 2 != dotToSquare ) {
-                        if (dotFromSquare - 2*MehenSingleton.blackValueDiceRoll - 2 - MehenSingleton.memoryBlack <= dotToSquare){
-                            MehenSingleton.memoryBlack -= -dotToSquare + dotFromSquare + 2*MehenSingleton.blackValueDiceRoll + 2
+                if (identy == 0){
+                    if (dotToSquare > dotFromSquare - 2*MehenSingleton.blackValueDiceRoll - 2 && dotToSquare < dotFromSquare){
+                        MehenSingleton.memoryBlack -= - dotToSquare + dotFromSquare
+                    } else {
+                        if (dotFromSquare - 2*MehenSingleton.blackValueDiceRoll - 2 != dotToSquare ) {
+                            if (dotFromSquare - 2*MehenSingleton.blackValueDiceRoll - 2 - MehenSingleton.memoryBlack <= dotToSquare && dotToSquare < dotFromSquare){
+                                MehenSingleton.memoryBlack -= -dotToSquare + dotFromSquare - 2*MehenSingleton.blackValueDiceRoll - 2
+                            }
                         }
                     }
                 }
@@ -171,24 +228,30 @@ object MehenGame {
             MehenSingleton.canBlackMove = false
             MehenSingleton.canWhiteDiceRoll = true
         }
+
         if (movingPiece.player == Player.WHITE && MehenSingleton.canWhiteMove){
             if (movingPiece.mehenman == Mehenman.WALKER){
-                if (dotToSquare < dotFromSquare + MehenSingleton.whiteValueDiceRoll + 1){
-                    MehenSingleton.memoryWhite -= dotToSquare - dotFromSquare
-                } else {
-                    if (dotFromSquare + MehenSingleton.whiteValueDiceRoll + 1 != dotToSquare ) {
-                        if (dotFromSquare + MehenSingleton.whiteValueDiceRoll + 1 + MehenSingleton.memoryWhite >= dotToSquare){
-                            MehenSingleton.memoryWhite -= dotToSquare - dotFromSquare - MehenSingleton.whiteValueDiceRoll - 1
+                if (identy == 0){
+                    if (dotToSquare < dotFromSquare + MehenSingleton.whiteValueDiceRoll + 1){
+                        MehenSingleton.memoryWhite -= dotToSquare - dotFromSquare
+                    } else {
+                        if (dotFromSquare + MehenSingleton.whiteValueDiceRoll + 1 != dotToSquare ) {
+                            if (dotFromSquare + MehenSingleton.whiteValueDiceRoll + 1 + MehenSingleton.memoryWhite >= dotToSquare){
+                                MehenSingleton.memoryWhite -= dotToSquare - dotFromSquare - MehenSingleton.whiteValueDiceRoll - 1
+                            }
                         }
                     }
                 }
             } else {
-                if (dotToSquare > dotFromSquare - 2*MehenSingleton.whiteValueDiceRoll - 2){
-                    MehenSingleton.memoryWhite -= - dotToSquare + dotFromSquare
-                } else {
-                    if (dotFromSquare - 2*MehenSingleton.whiteValueDiceRoll - 2 != dotToSquare ) {
-                        if (dotFromSquare - 2*MehenSingleton.whiteValueDiceRoll - 2 - MehenSingleton.memoryWhite <= dotToSquare){
-                            MehenSingleton.memoryWhite -= -dotToSquare + dotFromSquare + 2*MehenSingleton.whiteValueDiceRoll + 2
+                if (identy == 0){
+                    println(dotFromSquare - 2*MehenSingleton.whiteValueDiceRoll - 2)
+                    if (dotToSquare > dotFromSquare - 2*MehenSingleton.whiteValueDiceRoll - 2 && dotToSquare < dotFromSquare){
+                        MehenSingleton.memoryWhite -= - dotToSquare + dotFromSquare
+                    } else {
+                        if (dotFromSquare - 2*MehenSingleton.whiteValueDiceRoll - 2 != dotToSquare ) {
+                            if (dotFromSquare - 2*MehenSingleton.whiteValueDiceRoll - 2 - MehenSingleton.memoryWhite <= dotToSquare && dotToSquare < dotFromSquare){
+                                MehenSingleton.memoryWhite -= -dotToSquare + dotFromSquare - 2*MehenSingleton.whiteValueDiceRoll - 2
+                            }
                         }
                     }
                 }

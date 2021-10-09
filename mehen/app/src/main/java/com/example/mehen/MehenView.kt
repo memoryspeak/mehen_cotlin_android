@@ -490,7 +490,7 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
                     0 -> addPossibleDot(listOf(2, 7), Player.WHITE, Mehenman.WALKER, blueDotColor)
                     6 -> addPossibleDot(listOf(2, 1), Player.WHITE, Mehenman.WALKER, blueDotColor)
                     12 -> addPossibleDot(listOf(4, 1), Player.WHITE, Mehenman.WALKER, blueDotColor)
-                    18 -> addPossibleDot(listOf(7, 2), Player.WHITE, Mehenman.WALKER, blueDotColor)
+                    18 -> addPossibleDot(listOf(7, 4), Player.WHITE, Mehenman.WALKER, blueDotColor)
                     24 -> addPossibleDot(listOf(5, 6), Player.WHITE, Mehenman.WALKER, blueDotColor)
                     28 -> addPossibleDot(listOf(3, 6), Player.WHITE, Mehenman.WALKER, blueDotColor)
                     34 -> addPossibleDot(listOf(3, 2), Player.WHITE, Mehenman.WALKER, blueDotColor)
@@ -532,9 +532,9 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
                 }
                 if (MehenSingleton.blackValueDiceRoll == 5){ when (position){
                     0 -> addPossibleDot(listOf(2, 7), Player.BLACK, Mehenman.WALKER, blueDotColor)
-                    6 -> addPossibleDot(listOf(2, 7), Player.BLACK, Mehenman.WALKER, blueDotColor)
+                    6 -> addPossibleDot(listOf(2, 1), Player.BLACK, Mehenman.WALKER, blueDotColor)
                     12 -> addPossibleDot(listOf(4, 1), Player.BLACK, Mehenman.WALKER, blueDotColor)
-                    18 -> addPossibleDot(listOf(7, 2), Player.BLACK, Mehenman.WALKER, blueDotColor)
+                    18 -> addPossibleDot(listOf(7, 4), Player.BLACK, Mehenman.WALKER, blueDotColor)
                     24 -> addPossibleDot(listOf(5, 6), Player.BLACK, Mehenman.WALKER, blueDotColor)
                     28 -> addPossibleDot(listOf(3, 6), Player.BLACK, Mehenman.WALKER, blueDotColor)
                     34 -> addPossibleDot(listOf(3, 2), Player.BLACK, Mehenman.WALKER, blueDotColor)
