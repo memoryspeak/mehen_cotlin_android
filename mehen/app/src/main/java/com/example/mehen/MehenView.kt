@@ -7,9 +7,8 @@ import android.view.MotionEvent
 import android.view.View
 import kotlin.math.min
 import kotlin.random.Random
-import android.graphics.DashPathEffect
-
-
+import android.media.MediaPlayer
+import java.util.concurrent.TimeUnit
 
 
 class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
@@ -222,9 +221,11 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
 
                     if (fromCol == 7 && fromRow == 9) {
                         if (MehenSingleton.canBlackDiceRoll) {
+                            if (MehenSingleton.soundEffect){ MehenSingleton.soundEngine.play(MehenSingleton.dicerollEffect, 1f, 1f, 1, 0, 1f) }
                             MehenSingleton.blackValueDiceRoll = randomDiceValue()
                             if (MehenSingleton.blackValueDiceRoll == 0) {
                                 MehenSingleton.memoryBlack +=1
+                                if (MehenSingleton.soundEffect){ MehenSingleton.soundEngine.play(MehenSingleton.magicEffect, 1f, 1f, 1, 0, 1f) }
                             } else {
                                 MehenSingleton.canBlackMove = true
                                 MehenSingleton.canWhiteMove = false
@@ -235,9 +236,11 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
                     }
                     if (fromCol == 7 && fromRow == 0) {
                         if (MehenSingleton.canWhiteDiceRoll) {
+                            if (MehenSingleton.soundEffect){ MehenSingleton.soundEngine.play(MehenSingleton.dicerollEffect, 1f, 1f, 1, 0, 1f) }
                             MehenSingleton.whiteValueDiceRoll = randomDiceValue()
                             if (MehenSingleton.whiteValueDiceRoll == 0) {
                                 MehenSingleton.memoryWhite += 1
+                                if (MehenSingleton.soundEffect){ MehenSingleton.soundEngine.play(MehenSingleton.magicEffect, 1f, 1f, 1, 0, 1f) }
                             } else {
                                 MehenSingleton.canWhiteMove = true
                                 MehenSingleton.canBlackMove = false
@@ -385,6 +388,7 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
     private fun drawWhiteDiceRoll(canvas: Canvas){
         val diceRollWhite = (bitmapsOfDiceRollWhite[MehenSingleton.whiteValueDiceRoll])
         if (diceRollWhite != null) {
+
             canvas.drawBitmap(
                 diceRollWhite,
                 null,
@@ -647,6 +651,7 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
                     18 -> { addPossibleDot(listOf(7, 4), Player.WHITE, Mehenman.LION, blueDotColor) }
                     12 -> { addPossibleDot(listOf(4, 1), Player.WHITE, Mehenman.LION, blueDotColor) }
                     6-> { addPossibleDot(listOf(2, 1), Player.WHITE, Mehenman.LION, blueDotColor) }
+                    0 -> { addPossibleDot(listOf(2, 7), Player.WHITE, Mehenman.LION, blueDotColor) }
                 } }
             } else {
                 for (dot in position - 2*(MehenSingleton.blackValueDiceRoll + 1) - MehenSingleton.memoryBlack until position - 2*(MehenSingleton.blackValueDiceRoll + 1)){
@@ -739,6 +744,7 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
                     18 -> { addPossibleDot(listOf(7, 4), Player.BLACK, Mehenman.LION, blueDotColor) }
                     12 -> { addPossibleDot(listOf(4, 1), Player.BLACK, Mehenman.LION, blueDotColor) }
                     6-> { addPossibleDot(listOf(2, 1), Player.BLACK, Mehenman.LION, blueDotColor) }
+                    0 -> { addPossibleDot(listOf(2, 7), Player.BLACK, Mehenman.LION, blueDotColor) }
                 } }
             }
         }

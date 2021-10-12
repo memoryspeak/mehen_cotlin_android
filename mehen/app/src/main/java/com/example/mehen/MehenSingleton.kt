@@ -1,6 +1,13 @@
 package com.example.mehen
 
 object MehenSingleton {
+    var soundEffect: Boolean = true
+    val soundEngine = SoundEngine()
+    var magicEffect: Int = 0
+    var turnEffect: Int = 0
+    var startgameEffect: Int = 0
+    var dicerollEffect: Int = 0
+
     var memoryWhite: Int = 0
     var memoryBlack: Int = 0
     var canWhiteMove: Boolean = false

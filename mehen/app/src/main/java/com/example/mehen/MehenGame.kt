@@ -1,6 +1,12 @@
 package com.example.mehen
 
-object MehenGame {
+
+import android.media.MediaPlayer
+import android.view.View
+import java.security.AccessController.getContext
+
+
+object MehenGame{
     private var piecesBox = mutableSetOf<MehenPiece>()
 
     init {
@@ -149,6 +155,8 @@ object MehenGame {
             }
         }
 
+        if (MehenSingleton.soundEffect){ MehenSingleton.soundEngine.play(MehenSingleton.turnEffect, 1f, 1f, 1, 0, 1f) }
+
         if (dotToSquare == 4){
             val fourPiece: MehenPiece? = pieceAt(toCol, toRow)
             val twentyTwoPiece: MehenPiece? = pieceAt(7, 1)
@@ -266,6 +274,7 @@ object MehenGame {
     }
 
     fun reset() {
+        if (MehenSingleton.soundEffect){ MehenSingleton.soundEngine.play(MehenSingleton.startgameEffect, 1f, 1f, 1, 0, 1f) }
         clear()
         for (i in 0 until 6) {
             addPiece(MehenPiece(i, 0, Player.WHITE, Mehenman.WALKER, R.drawable.white_goose))
