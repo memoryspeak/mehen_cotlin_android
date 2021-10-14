@@ -31,14 +31,19 @@ class MainActivity() : AppCompatActivity(), MehenDelegate {
     private val isEmulator = Build.FINGERPRINT.contains("generic")
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.Theme_Mehen)
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
         MehenSingleton.magicEffect = MehenSingleton.soundEngine.load(this, R.raw.magic, 1)
         MehenSingleton.turnEffect = MehenSingleton.soundEngine.load(this, R.raw.turn, 1)
         MehenSingleton.startgameEffect = MehenSingleton.soundEngine.load(this, R.raw.startgame, 1)
         MehenSingleton.dicerollEffect = MehenSingleton.soundEngine.load(this, R.raw.diceroll, 1)
+
+        setTheme(R.style.Theme_Mehen)
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+//        MehenSingleton.magicEffect = MehenSingleton.soundEngine.load(this, R.raw.magic, 1)
+//        MehenSingleton.turnEffect = MehenSingleton.soundEngine.load(this, R.raw.turn, 1)
+//        MehenSingleton.startgameEffect = MehenSingleton.soundEngine.load(this, R.raw.startgame, 1)
+//        MehenSingleton.dicerollEffect = MehenSingleton.soundEngine.load(this, R.raw.diceroll, 1)
 
         mehenView = findViewById<MehenView>(R.id.mehen_view)
 //        resetButton = findViewById<Button>(R.id.reset_button)
@@ -92,11 +97,20 @@ class MainActivity() : AppCompatActivity(), MehenDelegate {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
-            R.id.reset -> {
+            R.id.opposite -> {
+                MehenSingleton.game = true
+                MehenSingleton.robot = false
                 MehenGame.reset()
                 mehenView.invalidate()
                 serverSocket?.close()
 //                listenButton.isEnabled = true
+            }
+            R.id.robot -> {
+                MehenSingleton.game = true
+                MehenSingleton.robot = true
+                MehenGame.reset()
+                mehenView.invalidate()
+                serverSocket?.close()
             }
         }
         return true

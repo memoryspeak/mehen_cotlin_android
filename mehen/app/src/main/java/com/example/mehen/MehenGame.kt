@@ -4,38 +4,19 @@ package com.example.mehen
 import android.media.MediaPlayer
 import android.view.View
 import java.security.AccessController.getContext
+import kotlin.random.Random
 
 
 object MehenGame{
     private var piecesBox = mutableSetOf<MehenPiece>()
 
-    init {
-        reset()
-    }
+    init { reset() }
 
-    fun clear(){
-        piecesBox.clear()
-    }
+    fun clear(){ piecesBox.clear() }
 
-    fun addPiece(piece: MehenPiece) {
-        piecesBox.add(piece)
-    }
+    fun addPiece(piece: MehenPiece) { piecesBox.add(piece) }
 
-    private fun canWalkerMove(from: Square, to: Square): Boolean {
-        if (true) {
-            return true
-        }
-        return false
-    }
-
-    private fun canLionMove(from: Square, to: Square): Boolean {
-        if (true) {
-            return true
-        }
-        return false
-    }
-
-    fun canMove(from: Square, to: Square): Boolean {
+    private fun canMove(from: Square, to: Square): Boolean {
         if (from.col == to.col && from.row == to.row) { return  false }
         else if (0 > to.row) { return  false }
         else if (9 < to.row) { return  false }
@@ -43,11 +24,8 @@ object MehenGame{
         else if (7 == to.col && 9 == to.row) { return  false }
         else if (6 == to.col && 0 == to.row) { return  false }
         else if (6 == to.col && 9 == to.row) { return  false }
-        val movingPiece = pieceAt(from) ?: return false
-        return when(movingPiece.mehenman) {
-            Mehenman.WALKER -> canWalkerMove(from, to)
-            Mehenman.LION -> canLionMove(from, to)
-        }
+        pieceAt(from) ?: return false
+        return true
     }
 
     fun movePiece(from: Square, to: Square) {
@@ -57,6 +35,10 @@ object MehenGame{
     }
 
     private fun movePiece(fromCol: Int, fromRow: Int, toCol: Int, toRow: Int) {
+        println(fromCol)
+        println(fromRow)
+        println(toCol)
+        println(toRow)
         if (fromCol == toCol && fromRow == toRow) return
         val setColRow = mutableListOf<List<Int>>()
         for (item in MehenSingleton.possibleDots){ setColRow.add(listOf<Int>(item.col, item.row)) }
@@ -271,10 +253,403 @@ object MehenGame{
         MehenSingleton.possibleDots.clear()
         MehenSingleton.viewPossibleDot = false
         MehenSingleton.outlineList.clear()
+
+        if (MehenSingleton.robot) {
+            MehenSingleton.canRobotMove = !MehenSingleton.canRobotMove
+            if (MehenSingleton.canRobotMove){
+                robot()
+            }
+        }
+    }
+
+    private fun robot(){
+        println("goRobot")
+
+        if (MehenSingleton.soundEffect){ MehenSingleton.soundEngine.play(MehenSingleton.dicerollEffect, 1f, 1f, 1, 0, 1f) }
+        if (MehenSingleton.canWhiteDiceRoll){
+            MehenSingleton.whiteValueDiceRoll = Random.nextInt(6)
+            if (MehenSingleton.whiteValueDiceRoll == 0) {
+                MehenSingleton.memoryWhite += 1
+                if (MehenSingleton.soundEffect){ MehenSingleton.soundEngine.play(MehenSingleton.magicEffect, 1f, 1f, 1, 0, 1f) }
+                robot()
+            } else {
+                MehenSingleton.canWhiteMove = false
+                MehenSingleton.canWhiteDiceRoll = false
+                MehenSingleton.canBlackDiceRoll = true
+                robotIQ(Player.WHITE)["fromSquare"]?.let { robotIQ(Player.WHITE)["toSquare"]?.let { it1 ->
+                    movePiece(it,
+                        it1
+                    )
+                } }
+            }
+        } else {
+            MehenSingleton.blackValueDiceRoll = Random.nextInt(6)
+            if (MehenSingleton.blackValueDiceRoll == 0) {
+                MehenSingleton.memoryBlack +=1
+                if (MehenSingleton.soundEffect){ MehenSingleton.soundEngine.play(MehenSingleton.magicEffect, 1f, 1f, 1, 0, 1f) }
+                robot()
+            } else {
+                MehenSingleton.canBlackMove = false
+                MehenSingleton.canBlackDiceRoll = false
+                MehenSingleton.canWhiteDiceRoll = true
+                robotIQ(Player.BLACK)["fromSquare"]?.let { robotIQ(Player.BLACK)["toSquare"]?.let { it1 ->
+                    movePiece(it,
+                        it1
+                    )
+                } }
+            }
+        }
+    }
+
+    private fun robotIQ(player: Player): Map<String, Square> {
+        var colFromSquare: Int = -1
+        var rowFromSquare: Int = -1
+        var colToSquare: Int = -1
+        var rowToSquare: Int = -1
+        val selfPieceSet = mutableListOf<MehenPiece>()
+        val rivalPieceSet = mutableListOf<MehenPiece>()
+        for (row in 0 until 10)
+            for (col in 0 until 8)
+                pieceAt(Square(col, row))?.let { piece ->
+                    if (piece.player == player) {
+                        selfPieceSet.add(piece)
+                    } else {
+                        rivalPieceSet.add(piece)
+                    }
+                }
+        when (MehenSingleton.robotIQ){
+            0 -> {
+                var breakTag: Boolean = false
+                while (!breakTag){
+                    val randomElement = selfPieceSet[Random.nextInt(selfPieceSet.size)]
+                    colFromSquare = randomElement.col
+                    rowFromSquare = randomElement.row
+                    MehenSingleton.selectedFigure.clear()
+                    MehenSingleton.selectedFigure.add(colFromSquare)
+                    MehenSingleton.selectedFigure.add(rowFromSquare)
+                    MehenSingleton.bindingSquare[listOf<Int>(9 - rowFromSquare, colFromSquare)]?.let { it ->
+                        findPossibleDots(it, randomElement.player, randomElement.mehenman)
+                    }
+                    if (MehenSingleton.possibleDots.size != 0){
+                        breakTag = true
+                    }
+                }
+                val randomPossibleDot = MehenSingleton.possibleDots[Random.nextInt(MehenSingleton.possibleDots.size)]
+                colToSquare = randomPossibleDot.col
+                rowToSquare  = randomPossibleDot.row
+        }
+            1 -> { colFromSquare = 1; rowFromSquare = 1; colToSquare = 2; rowToSquare  = 2 }
+        }
+        return mapOf("fromSquare" to Square(colFromSquare, rowFromSquare), "toSquare" to Square(colToSquare, rowToSquare))
+    }
+
+    private fun findPossibleDots(position: Int, player: Player, mehenman: Mehenman){
+        var playerAt: Player? = null
+        var mehenmanAt: Mehenman? = null
+        val blueDotColor: String = "#FF6B8E23"
+        val yellowDotColor: String = "#E6BC8F8F"
+
+        fun addPossibleDot(i: List<Int>, itPlayer: Player, itMehenman: Mehenman, itColor: String){
+            pieceAt(Square(i[1], 9 - i[0]))?.let{
+                playerAt = it.player
+                mehenmanAt = it.mehenman
+            }
+            if (playerAt == itPlayer && mehenmanAt == itMehenman){
+                playerAt = null
+                mehenmanAt = null
+            } else {
+                MehenSingleton.possibleDots.add(PossibleDot(i[1], i[0], itColor))
+                playerAt = null
+                mehenmanAt = null
+            }
+        }
+
+        if (mehenman == Mehenman.WALKER){
+            if (player == Player.WHITE){
+                for (dot in position + MehenSingleton.whiteValueDiceRoll + 2 until position + MehenSingleton.whiteValueDiceRoll + MehenSingleton.memoryWhite + 2){
+                    val keys = MehenSingleton.bindingSquare.filterValues { it == dot }.keys
+                    for (i in keys){
+                        addPossibleDot(i, Player.WHITE, Mehenman.WALKER, yellowDotColor)
+                    }
+                }
+                for (dot in position + 1 until position + MehenSingleton.memoryWhite + 1){
+                    val whiteDot = position + MehenSingleton.whiteValueDiceRoll + 1
+                    if (dot != whiteDot){
+                        val keys = MehenSingleton.bindingSquare.filterValues { it == dot }.keys
+                        for (i in keys){
+                            addPossibleDot(i, Player.WHITE, Mehenman.WALKER, yellowDotColor)
+                        }
+                    }
+                }
+                val diceRollKeys = MehenSingleton.bindingSquare.filterValues { it == position + MehenSingleton.whiteValueDiceRoll + 1 }.keys
+                for (i in diceRollKeys){
+                    addPossibleDot(i, Player.WHITE, Mehenman.WALKER, blueDotColor)
+                }
+                if (MehenSingleton.whiteValueDiceRoll == 5){ when (position){
+                    0 -> addPossibleDot(listOf(2, 7), Player.WHITE, Mehenman.WALKER, blueDotColor)
+                    6 -> addPossibleDot(listOf(2, 1), Player.WHITE, Mehenman.WALKER, blueDotColor)
+                    12 -> addPossibleDot(listOf(4, 1), Player.WHITE, Mehenman.WALKER, blueDotColor)
+                    18 -> addPossibleDot(listOf(7, 4), Player.WHITE, Mehenman.WALKER, blueDotColor)
+                    24 -> addPossibleDot(listOf(5, 6), Player.WHITE, Mehenman.WALKER, blueDotColor)
+                    28 -> addPossibleDot(listOf(3, 6), Player.WHITE, Mehenman.WALKER, blueDotColor)
+                    34 -> addPossibleDot(listOf(3, 2), Player.WHITE, Mehenman.WALKER, blueDotColor)
+                    36 -> {
+                        addPossibleDot(listOf(3, 2), Player.WHITE, Mehenman.WALKER, blueDotColor)
+                        addPossibleDot(listOf(5, 2), Player.WHITE, Mehenman.WALKER, blueDotColor)
+                    }
+                    42 -> addPossibleDot(listOf(6, 5), Player.WHITE, Mehenman.WALKER, blueDotColor)
+                    46 -> {
+                        addPossibleDot(listOf(4, 5), Player.WHITE, Mehenman.WALKER, blueDotColor)
+                        addPossibleDot(listOf(6, 5), Player.WHITE, Mehenman.WALKER, blueDotColor)
+                    }
+                    48 -> addPossibleDot(listOf(4, 5), Player.WHITE, Mehenman.WALKER, blueDotColor)
+                    52 -> addPossibleDot(listOf(4, 3), Player.WHITE, Mehenman.WALKER, blueDotColor)
+                    54 -> addPossibleDot(listOf(4, 3), Player.WHITE, Mehenman.WALKER, blueDotColor)
+                    58 -> addPossibleDot(listOf(5, 4), Player.WHITE, Mehenman.WALKER, blueDotColor)
+                    60 -> addPossibleDot(listOf(5, 4), Player.WHITE, Mehenman.WALKER, blueDotColor)
+                    62 -> addPossibleDot(listOf(5, 4), Player.WHITE, Mehenman.WALKER, blueDotColor)
+                } }
+            } else {
+                for (dot in position + MehenSingleton.blackValueDiceRoll + 2 until position + MehenSingleton.blackValueDiceRoll + MehenSingleton.memoryBlack + 2){
+                    val keys = MehenSingleton.bindingSquare.filterValues { it == dot }.keys
+                    for (i in keys){
+                        addPossibleDot(i, Player.BLACK, Mehenman.WALKER, yellowDotColor)
+                    }
+                }
+                for (dot in position + 1 until position + MehenSingleton.memoryBlack + 1){
+                    val blackDot = position + MehenSingleton.blackValueDiceRoll + 1
+                    if (dot != blackDot){
+                        val keys = MehenSingleton.bindingSquare.filterValues { it == dot }.keys
+                        for (i in keys){
+                            addPossibleDot(i, Player.BLACK, Mehenman.WALKER, yellowDotColor)
+                        }
+                    }
+                }
+                val diceRollKeys = MehenSingleton.bindingSquare.filterValues { it == position + MehenSingleton.blackValueDiceRoll + 1 }.keys
+                for (i in diceRollKeys){
+                    addPossibleDot(i, Player.BLACK, Mehenman.WALKER, blueDotColor)
+                }
+                if (MehenSingleton.blackValueDiceRoll == 5){ when (position){
+                    0 -> addPossibleDot(listOf(2, 7), Player.BLACK, Mehenman.WALKER, blueDotColor)
+                    6 -> addPossibleDot(listOf(2, 1), Player.BLACK, Mehenman.WALKER, blueDotColor)
+                    12 -> addPossibleDot(listOf(4, 1), Player.BLACK, Mehenman.WALKER, blueDotColor)
+                    18 -> addPossibleDot(listOf(7, 4), Player.BLACK, Mehenman.WALKER, blueDotColor)
+                    24 -> addPossibleDot(listOf(5, 6), Player.BLACK, Mehenman.WALKER, blueDotColor)
+                    28 -> addPossibleDot(listOf(3, 6), Player.BLACK, Mehenman.WALKER, blueDotColor)
+                    34 -> addPossibleDot(listOf(3, 2), Player.BLACK, Mehenman.WALKER, blueDotColor)
+                    36 -> {
+                        addPossibleDot(listOf(3, 2), Player.BLACK, Mehenman.WALKER, blueDotColor)
+                        addPossibleDot(listOf(5, 2), Player.BLACK, Mehenman.WALKER, blueDotColor)
+                    }
+                    42 -> addPossibleDot(listOf(6, 5), Player.BLACK, Mehenman.WALKER, blueDotColor)
+                    46 -> {
+                        addPossibleDot(listOf(4, 5), Player.BLACK, Mehenman.WALKER, blueDotColor)
+                        addPossibleDot(listOf(6, 5), Player.BLACK, Mehenman.WALKER, blueDotColor)
+                    }
+                    48 -> addPossibleDot(listOf(4, 5), Player.BLACK, Mehenman.WALKER, blueDotColor)
+                    52 -> addPossibleDot(listOf(4, 3), Player.BLACK, Mehenman.WALKER, blueDotColor)
+                    54 -> addPossibleDot(listOf(4, 3), Player.BLACK, Mehenman.WALKER, blueDotColor)
+                    58 -> addPossibleDot(listOf(5, 4), Player.BLACK, Mehenman.WALKER, blueDotColor)
+                    60 -> addPossibleDot(listOf(5, 4), Player.BLACK, Mehenman.WALKER, blueDotColor)
+                    62 -> addPossibleDot(listOf(5, 4), Player.BLACK, Mehenman.WALKER, blueDotColor)
+                } }
+            }
+        } else {
+            if (player == Player.WHITE){
+                for (dot in position - 2*(MehenSingleton.whiteValueDiceRoll + 1) - MehenSingleton.memoryWhite until position - 2*(MehenSingleton.whiteValueDiceRoll + 1)){
+                    val keys = MehenSingleton.bindingSquare.filterValues { it == dot }.keys
+                    for (i in keys){
+                        addPossibleDot(i, Player.WHITE, Mehenman.LION, yellowDotColor)
+                    }
+                }
+                for (dot in position - MehenSingleton.memoryWhite until position){
+                    val whiteDot = position - 2*(MehenSingleton.whiteValueDiceRoll + 1)
+                    if (dot != whiteDot){
+                        val keys = MehenSingleton.bindingSquare.filterValues { it == dot }.keys
+                        for (i in keys){
+                            addPossibleDot(i, Player.WHITE, Mehenman.LION, yellowDotColor)
+                        }
+                    }
+                }
+                val diceRollKeys = MehenSingleton.bindingSquare.filterValues { it == position - 2*(MehenSingleton.whiteValueDiceRoll + 1) }.keys
+                for (i in diceRollKeys){
+                    addPossibleDot(i, Player.WHITE, Mehenman.LION, blueDotColor)
+                }
+                if (MehenSingleton.whiteValueDiceRoll == 5){ when (position){
+                    64 -> {
+                        addPossibleDot(listOf(4, 3), Player.WHITE, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(4, 5), Player.WHITE, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(6, 5), Player.WHITE, Mehenman.LION, blueDotColor)
+                    }
+                    62 -> {
+                        addPossibleDot(listOf(3, 2), Player.WHITE, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(5, 2), Player.WHITE, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(5, 4), Player.WHITE, Mehenman.LION, blueDotColor)
+                    }
+                    60 -> {
+                        addPossibleDot(listOf(5, 4), Player.WHITE, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(3, 6), Player.WHITE, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(5, 6), Player.WHITE, Mehenman.LION, blueDotColor)
+                    }
+                    58 -> {
+                        addPossibleDot(listOf(5, 4), Player.WHITE, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(5, 6), Player.WHITE, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(7, 4), Player.WHITE, Mehenman.LION, blueDotColor)
+                    }
+                    54 -> {
+                        addPossibleDot(listOf(4, 1), Player.WHITE, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(4, 3), Player.WHITE, Mehenman.LION, blueDotColor)
+                    }
+                    52 -> {
+                        addPossibleDot(listOf(4, 3), Player.WHITE, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(4, 1), Player.WHITE, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(2, 1), Player.WHITE, Mehenman.LION, blueDotColor)
+                    }
+                    48 -> {
+                        addPossibleDot(listOf(4, 5), Player.WHITE, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(2, 7), Player.WHITE, Mehenman.LION, blueDotColor)
+                    }
+                    46 -> {
+                        addPossibleDot(listOf(4, 5), Player.WHITE, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(6, 5), Player.WHITE, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(6, 7), Player.WHITE, Mehenman.LION, blueDotColor)
+                    }
+                    42 -> {
+                        addPossibleDot(listOf(6, 5), Player.WHITE, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(8, 3), Player.WHITE, Mehenman.LION, blueDotColor)
+                    }
+                    36 -> {
+                        addPossibleDot(listOf(5, 0), Player.WHITE, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(5, 2), Player.WHITE, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(3, 2), Player.WHITE, Mehenman.LION, blueDotColor)
+                    }
+                    34 -> {
+                        addPossibleDot(listOf(1, 2), Player.WHITE, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(3, 2), Player.WHITE, Mehenman.LION, blueDotColor)
+                    }
+                    28 -> {
+                        addPossibleDot(listOf(3, 6), Player.WHITE, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(0, 0), Player.WHITE, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(0, 1), Player.WHITE, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(0, 2), Player.WHITE, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(0, 3), Player.WHITE, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(0, 4), Player.WHITE, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(0, 5), Player.WHITE, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(9, 0), Player.WHITE, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(9, 1), Player.WHITE, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(9, 2), Player.WHITE, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(9, 3), Player.WHITE, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(9, 4), Player.WHITE, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(9, 5), Player.WHITE, Mehenman.LION, blueDotColor)
+                    }
+                    24 -> { addPossibleDot(listOf(5, 6), Player.WHITE, Mehenman.LION, blueDotColor) }
+                    18 -> { addPossibleDot(listOf(7, 4), Player.WHITE, Mehenman.LION, blueDotColor) }
+                    12 -> { addPossibleDot(listOf(4, 1), Player.WHITE, Mehenman.LION, blueDotColor) }
+                    6-> { addPossibleDot(listOf(2, 1), Player.WHITE, Mehenman.LION, blueDotColor) }
+                    0 -> { addPossibleDot(listOf(2, 7), Player.WHITE, Mehenman.LION, blueDotColor) }
+                } }
+            } else {
+                for (dot in position - 2*(MehenSingleton.blackValueDiceRoll + 1) - MehenSingleton.memoryBlack until position - 2*(MehenSingleton.blackValueDiceRoll + 1)){
+                    val keys = MehenSingleton.bindingSquare.filterValues { it == dot }.keys
+                    for (i in keys){
+                        addPossibleDot(i, Player.BLACK, Mehenman.LION, yellowDotColor)
+                    }
+                }
+                for (dot in position - MehenSingleton.memoryBlack until position){
+                    val blackDot = position - 2*(MehenSingleton.blackValueDiceRoll + 1)
+                    if (dot != blackDot){
+                        val keys = MehenSingleton.bindingSquare.filterValues { it == dot }.keys
+                        for (i in keys){
+                            addPossibleDot(i, Player.BLACK, Mehenman.LION, yellowDotColor)
+                        }
+                    }
+                }
+                val diceRollKeys = MehenSingleton.bindingSquare.filterValues { it == position - 2*(MehenSingleton.blackValueDiceRoll + 1) }.keys
+                for (i in diceRollKeys){
+                    addPossibleDot(i, Player.BLACK, Mehenman.LION, blueDotColor)
+                }
+                if (MehenSingleton.blackValueDiceRoll == 5){ when (position){
+                    64 -> {
+                        addPossibleDot(listOf(4, 3), Player.BLACK, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(4, 5), Player.BLACK, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(6, 5), Player.BLACK, Mehenman.LION, blueDotColor)
+                    }
+                    62 -> {
+                        addPossibleDot(listOf(3, 2), Player.BLACK, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(5, 2), Player.BLACK, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(5, 4), Player.BLACK, Mehenman.LION, blueDotColor)
+                    }
+                    60 -> {
+                        addPossibleDot(listOf(5, 4), Player.BLACK, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(3, 6), Player.BLACK, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(5, 6), Player.BLACK, Mehenman.LION, blueDotColor)
+                    }
+                    58 -> {
+                        addPossibleDot(listOf(5, 4), Player.BLACK, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(5, 6), Player.BLACK, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(7, 4), Player.BLACK, Mehenman.LION, blueDotColor)
+                    }
+                    54 -> {
+                        addPossibleDot(listOf(4, 1), Player.BLACK, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(4, 3), Player.BLACK, Mehenman.LION, blueDotColor)
+                    }
+                    52 -> {
+                        addPossibleDot(listOf(4, 3), Player.BLACK, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(4, 1), Player.BLACK, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(2, 1), Player.BLACK, Mehenman.LION, blueDotColor)
+                    }
+                    48 -> {
+                        addPossibleDot(listOf(4, 5), Player.BLACK, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(2, 7), Player.BLACK, Mehenman.LION, blueDotColor)
+                    }
+                    46 -> {
+                        addPossibleDot(listOf(4, 5), Player.BLACK, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(6, 5), Player.BLACK, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(6, 7), Player.BLACK, Mehenman.LION, blueDotColor)
+                    }
+                    42 -> {
+                        addPossibleDot(listOf(6, 5), Player.BLACK, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(8, 3), Player.BLACK, Mehenman.LION, blueDotColor)
+                    }
+                    36 -> {
+                        addPossibleDot(listOf(5, 0), Player.BLACK, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(5, 2), Player.BLACK, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(3, 2), Player.BLACK, Mehenman.LION, blueDotColor)
+                    }
+                    34 -> {
+                        addPossibleDot(listOf(1, 2), Player.BLACK, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(3, 2), Player.BLACK, Mehenman.LION, blueDotColor)
+                    }
+                    28 -> {
+                        addPossibleDot(listOf(3, 6), Player.BLACK, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(0, 0), Player.BLACK, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(0, 1), Player.BLACK, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(0, 2), Player.BLACK, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(0, 3), Player.BLACK, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(0, 4), Player.BLACK, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(0, 5), Player.BLACK, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(9, 0), Player.BLACK, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(9, 1), Player.BLACK, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(9, 2), Player.BLACK, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(9, 3), Player.BLACK, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(9, 4), Player.BLACK, Mehenman.LION, blueDotColor)
+                        addPossibleDot(listOf(9, 5), Player.BLACK, Mehenman.LION, blueDotColor)
+                    }
+                    24 -> { addPossibleDot(listOf(5, 6), Player.BLACK, Mehenman.LION, blueDotColor) }
+                    18 -> { addPossibleDot(listOf(7, 4), Player.BLACK, Mehenman.LION, blueDotColor) }
+                    12 -> { addPossibleDot(listOf(4, 1), Player.BLACK, Mehenman.LION, blueDotColor) }
+                    6-> { addPossibleDot(listOf(2, 1), Player.BLACK, Mehenman.LION, blueDotColor) }
+                    0 -> { addPossibleDot(listOf(2, 7), Player.BLACK, Mehenman.LION, blueDotColor) }
+                } }
+            }
+        }
     }
 
     fun reset() {
-        if (MehenSingleton.soundEffect){ MehenSingleton.soundEngine.play(MehenSingleton.startgameEffect, 1f, 1f, 1, 0, 1f) }
+        if (MehenSingleton.game){
+            if (MehenSingleton.soundEffect){ MehenSingleton.soundEngine.play(MehenSingleton.startgameEffect, 1f, 1f, 1, 0, 1f) }
+        }
+
         clear()
         for (i in 0 until 6) {
             addPiece(MehenPiece(i, 0, Player.WHITE, Mehenman.WALKER, R.drawable.white_goose))

@@ -1,6 +1,11 @@
 package com.example.mehen
 
 object MehenSingleton {
+    var game: Boolean = false
+    var robot: Boolean = false
+    var canRobotMove: Boolean = false
+    var robotIQ: Int = 0
+
     var soundEffect: Boolean = true
     val soundEngine = SoundEngine()
     var magicEffect: Int = 0

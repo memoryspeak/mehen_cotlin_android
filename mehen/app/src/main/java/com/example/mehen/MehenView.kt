@@ -7,8 +7,6 @@ import android.view.MotionEvent
 import android.view.View
 import kotlin.math.min
 import kotlin.random.Random
-import android.media.MediaPlayer
-import java.util.concurrent.TimeUnit
 
 
 class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
@@ -179,10 +177,14 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
 
         drawPossibleDots(canvas)
         drawPieceOutline(canvas)
+
+//        drawRobotTurn(canvas)
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         event ?: return false
+        if (!MehenSingleton.game) return false
+        if (MehenSingleton.robot && MehenSingleton.canRobotMove) return false
 
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
@@ -290,6 +292,84 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
         }
         return true
     }
+
+//    private fun drawRobotTurn(canvas: Canvas){
+//        if (!MehenSingleton.game) return
+//        if (!MehenSingleton.robot){ return } else { if (!MehenSingleton.canRobotMove) return }
+//
+//        if (MehenSingleton.soundEffect){ MehenSingleton.soundEngine.play(MehenSingleton.dicerollEffect, 1f, 1f, 1, 0, 1f) }
+//        if (MehenSingleton.canWhiteDiceRoll){
+//            MehenSingleton.whiteValueDiceRoll = randomDiceValue()
+//            if (MehenSingleton.whiteValueDiceRoll == 0) {
+//                MehenSingleton.memoryWhite += 1
+//                if (MehenSingleton.soundEffect){ MehenSingleton.soundEngine.play(MehenSingleton.magicEffect, 1f, 1f, 1, 0, 1f) }
+//                drawRobotTurn(canvas)
+//            } else {
+//                robotIQ(Player.WHITE)["fromSquare"]?.let { robotIQ(Player.WHITE)["toSquare"]?.let { it1 -> mehenDelegate?.movePiece(from = it, to = it1) } }
+//                MehenSingleton.canWhiteMove = false
+//                MehenSingleton.canWhiteDiceRoll = false
+//                MehenSingleton.canBlackDiceRoll = true
+//            }
+//        } else {
+//            MehenSingleton.blackValueDiceRoll = randomDiceValue()
+//            if (MehenSingleton.blackValueDiceRoll == 0) {
+//                MehenSingleton.memoryBlack +=1
+//                if (MehenSingleton.soundEffect){ MehenSingleton.soundEngine.play(MehenSingleton.magicEffect, 1f, 1f, 1, 0, 1f) }
+//                drawRobotTurn(canvas)
+//            } else {
+//                robotIQ(Player.BLACK)["fromSquare"]?.let { robotIQ(Player.BLACK)["toSquare"]?.let { it1 -> mehenDelegate?.movePiece(from = it, to = it1) } }
+//                MehenSingleton.canBlackMove = false
+//                MehenSingleton.canBlackDiceRoll = false
+//                MehenSingleton.canWhiteDiceRoll = true
+//            }
+//        }
+//
+////        MehenSingleton.canRobotMove = false
+//    }
+//
+//    private fun robotIQ(player: Player): Map<String, Square> {
+//        var colFromSquare: Int = -1
+//        var rowFromSquare: Int = -1
+//        var colToSquare: Int = -1
+//        var rowToSquare: Int = -1
+//        val selfPieceSet = mutableListOf<MehenPiece>()
+//        val rivalPieceSet = mutableListOf<MehenPiece>()
+//        for (row in 0 until 10)
+//            for (col in 0 until 8)
+//                mehenDelegate?.pieceAt(Square(col, row))?.let { piece ->
+//                    if (piece != movingPiece) {
+//                        if (piece.player == player) {
+//                            selfPieceSet.add(piece)
+//                        } else {
+//                            rivalPieceSet.add(piece)
+//                        }
+//                    }
+//                }
+//        when (MehenSingleton.robotIQ){
+//            0 -> {
+//                var breakTag: Boolean = false
+//                while (!breakTag){
+//                    val randomElement = selfPieceSet[Random.nextInt(selfPieceSet.size)]
+//                    colFromSquare = randomElement.col
+//                    rowFromSquare = randomElement.row
+//                    MehenSingleton.selectedFigure.clear()
+//                    MehenSingleton.selectedFigure.add(colFromSquare)
+//                    MehenSingleton.selectedFigure.add(rowFromSquare)
+//                    MehenSingleton.bindingSquare[listOf<Int>(9 - rowFromSquare, colFromSquare)]?.let { it ->
+//                        findPossibleDots(it, randomElement.player, randomElement.mehenman)
+//                    }
+//                    if (MehenSingleton.possibleDots.size != 0){
+//                        breakTag = true
+//                    }
+//                }
+//                val randomPossibleDot = MehenSingleton.possibleDots[Random.nextInt(MehenSingleton.possibleDots.size)]
+//                colToSquare = randomPossibleDot.col
+//                rowToSquare  = randomPossibleDot.row
+//        }
+//            1 -> { colFromSquare = 1; rowFromSquare = 1; colToSquare = 2; rowToSquare  = 2 }
+//        }
+//        return mapOf("fromSquare" to Square(colFromSquare, rowFromSquare), "toSquare" to Square(colToSquare, rowToSquare))
+//    }
 
     private fun drawPieces(canvas: Canvas) {
         for (row in 0 until 10)

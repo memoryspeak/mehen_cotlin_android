@@ -20,7 +20,6 @@ class SoundEngine {
         SoundPool(1, AudioManager.STREAM_MUSIC, 0)
     }
 
-
     fun load(context: Context, rawId: Int, priority: Int):Int {
         return soundPool.load(context, rawId, priority)
     }

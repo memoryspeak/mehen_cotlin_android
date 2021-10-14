@@ -3,9 +3,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:title="@string/reset"
-        android:icon="@drawable/ic_reset"
-        android:id="@+id/reset"
-        app:showAsAction="withText"/>
+        android:title="@string/opposite"
+        android:id="@+id/opposite"
+        app:showAsAction="never"/>
+    <item
+        android:title="@string/robot"
+        android:id="@+id/robot"
+        app:showAsAction="never"/>
 
 </menu>
