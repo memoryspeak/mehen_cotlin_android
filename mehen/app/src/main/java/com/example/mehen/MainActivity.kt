@@ -100,6 +100,7 @@ class MainActivity() : AppCompatActivity(), MehenDelegate {
             R.id.opposite -> {
                 MehenSingleton.game = true
                 MehenSingleton.robot = false
+                MehenSingleton.canRobotMove = false
                 MehenGame.reset()
                 mehenView.invalidate()
                 serverSocket?.close()
@@ -108,6 +109,7 @@ class MainActivity() : AppCompatActivity(), MehenDelegate {
             R.id.robot -> {
                 MehenSingleton.game = true
                 MehenSingleton.robot = true
+                MehenSingleton.canRobotMove = false
                 MehenGame.reset()
                 mehenView.invalidate()
                 serverSocket?.close()
@@ -140,5 +142,9 @@ class MainActivity() : AppCompatActivity(), MehenDelegate {
                 it.println(moveStr)
             }
         }
+    }
+
+    override fun findPossibleDots(position: Int, player: Player, mehenman: Mehenman) {
+        MehenGame.findPossibleDots(position, player, mehenman)
     }
 }

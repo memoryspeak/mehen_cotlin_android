@@ -35,10 +35,6 @@ object MehenGame{
     }
 
     private fun movePiece(fromCol: Int, fromRow: Int, toCol: Int, toRow: Int) {
-        println(fromCol)
-        println(fromRow)
-        println(toCol)
-        println(toRow)
         if (fromCol == toCol && fromRow == toRow) return
         val setColRow = mutableListOf<List<Int>>()
         for (item in MehenSingleton.possibleDots){ setColRow.add(listOf<Int>(item.col, item.row)) }
@@ -263,8 +259,6 @@ object MehenGame{
     }
 
     private fun robot(){
-        println("goRobot")
-
         if (MehenSingleton.soundEffect){ MehenSingleton.soundEngine.play(MehenSingleton.dicerollEffect, 1f, 1f, 1, 0, 1f) }
         if (MehenSingleton.canWhiteDiceRoll){
             MehenSingleton.whiteValueDiceRoll = Random.nextInt(6)
@@ -273,9 +267,9 @@ object MehenGame{
                 if (MehenSingleton.soundEffect){ MehenSingleton.soundEngine.play(MehenSingleton.magicEffect, 1f, 1f, 1, 0, 1f) }
                 robot()
             } else {
-                MehenSingleton.canWhiteMove = false
+                MehenSingleton.canWhiteMove = true
+                MehenSingleton.canBlackMove = false
                 MehenSingleton.canWhiteDiceRoll = false
-                MehenSingleton.canBlackDiceRoll = true
                 robotIQ(Player.WHITE)["fromSquare"]?.let { robotIQ(Player.WHITE)["toSquare"]?.let { it1 ->
                     movePiece(it,
                         it1
@@ -289,9 +283,9 @@ object MehenGame{
                 if (MehenSingleton.soundEffect){ MehenSingleton.soundEngine.play(MehenSingleton.magicEffect, 1f, 1f, 1, 0, 1f) }
                 robot()
             } else {
-                MehenSingleton.canBlackMove = false
+                MehenSingleton.canBlackMove = true
+                MehenSingleton.canWhiteMove = false
                 MehenSingleton.canBlackDiceRoll = false
-                MehenSingleton.canWhiteDiceRoll = true
                 robotIQ(Player.BLACK)["fromSquare"]?.let { robotIQ(Player.BLACK)["toSquare"]?.let { it1 ->
                     movePiece(it,
                         it1
@@ -336,14 +330,14 @@ object MehenGame{
                 }
                 val randomPossibleDot = MehenSingleton.possibleDots[Random.nextInt(MehenSingleton.possibleDots.size)]
                 colToSquare = randomPossibleDot.col
-                rowToSquare  = randomPossibleDot.row
+                rowToSquare  = 9 - randomPossibleDot.row
         }
             1 -> { colFromSquare = 1; rowFromSquare = 1; colToSquare = 2; rowToSquare  = 2 }
         }
         return mapOf("fromSquare" to Square(colFromSquare, rowFromSquare), "toSquare" to Square(colToSquare, rowToSquare))
     }
 
-    private fun findPossibleDots(position: Int, player: Player, mehenman: Mehenman){
+    fun findPossibleDots(position: Int, player: Player, mehenman: Mehenman){
         var playerAt: Player? = null
         var mehenmanAt: Mehenman? = null
         val blueDotColor: String = "#FF6B8E23"
