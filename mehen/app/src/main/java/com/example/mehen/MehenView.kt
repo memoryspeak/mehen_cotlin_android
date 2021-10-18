@@ -222,6 +222,11 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
                         if (MehenSingleton.canBlackDiceRoll) {
                             if (MehenSingleton.soundEffect){ MehenSingleton.soundEngine.play(MehenSingleton.dicerollEffect, 1f, 1f, 1, 0, 1f) }
                             MehenSingleton.blackValueDiceRoll = randomDiceValue()
+                            if (mehenDelegate?.isFinish(Player.BLACK) ?: Int == 0) {
+                                MehenSingleton.game = false
+                                MehenSingleton.alertWhiteWon.show(MehenSingleton.manager, "whiteWon")
+                                return false
+                            }
                             if (MehenSingleton.blackValueDiceRoll == 0) {
                                 MehenSingleton.memoryBlack +=1
                                 if (MehenSingleton.soundEffect){ MehenSingleton.soundEngine.play(MehenSingleton.magicEffect, 1f, 1f, 1, 0, 1f) }
@@ -237,6 +242,11 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
                         if (MehenSingleton.canWhiteDiceRoll) {
                             if (MehenSingleton.soundEffect){ MehenSingleton.soundEngine.play(MehenSingleton.dicerollEffect, 1f, 1f, 1, 0, 1f) }
                             MehenSingleton.whiteValueDiceRoll = randomDiceValue()
+                            if (mehenDelegate?.isFinish(Player.WHITE) ?: Int == 0) {
+                                MehenSingleton.game = false
+                                MehenSingleton.alertBlackWon.show(MehenSingleton.manager, "blackWon")
+                                return false
+                            }
                             if (MehenSingleton.whiteValueDiceRoll == 0) {
                                 MehenSingleton.memoryWhite += 1
                                 if (MehenSingleton.soundEffect){ MehenSingleton.soundEngine.play(MehenSingleton.magicEffect, 1f, 1f, 1, 0, 1f) }
@@ -249,32 +259,38 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
                         MehenSingleton.selectedFigure.clear()
                     }
                 } else {
-                    mehenDelegate?.movePiece(
-                        Square(MehenSingleton.selectedFigure[0], MehenSingleton.selectedFigure[1]),
-                        Square(fromCol, fromRow)
-                    )
+                    if (MehenSingleton.selectedFigure.size != 0){
+                        mehenDelegate?.movePiece(
+                            Square(MehenSingleton.selectedFigure[0], MehenSingleton.selectedFigure[1]),
+                            Square(fromCol, fromRow)
+                        )
+                    }
+//                    mehenDelegate?.movePiece(
+//                        Square(MehenSingleton.selectedFigure[0], MehenSingleton.selectedFigure[1]),
+//                        Square(fromCol, fromRow)
+//                    )
                     MehenSingleton.selectedFigure.clear()
                 }
             }
-            MotionEvent.ACTION_MOVE -> {
-                if (!MehenSingleton.viewPossibleDot){
-                    mehenDelegate?.pieceAt(Square(fromCol, fromRow))?.let {
-                        MehenSingleton.outlineList.clear()
-                        MehenSingleton.selectedFigure.clear()
-                        MehenSingleton.selectedFigure.add(fromCol)
-                        MehenSingleton.selectedFigure.add(fromRow)
-                        MehenSingleton.outlineList.add(fromCol)
-                        MehenSingleton.outlineList.add(9 - fromRow)
-                        movingPiece?.let { MehenSingleton.bindingSquare[listOf<Int>(9 - fromRow, fromCol)]?.let { it1 ->
-                            mehenDelegate!!.findPossibleDots(it1, it.player, it.mehenman)
-                        } }
-                        MehenSingleton.viewPossibleDot = true
-                    }
-                }
-                movingPieceX = event.x
-                movingPieceY = event.y
-                invalidate()
-            }
+//            MotionEvent.ACTION_MOVE -> {
+//                if (!MehenSingleton.viewPossibleDot){
+//                    mehenDelegate?.pieceAt(Square(fromCol, fromRow))?.let {
+//                        MehenSingleton.outlineList.clear()
+//                        MehenSingleton.selectedFigure.clear()
+//                        MehenSingleton.selectedFigure.add(fromCol)
+//                        MehenSingleton.selectedFigure.add(fromRow)
+//                        MehenSingleton.outlineList.add(fromCol)
+//                        MehenSingleton.outlineList.add(9 - fromRow)
+//                        movingPiece?.let { MehenSingleton.bindingSquare[listOf<Int>(9 - fromRow, fromCol)]?.let { it1 ->
+//                            mehenDelegate!!.findPossibleDots(it1, it.player, it.mehenman)
+//                        } }
+//                        MehenSingleton.viewPossibleDot = true
+//                    }
+//                }
+//                movingPieceX = event.x
+//                movingPieceY = event.y
+//                invalidate()
+//            }
             MotionEvent.ACTION_UP -> {
                 val col = ((event.x - originX) / cellSide).toInt()
                 val row = 9 - ((event.y - originY) / cellSide).toInt()

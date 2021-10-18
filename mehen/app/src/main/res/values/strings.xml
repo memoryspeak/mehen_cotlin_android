@@ -2,6 +2,8 @@
     <string name="app_name">mehen</string>
     <string name="listen">Listen</string>
     <string name="connect">Connect</string>
-    <string name="opposite">NewGameOppositeEachOver</string>
-    <string name="robot">NewGameWithRobot</string>
+    <string name="new_game">New Game</string>
+    <string name="opposite">Opposite Each Over</string>
+    <string name="robot">With Robot</string>
+    <string name="network">Network Play</string>
 </resources>

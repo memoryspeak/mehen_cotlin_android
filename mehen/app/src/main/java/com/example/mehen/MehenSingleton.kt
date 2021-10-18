@@ -1,10 +1,25 @@
 package com.example.mehen
 
+import androidx.fragment.app.FragmentManager
+import java.net.ServerSocket
+import kotlin.properties.Delegates
+
 object MehenSingleton {
+    lateinit var alertNewGame: MehenGameSelectionDialogFragment
+    lateinit var alertRobotGame: MehenGameSelectionDialogFragment
+    var selectedItemOfNewGame: Int = 0
+
+    var serverSocket: ServerSocket? = null
+    lateinit var mehenView: MehenView
+
     var game: Boolean = false
     var robot: Boolean = false
     var canRobotMove: Boolean = false
-    var robotIQ: Int = 0
+    var robotIQ: Int = 1
+
+    lateinit var manager: FragmentManager
+    lateinit var alertWhiteWon: MehenDialogFragment
+    lateinit var alertBlackWon: MehenDialogFragment
 
     var soundEffect: Boolean = true
     val soundEngine = SoundEngine()

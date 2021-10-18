@@ -8,6 +8,7 @@ import android.view.MenuItem
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentManager
 import java.io.PrintWriter
 import java.net.ConnectException
 import java.net.ServerSocket
@@ -22,15 +23,29 @@ class MainActivity() : AppCompatActivity(), MehenDelegate {
     private val socketHost = "127.0.0.1"
     private val socketPort: Int = 50000
     private val socketGuestPort: Int = 50001 // used for socket server on emulator
-    private lateinit var mehenView: MehenView
+//    private lateinit var mehenView: MehenView
 //    private lateinit var resetButton: Button
 //    private lateinit var listenButton: Button
 //    private lateinit var connectButton: Button
     private var printWriter: PrintWriter? = null
-    private var serverSocket: ServerSocket? = null
+//    private var serverSocket: ServerSocket? = null
     private val isEmulator = Build.FINGERPRINT.contains("generic")
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        MehenSingleton.manager = supportFragmentManager
+        MehenSingleton.alertWhiteWon = MehenDialogFragment(
+            "White won!",
+            "Congratulations!",
+            R.drawable.white_lion,
+            "OK")
+        MehenSingleton.alertBlackWon = MehenDialogFragment(
+            "Black won!",
+            "Congratulations!",
+            R.drawable.black_lion,
+            "OK")
+        MehenSingleton.alertNewGame = MehenGameSelectionDialogFragment(false)
+        MehenSingleton.alertRobotGame = MehenGameSelectionDialogFragment(true)
+
         MehenSingleton.magicEffect = MehenSingleton.soundEngine.load(this, R.raw.magic, 1)
         MehenSingleton.turnEffect = MehenSingleton.soundEngine.load(this, R.raw.turn, 1)
         MehenSingleton.startgameEffect = MehenSingleton.soundEngine.load(this, R.raw.startgame, 1)
@@ -45,11 +60,11 @@ class MainActivity() : AppCompatActivity(), MehenDelegate {
 //        MehenSingleton.startgameEffect = MehenSingleton.soundEngine.load(this, R.raw.startgame, 1)
 //        MehenSingleton.dicerollEffect = MehenSingleton.soundEngine.load(this, R.raw.diceroll, 1)
 
-        mehenView = findViewById<MehenView>(R.id.mehen_view)
+        MehenSingleton.mehenView = findViewById<MehenView>(R.id.mehen_view)
 //        resetButton = findViewById<Button>(R.id.reset_button)
 //        listenButton = findViewById<Button>(R.id.listen_button)
 //        connectButton = findViewById<Button>(R.id.connect_button)
-        mehenView.mehenDelegate = this
+        MehenSingleton.mehenView.mehenDelegate = this
 
 //        resetButton.setOnClickListener {
 //            MehenGame.reset()
@@ -97,22 +112,8 @@ class MainActivity() : AppCompatActivity(), MehenDelegate {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
-            R.id.opposite -> {
-                MehenSingleton.game = true
-                MehenSingleton.robot = false
-                MehenSingleton.canRobotMove = false
-                MehenGame.reset()
-                mehenView.invalidate()
-                serverSocket?.close()
-//                listenButton.isEnabled = true
-            }
-            R.id.robot -> {
-                MehenSingleton.game = true
-                MehenSingleton.robot = true
-                MehenSingleton.canRobotMove = false
-                MehenGame.reset()
-                mehenView.invalidate()
-                serverSocket?.close()
+            R.id.new_game -> {
+                MehenSingleton.alertNewGame.show(MehenSingleton.manager, "newGame")
             }
         }
         return true
@@ -125,7 +126,7 @@ class MainActivity() : AppCompatActivity(), MehenDelegate {
             val move = scanner.nextLine().split(",").map { it.toInt() }
             runOnUiThread {
                 MehenGame.movePiece(Square(move[0], move[1]), Square(move[2], move[3]))
-                mehenView.invalidate()
+                MehenSingleton.mehenView.invalidate()
             }
         }
     }
@@ -134,7 +135,7 @@ class MainActivity() : AppCompatActivity(), MehenDelegate {
 
     override fun movePiece(from: Square, to: Square) {
         MehenGame.movePiece(from, to)
-        mehenView.invalidate()
+        MehenSingleton.mehenView.invalidate()
 
         printWriter?.let {
             val moveStr = "${from.col},${from.row},${to.col},${to.row}"
@@ -146,5 +147,9 @@ class MainActivity() : AppCompatActivity(), MehenDelegate {
 
     override fun findPossibleDots(position: Int, player: Player, mehenman: Mehenman) {
         MehenGame.findPossibleDots(position, player, mehenman)
+    }
+
+    override fun isFinish(player: Player): Int{
+        return MehenGame.isFinish(player)
     }
 }

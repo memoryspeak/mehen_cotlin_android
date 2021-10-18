@@ -8,7 +8,7 @@
     <item>
 
         <bitmap
-            android:src="@drawable/lion"
+            android:src="@drawable/logo"
             android:gravity="center"/>
 
     </item>
