@@ -343,6 +343,8 @@ object MehenGame{
                 priorityForRivalPieces.add(0)
             }
         }
+        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        println("selfPieceSet = $selfPieceSet")
 
         when (MehenSingleton.robotIQ){
             0 -> {
@@ -364,12 +366,20 @@ object MehenGame{
                 val randomPossibleDot = MehenSingleton.possibleDots[Random.nextInt(MehenSingleton.possibleDots.size)]
                 colToSquare = randomPossibleDot.col
                 rowToSquare  = 9 - randomPossibleDot.row
-        }
+            }
             1 -> {
+                //!!!!!!!!!!!!!!!!!!!!
+                println("memory = ${MehenSingleton.memoryBlack}")
+                println("diceRoll = ${MehenSingleton.blackValueDiceRoll}")
                 selfPieceSet.forEachIndexed { index, item ->
                     MehenSingleton.possibleDots.clear()
                     MehenSingleton.bindingSquare[listOf<Int>(9 - item.row, item.col)]?.let { it ->
                         findPossibleDots(it, item.player, item.mehenman)
+                        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        println("indexOfPieceSet = $index")
+                        println("iterariton piece = $item")
+                        println("possibleDots = ${MehenSingleton.possibleDots}")
+                        println("number of square = $it")
                         //если игрок расположен на 22, 28,  клетке +1
                         if (it == 22){ priorityForSelfPieces[index] += 1 }
                         if (it == 28){ priorityForSelfPieces[index] += 1 }
@@ -379,11 +389,14 @@ object MehenGame{
                     if (MehenSingleton.possibleDots.size != 0){
                         priorityForSelfPieces[index] += 1
                         for (dot in MehenSingleton.possibleDots){
+                            println("if (dot.dotColor == basicDotColor) = ${dot.dotColor == basicDotColor}")
                             //если есть зеленые possibleDots - прибавляем приоритет
                             if (dot.dotColor == basicDotColor){
                                 priorityForSelfPieces[index] += 1
                             }
-                            MehenSingleton.bindingSquare[listOf<Int>(9 - dot.row, dot.col)]?.let { it ->
+                            MehenSingleton.bindingSquare[listOf<Int>(dot.row, dot.col)]?.let { it ->
+                                println("если возможный ход попадает в список зеленых клеток - прибавляем приоритет = ${it in listOfGreenDotColor}")
+                                println(it)
                                 //если возможный ход попадает в список зеленых клеток - прибавляем приоритет
                                 if (it in listOfGreenDotColor){
                                     priorityForSelfPieces[index] += 1
@@ -412,10 +425,13 @@ object MehenGame{
                     }
                     MehenSingleton.possibleDots.clear()
                 }
+                //!!!!!!!!!!!!!!!!!!!!!!!!
+                println("priorityForSelfPieces = $priorityForSelfPieces")
                 val maxPriorityValue: Int = priorityForSelfPieces.maxOrNull() ?: 0
                 val maxPriorityElement = selfPieceSet[priorityForSelfPieces.indexOf(maxPriorityValue)]
                 colFromSquare = maxPriorityElement.col
                 rowFromSquare = maxPriorityElement.row
+                println("maxPriorityElement = $colFromSquare, $rowFromSquare")
                 MehenSingleton.selectedFigure.clear()
                 MehenSingleton.selectedFigure.add(colFromSquare)
                 MehenSingleton.selectedFigure.add(rowFromSquare)
@@ -447,6 +463,7 @@ object MehenGame{
                 val maxPriorityPossibleDot = MehenSingleton.possibleDots[listOfPriorityDots.indexOf(maxPriorityPossibleValue)]
                 colToSquare = maxPriorityPossibleDot.col
                 rowToSquare  = 9 - maxPriorityPossibleDot.row
+                println("maxPriorityPossibleDot = $colToSquare, $rowToSquare")
             }
             2 ->{}
         }

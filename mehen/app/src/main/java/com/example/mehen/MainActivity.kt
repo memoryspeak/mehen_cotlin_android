@@ -32,6 +32,8 @@ class MainActivity() : AppCompatActivity(), MehenDelegate {
     private val isEmulator = Build.FINGERPRINT.contains("generic")
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        //MehenSingleton.db = DataBaseHandler(this)
+
         MehenSingleton.manager = supportFragmentManager
         MehenSingleton.alertWhiteWon = MehenDialogFragment(
             "White won!",

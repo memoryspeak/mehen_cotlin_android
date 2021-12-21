@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "689568431565",
+    "project_id": "mehen-f7c26",
+    "storage_bucket": "mehen-f7c26.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:689568431565:android:84edba3f8bd982389f9884",
+        "android_client_info": {
+          "package_name": "com.example.mehen"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "689568431565-45a69bm6rbst3ch1vupolg5vtvjh9493.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAS74MaW8QPmHnGzINfAxTYvaSaOixF8nM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "689568431565-45a69bm6rbst3ch1vupolg5vtvjh9493.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

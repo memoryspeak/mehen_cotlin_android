@@ -228,8 +228,10 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
                                 return false
                             }
                             if (MehenSingleton.blackValueDiceRoll == 0) {
-                                MehenSingleton.memoryBlack +=1
-                                if (MehenSingleton.soundEffect){ MehenSingleton.soundEngine.play(MehenSingleton.magicEffect, 1f, 1f, 1, 0, 1f) }
+                                if (MehenSingleton.memoryBlack < MehenSingleton.memoryLimit){
+                                    MehenSingleton.memoryBlack +=1
+                                    if (MehenSingleton.soundEffect){ MehenSingleton.soundEngine.play(MehenSingleton.magicEffect, 1f, 1f, 1, 0, 1f) }
+                                }
                             } else {
                                 MehenSingleton.canBlackMove = true
                                 MehenSingleton.canWhiteMove = false
@@ -248,8 +250,10 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
                                 return false
                             }
                             if (MehenSingleton.whiteValueDiceRoll == 0) {
-                                MehenSingleton.memoryWhite += 1
-                                if (MehenSingleton.soundEffect){ MehenSingleton.soundEngine.play(MehenSingleton.magicEffect, 1f, 1f, 1, 0, 1f) }
+                                if (MehenSingleton.memoryWhite < MehenSingleton.memoryLimit){
+                                    MehenSingleton.memoryWhite += 1
+                                    if (MehenSingleton.soundEffect){ MehenSingleton.soundEngine.play(MehenSingleton.magicEffect, 1f, 1f, 1, 0, 1f) }
+                                }
                             } else {
                                 MehenSingleton.canWhiteMove = true
                                 MehenSingleton.canBlackMove = false

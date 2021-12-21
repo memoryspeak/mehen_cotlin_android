@@ -5,6 +5,10 @@ import java.net.ServerSocket
 import kotlin.properties.Delegates
 
 object MehenSingleton {
+    const val memoryLimit: Int = 6
+
+    //lateinit var db: DataBaseHandler
+
     lateinit var alertNewGame: MehenGameSelectionDialogFragment
     lateinit var alertRobotGame: MehenGameSelectionDialogFragment
     var selectedItemOfNewGame: Int = 0
