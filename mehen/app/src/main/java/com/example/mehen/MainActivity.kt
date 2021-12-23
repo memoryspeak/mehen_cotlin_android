@@ -1,5 +1,7 @@
 package com.example.mehen
 
+import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -20,7 +22,7 @@ import java.util.concurrent.Executors
 private const val TAG = "MainActivity"
 
 class MainActivity() : AppCompatActivity(), MehenDelegate {
-    private val socketHost = "127.0.0.1"
+    private val socketHost = "192.168.10.5"
     private val socketPort: Int = 50000
     private val socketGuestPort: Int = 50001 // used for socket server on emulator
 //    private lateinit var mehenView: MehenView
@@ -33,6 +35,9 @@ class MainActivity() : AppCompatActivity(), MehenDelegate {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         //MehenSingleton.db = DataBaseHandler(this)
+        //MehenSingleton.intent = Intent(this@MainActivity, FirebaseUIActivity::class.java)
+
+
 
         MehenSingleton.manager = supportFragmentManager
         MehenSingleton.alertWhiteWon = MehenDialogFragment(
@@ -56,6 +61,7 @@ class MainActivity() : AppCompatActivity(), MehenDelegate {
         setTheme(R.style.Theme_Mehen)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
 
 //        MehenSingleton.magicEffect = MehenSingleton.soundEngine.load(this, R.raw.magic, 1)
 //        MehenSingleton.turnEffect = MehenSingleton.soundEngine.load(this, R.raw.turn, 1)
@@ -115,6 +121,7 @@ class MainActivity() : AppCompatActivity(), MehenDelegate {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.new_game -> {
+                MehenSingleton.selectedItemOfNewGame = 0
                 MehenSingleton.alertNewGame.show(MehenSingleton.manager, "newGame")
             }
         }

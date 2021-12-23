@@ -12,7 +12,7 @@ import com.google.firebase.auth.ActionCodeSettings
 import com.google.firebase.auth.FirebaseAuth
 //import com.google.firebase.quickstart.auth.R
 
-abstract class FirebaseUIActivity : AppCompatActivity () {
+class FirebaseUIActivity : AppCompatActivity () {
     // [START auth_fui_create_launcher]
     // See: https://developer.android.com/training/basics/intents/result
     private val signInLauncher = registerForActivityResult(
@@ -23,8 +23,9 @@ abstract class FirebaseUIActivity : AppCompatActivity () {
     // [END auth_fui_create_launcher]
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.Theme_Mehen)
         super.onCreate(savedInstanceState)
-        //setContentView(R.layout.activity_firebase_ui)
+        setContentView(R.layout.activity_firebase_ui)
     }
 
     private fun createSignInIntent() {

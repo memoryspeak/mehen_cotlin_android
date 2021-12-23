@@ -1,11 +1,14 @@
 package com.example.mehen
 
+import android.content.Intent
 import androidx.fragment.app.FragmentManager
 import java.net.ServerSocket
 import kotlin.properties.Delegates
 
 object MehenSingleton {
-    const val memoryLimit: Int = 6
+    //lateinit var intent: FirebaseUIActivity
+
+    const val memoryLimit: Int = 100
 
     //lateinit var db: DataBaseHandler
 

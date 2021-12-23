@@ -1,9 +1,14 @@
 package com.example.mehen
 
 import android.app.Dialog
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
+import java.io.PrintWriter
+import java.net.Socket
+import java.util.*
+import java.util.concurrent.Executors
 
 class MehenGameSelectionDialogFragment(private val robotValue: Boolean): DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -47,6 +52,25 @@ class MehenGameSelectionDialogFragment(private val robotValue: Boolean): DialogF
                         }
                         1 -> {
                             dialog.cancel()
+//                            Executors.newSingleThreadExecutor().execute {
+//                                println("socketConnection...")
+//                                val socket = Socket("192.168.10.5", 80)
+//                                println("...socketConnection")
+//                                val scanner = Scanner(socket.getInputStream())
+//                                println(scanner)
+//                                println(scanner.hasNextLine())
+//                                val printWriter = PrintWriter(socket.getOutputStream())
+//                                println(printWriter.hashCode())
+//                                while (scanner.hasNextLine()) {
+//                                    println(scanner.hasNextLine())
+//                                }
+//
+//                            }
+                            println("Connection...")
+
+                            val randomIntent = Intent(requireContext(), FirebaseUIActivity::class.java)
+                            startActivity(randomIntent)
+
                         }
                         2 -> {
                             dialog.cancel()
