@@ -1,6 +1,12 @@
 package com.example.mehen
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.text.TextUtils
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.AuthUI.IdpConfig
@@ -8,11 +14,82 @@ import com.firebase.ui.auth.AuthUI.IdpConfig.EmailBuilder
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.firebase.ui.auth.util.ExtraConstants
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.ActionCodeSettings
+import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.auth.ktx.userProfileChangeRequest
+import com.google.firebase.ktx.Firebase
+
 //import com.google.firebase.quickstart.auth.R
 
-class FirebaseUIActivity : AppCompatActivity () {
+class RegisterActivity : AppCompatActivity (){
+    override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.Theme_Mehen)
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_register)
+
+        val activityRegisterEditLoginEditText = findViewById<EditText>(R.id.activity_register_edit_login)
+        val activityRegisterEditMailEditText = findViewById<EditText>(R.id.activity_register_edit_mail)
+        val activityRegisterEditPasswordEditText = findViewById<EditText>(R.id.activity_register_edit_password)
+        val activityRegisterSignInButton = findViewById<Button>(R.id.activity_register_sign_in)
+
+        activityRegisterSignInButton.setOnClickListener {
+            val loginToText = activityRegisterEditLoginEditText.text.toString().trim { it <= ' ' }
+            val mailToText = activityRegisterEditMailEditText.text.toString().trim { it <= ' ' }
+            val passwordToText = activityRegisterEditPasswordEditText.text.toString().trim { it <= ' ' }
+            if (TextUtils.isEmpty(loginToText) || TextUtils.isEmpty(mailToText) || TextUtils.isEmpty(passwordToText)){
+                Toast.makeText(
+                    this,
+                    "Please enter your details",
+                    Toast.LENGTH_LONG
+                ).show()
+            } else {
+                FirebaseAuth
+                    .getInstance()
+                    .createUserWithEmailAndPassword(mailToText, passwordToText)
+                    .addOnCompleteListener(
+                        OnCompleteListener <AuthResult> { task ->
+                            if (task.isSuccessful){
+                                val fireBaseUser: FirebaseUser = task.result!!.user!!
+                                val profileUpdates = userProfileChangeRequest { displayName = "$loginToText" }
+
+                                fireBaseUser!!.updateProfile(profileUpdates)
+                                    .addOnCompleteListener { task ->
+                                        if (task.isSuccessful) {
+                                            /*отправить письмо по эл.почте!!!!!*/
+
+                                            Toast.makeText(
+                                                this,
+                                                "Registration completed successfully!",
+                                                Toast.LENGTH_LONG).show()
+                                        } else {
+                                            Toast.makeText(
+                                                this,
+                                                task.exception!!.message.toString(),
+                                                Toast.LENGTH_LONG).show()
+                                        }
+                                    }
+                                val intent = Intent(this,MainActivity::class.java)
+                                startActivity(intent)
+                                finish()
+                            } else {
+                                Toast.makeText(
+                                    this,
+                                    task.exception!!.message.toString(),
+                                    Toast.LENGTH_LONG).show()
+                            }
+                        }
+                    )
+            }
+        }
+
+    }
+}
+
+/*class RegisterActivity : AppCompatActivity () {
     // [START auth_fui_create_launcher]
     // See: https://developer.android.com/training/basics/intents/result
     private val signInLauncher = registerForActivityResult(
@@ -25,7 +102,7 @@ class FirebaseUIActivity : AppCompatActivity () {
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_Mehen)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_firebase_ui)
+        setContentView(R.layout.activity_register)
     }
 
     private fun createSignInIntent() {
@@ -91,7 +168,7 @@ class FirebaseUIActivity : AppCompatActivity () {
         val signInIntent = AuthUI.getInstance()
             .createSignInIntentBuilder()
             .setAvailableProviders(providers)
-            .setLogo(R.drawable.logo) // Set logo drawable
+            //.setLogo(R.drawable.logo) // Set logo drawable
             //.setTheme(R.style.MySuperAppTheme) // Set theme
             .build()
         signInLauncher.launch(signInIntent)
@@ -155,4 +232,4 @@ class FirebaseUIActivity : AppCompatActivity () {
         }
         // [END auth_fui_email_link_catch]
     }
-}
+}*/

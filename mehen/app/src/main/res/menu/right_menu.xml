@@ -6,5 +6,9 @@
         android:title="@string/new_game"
         android:id="@+id/new_game"
         app:showAsAction="never"/>
+    <item
+        android:title="@string/account"
+        android:id="@+id/account"
+        app:showAsAction="never"/>
 
 </menu>

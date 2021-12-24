@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context=".LoginActivity">
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/lion"
+        android:layout_marginVertical="15dp"/>
+    <EditText
+        android:id="@+id/activity_login_edit_login"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="15dp"
+        android:inputType="textPersonName"
+        android:hint="@string/login" />
+    <EditText
+        android:id="@+id/activity_login_edit_pass"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="15dp"
+        android:inputType="textPassword"
+        android:hint="@string/password" />
+    <Button
+        android:id="@+id/activity_login_sign_in"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="15dp"
+        android:text="@string/login" />
+    <LinearLayout
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginVertical="15dp">
+        <TextView
+            android:id="@+id/activity_login_register_link"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:text="@string/registration"
+            android:textStyle="bold"
+            android:gravity="start"
+            android:clickable="true"
+            android:focusable="true" />
+        <TextView
+            android:id="@+id/activity_login_password_reset_link"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:text="@string/password_reset"
+            android:textStyle="bold"
+            android:gravity="end"
+            android:clickable="true"
+            android:focusable="true"/>
+    </LinearLayout>
+</LinearLayout>

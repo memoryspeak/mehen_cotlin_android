@@ -6,4 +6,11 @@
     <string name="opposite">Opposite Each Over</string>
     <string name="robot">With Robot</string>
     <string name="network">Network Play</string>
+    <string name="sign_in">Sign In</string>
+    <string name="registration">Registration</string>
+    <string name="login">Login</string>
+    <string name="e_mail">E-mail</string>
+    <string name="password">Password</string>
+    <string name="password_reset">Password reset</string>
+    <string name="account">Account</string>
 </resources>

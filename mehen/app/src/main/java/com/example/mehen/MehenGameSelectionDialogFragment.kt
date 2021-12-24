@@ -68,8 +68,8 @@ class MehenGameSelectionDialogFragment(private val robotValue: Boolean): DialogF
 //                            }
                             println("Connection...")
 
-                            val randomIntent = Intent(requireContext(), FirebaseUIActivity::class.java)
-                            startActivity(randomIntent)
+                            //val randomIntent = Intent(requireContext(), FirebaseUIActivity::class.java)
+                            //startActivity(randomIntent)
 
                         }
                         2 -> {

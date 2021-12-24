@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context=".RegisterActivity">
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/lion"
+        android:layout_marginVertical="15dp"/>
+    <EditText
+        android:id="@+id/activity_register_edit_login"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="15dp"
+        android:inputType="textPersonName"
+        android:hint="@string/login" />
+    <EditText
+        android:id="@+id/activity_register_edit_mail"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="15dp"
+        android:inputType="textEmailAddress"
+        android:hint="@string/e_mail" />
+    <EditText
+        android:id="@+id/activity_register_edit_password"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="15dp"
+        android:inputType="textPassword"
+        android:hint="@string/password" />
+    <TextView
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="15dp"
+        android:text="By registering, you agree to be bound by our Terms of Service"/>
+    <Button
+        android:id="@+id/activity_register_sign_in"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="15dp"
+        android:text="@string/registration" />
+</LinearLayout>

@@ -10,7 +10,12 @@ import android.view.MenuItem
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.FragmentManager
+import com.firebase.ui.auth.AuthUI
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.auth.ktx.oAuthCredential
+import com.google.firebase.ktx.Firebase
 import java.io.PrintWriter
 import java.net.ConnectException
 import java.net.ServerSocket
@@ -22,22 +27,12 @@ import java.util.concurrent.Executors
 private const val TAG = "MainActivity"
 
 class MainActivity() : AppCompatActivity(), MehenDelegate {
-    private val socketHost = "192.168.10.5"
-    private val socketPort: Int = 50000
-    private val socketGuestPort: Int = 50001 // used for socket server on emulator
-//    private lateinit var mehenView: MehenView
-//    private lateinit var resetButton: Button
-//    private lateinit var listenButton: Button
-//    private lateinit var connectButton: Button
-    private var printWriter: PrintWriter? = null
-//    private var serverSocket: ServerSocket? = null
-    private val isEmulator = Build.FINGERPRINT.contains("generic")
+    //private var printWriter: PrintWriter? = null
+    //private val isEmulator = Build.FINGERPRINT.contains("generic")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         //MehenSingleton.db = DataBaseHandler(this)
         //MehenSingleton.intent = Intent(this@MainActivity, FirebaseUIActivity::class.java)
-
-
 
         MehenSingleton.manager = supportFragmentManager
         MehenSingleton.alertWhiteWon = MehenDialogFragment(
@@ -58,59 +53,32 @@ class MainActivity() : AppCompatActivity(), MehenDelegate {
         MehenSingleton.startgameEffect = MehenSingleton.soundEngine.load(this, R.raw.startgame, 1)
         MehenSingleton.dicerollEffect = MehenSingleton.soundEngine.load(this, R.raw.diceroll, 1)
 
+        val user = Firebase.auth.currentUser
+        user?.let {
+            val login = it.displayName
+            val email = it.email
+            val emailVerified = it.isEmailVerified
+            println(login)
+            println(email)
+            println(emailVerified)
+        }
+        /*val login = user.displayName
+        val email = user.email
+        val emailVerified = user.isEmailVerified
+        println(login)
+        println(email)
+        println(emailVerified)
+        AuthUI.getInstance().signOut(this)
+        println(login)
+        println(email)
+        println(emailVerified)*/
+
         setTheme(R.style.Theme_Mehen)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-
-//        MehenSingleton.magicEffect = MehenSingleton.soundEngine.load(this, R.raw.magic, 1)
-//        MehenSingleton.turnEffect = MehenSingleton.soundEngine.load(this, R.raw.turn, 1)
-//        MehenSingleton.startgameEffect = MehenSingleton.soundEngine.load(this, R.raw.startgame, 1)
-//        MehenSingleton.dicerollEffect = MehenSingleton.soundEngine.load(this, R.raw.diceroll, 1)
-
         MehenSingleton.mehenView = findViewById<MehenView>(R.id.mehen_view)
-//        resetButton = findViewById<Button>(R.id.reset_button)
-//        listenButton = findViewById<Button>(R.id.listen_button)
-//        connectButton = findViewById<Button>(R.id.connect_button)
         MehenSingleton.mehenView.mehenDelegate = this
-
-//        resetButton.setOnClickListener {
-//            MehenGame.reset()
-//            mehenView.invalidate()
-//            serverSocket?.close()
-//            listenButton.isEnabled = true
-//        }
-
-//        listenButton.setOnClickListener {
-//            listenButton.isEnabled = false
-//            val port = if (isEmulator) socketGuestPort else socketPort
-//            Toast.makeText(this, "listening on $port", Toast.LENGTH_SHORT).show()
-//            Executors.newSingleThreadExecutor().execute {
-//                ServerSocket(port).let { srvSkt ->
-//                    serverSocket = srvSkt
-//                    try {
-//                        val socket = srvSkt.accept()
-//                        receiveMove(socket)
-//                    } catch (e: SocketException) {
-//                        // ignored, socket closed
-//                    }
-//                }
-//            }
-//        }
-//
-//        connectButton.setOnClickListener {
-//            Log.d(TAG, "socket client connecting ...")
-//            Executors.newSingleThreadExecutor().execute {
-//                try {
-//                    val socket = Socket(socketHost, socketPort)
-//                    receiveMove(socket)
-//                } catch (e: ConnectException) {
-//                    runOnUiThread {
-//                        Toast.makeText(this, "connection failed", Toast.LENGTH_SHORT).show()
-//                    }
-//                }
-//            }
-//        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -124,11 +92,18 @@ class MainActivity() : AppCompatActivity(), MehenDelegate {
                 MehenSingleton.selectedItemOfNewGame = 0
                 MehenSingleton.alertNewGame.show(MehenSingleton.manager, "newGame")
             }
+            R.id.account -> {
+                val register = Intent(this, RegisterActivity::class.java)
+                startActivity(register)
+                /*val login = Intent(this, LoginActivity::class.java)
+                startActivity(login)*/
+
+            }
         }
         return true
     }
 
-    private fun receiveMove(socket: Socket) {
+    /*private fun receiveMove(socket: Socket) {
         val scanner = Scanner(socket.getInputStream())
         printWriter = PrintWriter(socket.getOutputStream(), true)
         while (scanner.hasNextLine()) {
@@ -138,7 +113,7 @@ class MainActivity() : AppCompatActivity(), MehenDelegate {
                 MehenSingleton.mehenView.invalidate()
             }
         }
-    }
+    }*/
 
     override fun pieceAt(square: Square): MehenPiece? = MehenGame.pieceAt(square)
 
@@ -146,12 +121,12 @@ class MainActivity() : AppCompatActivity(), MehenDelegate {
         MehenGame.movePiece(from, to)
         MehenSingleton.mehenView.invalidate()
 
-        printWriter?.let {
+        /*printWriter?.let {
             val moveStr = "${from.col},${from.row},${to.col},${to.row}"
             Executors.newSingleThreadExecutor().execute {
                 it.println(moveStr)
             }
-        }
+        }*/
     }
 
     override fun findPossibleDots(position: Int, player: Player, mehenman: Mehenman) {
