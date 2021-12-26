@@ -1,12 +1,19 @@
 package com.example.mehen
 
+import android.content.Context
 import android.content.Intent
 import androidx.fragment.app.FragmentManager
 import java.net.ServerSocket
 import kotlin.properties.Delegates
 
 object MehenSingleton {
-    //lateinit var intent: FirebaseUIActivity
+    lateinit var activityMainIntent: Intent
+    lateinit var activityLoginIntent: Intent
+    lateinit var activityRegisterIntent: Intent
+
+    var login: String? = ""
+    var email: String? = ""
+    var emailVerified: Boolean? = false
 
     const val memoryLimit: Int = 100
 
@@ -27,6 +34,7 @@ object MehenSingleton {
     lateinit var manager: FragmentManager
     lateinit var alertWhiteWon: MehenDialogFragment
     lateinit var alertBlackWon: MehenDialogFragment
+    lateinit var alertEmailSend: MehenDialogFragment
 
     var soundEffect: Boolean = true
     val soundEngine = SoundEngine()

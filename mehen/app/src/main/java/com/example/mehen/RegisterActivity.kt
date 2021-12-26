@@ -56,15 +56,16 @@ class RegisterActivity : AppCompatActivity (){
                                 val fireBaseUser: FirebaseUser = task.result!!.user!!
                                 val profileUpdates = userProfileChangeRequest { displayName = "$loginToText" }
 
-                                fireBaseUser!!.updateProfile(profileUpdates)
+                                fireBaseUser.updateProfile(profileUpdates)
                                     .addOnCompleteListener { task ->
                                         if (task.isSuccessful) {
                                             /*отправить письмо по эл.почте!!!!!*/
-
-                                            Toast.makeText(
-                                                this,
-                                                "Registration completed successfully!",
-                                                Toast.LENGTH_LONG).show()
+                                            fireBaseUser.sendEmailVerification()
+                                                .addOnCompleteListener { task ->
+                                                    if (task.isSuccessful) {
+                                                        MehenSingleton.alertEmailSend.show(MehenSingleton.manager, "mailSend")
+                                                    }
+                                                }
                                         } else {
                                             Toast.makeText(
                                                 this,
@@ -72,9 +73,8 @@ class RegisterActivity : AppCompatActivity (){
                                                 Toast.LENGTH_LONG).show()
                                         }
                                     }
-                                val intent = Intent(this,MainActivity::class.java)
-                                startActivity(intent)
-                                finish()
+                                startActivity(MehenSingleton.activityLoginIntent)
+                                //finish()
                             } else {
                                 Toast.makeText(
                                     this,

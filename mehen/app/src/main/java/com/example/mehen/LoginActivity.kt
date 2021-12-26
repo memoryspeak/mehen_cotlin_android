@@ -1,6 +1,12 @@
 package com.example.mehen
 
+import android.content.Intent
 import android.os.Bundle
+import android.text.TextUtils
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.AuthUI.IdpConfig
@@ -10,9 +16,63 @@ import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.firebase.ui.auth.util.ExtraConstants
 import com.google.firebase.auth.ActionCodeSettings
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+
 //import com.google.firebase.quickstart.auth.R
 
 class LoginActivity : AppCompatActivity () {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.Theme_Mehen)
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_login)
+
+        val activityLoginEditMailEditText = findViewById<EditText>(R.id.activity_login_edit_mail)
+        val activityLoginEditPasswordEditText = findViewById<EditText>(R.id.activity_login_edit_pass)
+        val activityLoginSignInButton = findViewById<Button>(R.id.activity_login_sign_in)
+
+        val activityLoginRegisterLink = findViewById<TextView>(R.id.activity_login_register_link)
+
+        val auth: FirebaseAuth = Firebase.auth
+
+        activityLoginSignInButton.setOnClickListener{
+            //AuthUI.getInstance().signOut(this)
+            val mailToText = activityLoginEditMailEditText.text.toString().trim { it <= ' ' }
+            val passwordToText = activityLoginEditPasswordEditText.text.toString().trim { it <= ' ' }
+            if (TextUtils.isEmpty(mailToText) || TextUtils.isEmpty(passwordToText)){
+                Toast.makeText(
+                    this,
+                    "Please enter your details",
+                    Toast.LENGTH_LONG
+                ).show()
+            } else {
+                auth.signInWithEmailAndPassword(mailToText, passwordToText)
+                    .addOnCompleteListener(this) { task ->
+                        if (task.isSuccessful) {
+                            val fireBaseUser: String? = task.result!!.user!!.displayName
+                            Toast.makeText(
+                                this,
+                                "User '$fireBaseUser' logged in successfully!",
+                                Toast.LENGTH_LONG).show()
+                            startActivity(MehenSingleton.activityMainIntent)
+                        } else {
+                            Toast.makeText(
+                                this,
+                                task.exception!!.message.toString(),
+                                Toast.LENGTH_LONG).show()
+                        }
+                    }
+            }
+        }
+        activityLoginRegisterLink.setOnClickListener {
+            startActivity(MehenSingleton.activityRegisterIntent)
+        }
+    }
+}
+
+
+/*class LoginActivity : AppCompatActivity () {
     // [START auth_fui_create_launcher]
     // See: https://developer.android.com/training/basics/intents/result
     private val signInLauncher = registerForActivityResult(
@@ -155,4 +215,4 @@ class LoginActivity : AppCompatActivity () {
         }
         // [END auth_fui_email_link_catch]
     }
-}
+}*/
