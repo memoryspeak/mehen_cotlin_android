@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/random_game"
+        android:title="@string/random_game"
+        android:icon="@drawable/ic_baseline_shuffle_24"/>
+    <item
+        android:id="@+id/remove_game"
+        android:title="@string/remove_game"
+        android:icon="@drawable/ic_baseline_person_add_disabled_24"/>
+    <item
+        android:id="@+id/add_game"
+        android:title="@string/add_game"
+        android:icon="@drawable/ic_baseline_person_add_24"/>
+</menu>

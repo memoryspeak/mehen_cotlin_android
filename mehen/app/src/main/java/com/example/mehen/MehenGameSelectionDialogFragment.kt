@@ -66,12 +66,14 @@ class MehenGameSelectionDialogFragment(private val robotValue: Boolean): DialogF
 //                                }
 //
 //                            }
-                            println("Connection...")
-                            val obj = MehenFirebaseDataBaseGameObject(
+                            val randomIntent = Intent(requireContext(), NetworkActivity::class.java)
+                            startActivity(randomIntent)
+                            /*val obj = MehenFirebaseDataBaseGameObject(
                                 MehenSingleton.login,
                                 Date(System.currentTimeMillis()),
-                                "myFirstDBConect")
-                            MehenFirebaseDataBaseGames.addElement(obj,{e -> println(e)})
+                                "",
+                                "")
+                            MehenSingleton.userID?.let { it1 -> MehenFirebaseDataBaseGames.addElement(obj, it1) }*/
 
                             //val randomIntent = Intent(requireContext(), FirebaseUIActivity::class.java)
                             //startActivity(randomIntent)

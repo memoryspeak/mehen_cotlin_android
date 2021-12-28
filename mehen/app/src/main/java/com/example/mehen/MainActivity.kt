@@ -26,7 +26,7 @@ import java.net.SocketException
 import java.util.*
 import java.util.concurrent.Executors
 
-private const val TAG = "MainActivity"
+//private const val TAG = "MainActivity"
 
 class MainActivity() : AppCompatActivity(), MehenDelegate {
     //private var printWriter: PrintWriter? = null
@@ -72,10 +72,12 @@ class MainActivity() : AppCompatActivity(), MehenDelegate {
             MehenSingleton.login = currentUser.displayName
             MehenSingleton.email = currentUser.email
             MehenSingleton.emailVerified = currentUser.isEmailVerified
+            MehenSingleton.userID = currentUser.uid
 
             println(MehenSingleton.login)
             println(MehenSingleton.email)
             println(MehenSingleton.emailVerified)
+            println(MehenSingleton.userID)
 
             if (MehenSingleton.emailVerified == true){
                 if (MehenSingleton.login == null){
@@ -94,6 +96,7 @@ class MainActivity() : AppCompatActivity(), MehenDelegate {
             MehenSingleton.login = ""
             MehenSingleton.email = ""
             MehenSingleton.emailVerified = false
+            MehenSingleton.userID = ""
         }
 
 

@@ -21,18 +21,16 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <!--новая активити регистрации пользователей-->
-        <!--<activity android:name=".FirebaseUIActivity" />-->
+        </activity> <!-- новая активити регистрации пользователей -->
         <activity
             android:name=".RegisterActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".LoginActivity"
-            android:screenOrientation="portrait"/>
-
-
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".NetworkActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>
