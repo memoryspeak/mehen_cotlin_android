@@ -12,18 +12,17 @@ object MehenFirebaseDataBaseGames {
         db
     }
 
-    fun removeList (mehenGameID: String) {
+    fun removeList (mehenGameID: String, function: () -> Unit) {
         val reference = fireBase.getReference("games/$mehenGameID")
         //reference.removeValue({databaseError, databaseReference -> function() })
-        reference.removeValue()
-
+        reference.removeValue { _, _ -> function() }
     }
 
-    fun addElement (mehenObject: MehenFirebaseDataBaseGameObject, mehenGameID: String) {
+    fun addElement (mehenObject: MehenFirebaseDataBaseGameObject, mehenGameID: String, callError: (String) -> Unit) {
         val reference = fireBase.getReference("games/$mehenGameID")
         reference.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(error: DatabaseError) {
-                println(error)
+                callError(error.toString())
             }
 
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -31,15 +30,15 @@ object MehenFirebaseDataBaseGames {
             }
         })
     }
-    fun showElements () {
+    fun showElements (call: (DataSnapshot) -> Unit, callError: (String) -> Unit) {
         val reference = fireBase.getReference("games")
         reference.addValueEventListener(object : ValueEventListener{
             override fun onCancelled(error: DatabaseError) {
-                println(error)
+                callError(error.toString())
             }
 
             override fun onDataChange(snapshot: DataSnapshot) {
-                println(snapshot)
+                call(snapshot)
             }
         })
     }
