@@ -10,6 +10,7 @@ object MehenSingleton {
     lateinit var activityMainIntent: Intent
     lateinit var activityLoginIntent: Intent
     lateinit var activityRegisterIntent: Intent
+    lateinit var activityNetworkIntent: Intent
 
     var login: String? = ""
     var email: String? = ""

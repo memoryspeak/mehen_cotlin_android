@@ -52,6 +52,7 @@ class MehenGameSelectionDialogFragment(private val robotValue: Boolean): DialogF
                         }
                         1 -> {
                             dialog.cancel()
+                            startActivity(MehenSingleton.activityNetworkIntent)
 //                            Executors.newSingleThreadExecutor().execute {
 //                                println("socketConnection...")
 //                                val socket = Socket("192.168.10.5", 80)
@@ -66,8 +67,8 @@ class MehenGameSelectionDialogFragment(private val robotValue: Boolean): DialogF
 //                                }
 //
 //                            }
-                            val randomIntent = Intent(requireContext(), NetworkActivity::class.java)
-                            startActivity(randomIntent)
+                            //val randomIntent = Intent(requireContext(), NetworkActivity::class.java)
+                            //startActivity(MehenSingleton.activityNetworkIntent)
                             /*val obj = MehenFirebaseDataBaseGameObject(
                                 MehenSingleton.login,
                                 Date(System.currentTimeMillis()),

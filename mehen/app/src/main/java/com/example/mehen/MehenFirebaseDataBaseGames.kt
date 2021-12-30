@@ -31,4 +31,16 @@ object MehenFirebaseDataBaseGames {
             }
         })
     }
+    fun showElements () {
+        val reference = fireBase.getReference("games")
+        reference.addValueEventListener(object : ValueEventListener{
+            override fun onCancelled(error: DatabaseError) {
+                println(error)
+            }
+
+            override fun onDataChange(snapshot: DataSnapshot) {
+                println(snapshot)
+            }
+        })
+    }
 }

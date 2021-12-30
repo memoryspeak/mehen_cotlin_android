@@ -39,6 +39,7 @@ class MainActivity() : AppCompatActivity(), MehenDelegate {
         MehenSingleton.activityMainIntent = Intent(this,MainActivity::class.java)
         MehenSingleton.activityLoginIntent = Intent(this, LoginActivity::class.java)
         MehenSingleton.activityRegisterIntent = Intent(this, RegisterActivity::class.java)
+        MehenSingleton.activityNetworkIntent = Intent(this, NetworkActivity::class.java)
 
         MehenSingleton.manager = supportFragmentManager
         MehenSingleton.alertWhiteWon = MehenDialogFragment(

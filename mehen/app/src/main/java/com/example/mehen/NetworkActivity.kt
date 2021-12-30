@@ -6,6 +6,7 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import java.util.*
 
 class NetworkActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -15,6 +16,8 @@ class NetworkActivity: AppCompatActivity() {
         
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.mehen_bottom_navigation)
         bottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
+
+        MehenFirebaseDataBaseGames.showElements()
     }
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { menuItem ->
         when (menuItem.itemId) {
@@ -24,10 +27,16 @@ class NetworkActivity: AppCompatActivity() {
             }
             R.id.remove_game -> {
                 println("removeGame")
+                MehenSingleton.userID?.let { it1 -> MehenFirebaseDataBaseGames.removeList(it1) }
                 return@OnNavigationItemSelectedListener true
             }
             R.id.add_game -> {
                 println("addGame")
+                val obj = MehenFirebaseDataBaseGameObject(
+                    MehenSingleton.login,
+                    Date(System.currentTimeMillis()),
+                    "")
+                MehenSingleton.userID?.let { it1 -> MehenFirebaseDataBaseGames.addElement(obj, it1) }
                 return@OnNavigationItemSelectedListener true
             }
         }
