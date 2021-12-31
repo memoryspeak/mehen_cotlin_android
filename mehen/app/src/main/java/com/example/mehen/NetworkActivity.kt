@@ -2,25 +2,38 @@ package com.example.mehen
 
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.text.Layout
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintSet
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.database.DataSnapshot
 import java.util.*
+import android.widget.LinearLayout
+
+
+
 
 class NetworkActivity: AppCompatActivity() {
+    private lateinit var scrollNetworkLayout: LinearLayout
+    private lateinit var bottomNavigationView: BottomNavigationView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_Mehen)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_network)
 
-        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.mehen_bottom_navigation)
+        bottomNavigationView = findViewById<BottomNavigationView>(R.id.mehen_bottom_navigation)
         bottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
+        scrollNetworkLayout = findViewById<LinearLayout>(R.id.scroll_network)
 
         MehenFirebaseDataBaseGames.showElements(
             {dataSnapshot ->
                 //ниже прописать, что нужно сделать с интерфейсом при отображении элементов
-                println(dataSnapshot)},
+                showElements(dataSnapshot)},
             {callError ->
                 //ниже прописать, как визуально отображать ошибку при чтении базы данных игр...
                 println(callError)})
@@ -55,6 +68,26 @@ class NetworkActivity: AppCompatActivity() {
             }
         }
         false
+    }
+    private fun showElements(dataSnapshot: DataSnapshot){
+        for (i in 1..100){
+            val textViewGameElement: TextView = TextView(this)
+            textViewGameElement.layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            textViewGameElement.text = "New TextView+$i"
+
+            scrollNetworkLayout.addView(textViewGameElement)
+        }
+        /*al textViewGameElement: TextView = TextView(this)
+        textViewGameElement.layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
+        textViewGameElement.text = "New TextView"
+
+        scrollNetworkLayout.addView(textViewGameElement)*/
     }
 }
 
