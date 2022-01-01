@@ -85,7 +85,7 @@ class LoginActivity : AppCompatActivity () {
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_Mehen)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
+        setContentView(R.network_game_layout.xml.activity_login)
     }
 
     private fun createSignInIntent() {

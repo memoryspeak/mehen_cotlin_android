@@ -102,7 +102,7 @@ class RegisterActivity : AppCompatActivity (){
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_Mehen)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_register)
+        setContentView(R.network_game_layout.xml.activity_register)
     }
 
     private fun createSignInIntent() {
