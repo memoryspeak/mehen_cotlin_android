@@ -56,6 +56,7 @@ class LoginActivity : AppCompatActivity () {
                                 "User '$fireBaseUser' logged in successfully!",
                                 Toast.LENGTH_LONG).show()
                             startActivity(MehenSingleton.activityMainIntent)
+                            finish()
                         } else {
                             Toast.makeText(
                                 this,
@@ -67,6 +68,7 @@ class LoginActivity : AppCompatActivity () {
         }
         activityLoginRegisterLink.setOnClickListener {
             startActivity(MehenSingleton.activityRegisterIntent)
+            finish()
         }
     }
 }

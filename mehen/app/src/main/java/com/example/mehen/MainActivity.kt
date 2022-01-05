@@ -2,15 +2,19 @@ package com.example.mehen
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentManager
 import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
@@ -65,7 +69,6 @@ class MainActivity() : AppCompatActivity(), MehenDelegate {
         MehenSingleton.turnEffect = MehenSingleton.soundEngine.load(this, R.raw.turn, 1)
         MehenSingleton.startgameEffect = MehenSingleton.soundEngine.load(this, R.raw.startgame, 1)
         MehenSingleton.dicerollEffect = MehenSingleton.soundEngine.load(this, R.raw.diceroll, 1)
-
 
         val auth: FirebaseAuth = Firebase.auth
         val currentUser = auth.currentUser

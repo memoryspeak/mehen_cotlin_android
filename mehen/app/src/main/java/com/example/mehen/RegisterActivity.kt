@@ -63,7 +63,14 @@ class RegisterActivity : AppCompatActivity (){
                                             fireBaseUser.sendEmailVerification()
                                                 .addOnCompleteListener { task ->
                                                     if (task.isSuccessful) {
-                                                        MehenSingleton.alertEmailSend.show(MehenSingleton.manager, "mailSend")
+                                                        //println(task)
+                                                        //MehenSingleton.alertEmailSend.show(MehenSingleton.manager, "firebaseMailSend")
+                                                        Toast.makeText(
+                                                            this,
+                                                            "A confirmation link has been sent to the specified email address.\n" +
+                                                                    "Follow the link to complete registration.",
+                                                            Toast.LENGTH_LONG
+                                                        ).show()
                                                     }
                                                 }
                                         } else {
@@ -74,7 +81,7 @@ class RegisterActivity : AppCompatActivity (){
                                         }
                                     }
                                 startActivity(MehenSingleton.activityLoginIntent)
-                                //finish()
+                                finish()
                             } else {
                                 Toast.makeText(
                                     this,
@@ -98,13 +105,11 @@ class RegisterActivity : AppCompatActivity (){
         this.onSignInResult(res)
     }
     // [END auth_fui_create_launcher]
-
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_Mehen)
         super.onCreate(savedInstanceState)
         setContentView(R.network_game_layout.xml.activity_register)
     }
-
     private fun createSignInIntent() {
         // [START auth_fui_create_intent]
         // Choose authentication providers
@@ -115,7 +120,6 @@ class RegisterActivity : AppCompatActivity (){
 //            AuthUI.IdpConfig.FacebookBuilder().build(),
 //            AuthUI.IdpConfig.TwitterBuilder().build(),
         )
-
         // Create and launch sign-in intent
         val signInIntent = AuthUI.getInstance()
             .createSignInIntentBuilder()
@@ -124,7 +128,6 @@ class RegisterActivity : AppCompatActivity (){
         signInLauncher.launch(signInIntent)
         // [END auth_fui_create_intent]
     }
-
     // [START auth_fui_result]
     private fun onSignInResult(result: FirebaseAuthUIAuthenticationResult) {
         val response = result.idpResponse
@@ -140,7 +143,6 @@ class RegisterActivity : AppCompatActivity (){
         }
     }
     // [END auth_fui_result]
-
     private fun signOut() {
         // [START auth_fui_signout]
         AuthUI.getInstance()
@@ -150,7 +152,6 @@ class RegisterActivity : AppCompatActivity (){
             }
         // [END auth_fui_signout]
     }
-
     private fun delete() {
         // [START auth_fui_delete]
         AuthUI.getInstance()
@@ -160,10 +161,8 @@ class RegisterActivity : AppCompatActivity (){
             }
         // [END auth_fui_delete]
     }
-
     private fun themeAndLogo() {
         val providers = emptyList<AuthUI.IdpConfig>()
-
         // [START auth_fui_theme_logo]
         val signInIntent = AuthUI.getInstance()
             .createSignInIntentBuilder()
@@ -174,7 +173,6 @@ class RegisterActivity : AppCompatActivity (){
         signInLauncher.launch(signInIntent)
         // [END auth_fui_theme_logo]
     }
-
     private fun privacyAndTerms() {
         val providers = emptyList<AuthUI.IdpConfig>()
         // [START auth_fui_pp_tos]
@@ -188,7 +186,6 @@ class RegisterActivity : AppCompatActivity (){
         signInLauncher.launch(signInIntent)
         // [END auth_fui_pp_tos]
     }
-
     open fun emailLink() {
         // [START auth_fui_email_link]
         val actionCodeSettings = ActionCodeSettings.newBuilder()
@@ -199,7 +196,6 @@ class RegisterActivity : AppCompatActivity (){
             .setHandleCodeInApp(true) // This must be set to true
             .setUrl("https://google.com") // This URL needs to be whitelisted
             .build()
-
         val providers = listOf(
             EmailBuilder()
                 .enableEmailLinkSignIn()
@@ -213,10 +209,8 @@ class RegisterActivity : AppCompatActivity (){
         signInLauncher.launch(signInIntent)
         // [END auth_fui_email_link]
     }
-
     open fun catchEmailLink() {
         val providers: List<IdpConfig> = emptyList()
-
         // [START auth_fui_email_link_catch]
         if (AuthUI.canHandleIntent(intent)) {
             val extras = intent.extras ?: return
