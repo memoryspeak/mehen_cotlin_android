@@ -1,13 +1,19 @@
 package com.example.mehen
 
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.text.Editable
 import android.text.TextUtils
+import android.text.TextWatcher
+import android.view.KeyEvent
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.addTextChangedListener
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.AuthUI.IdpConfig
 import com.firebase.ui.auth.AuthUI.IdpConfig.EmailBuilder
@@ -23,6 +29,11 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.ktx.Firebase
 
+import com.google.firebase.FirebaseError
+import com.google.firebase.database.*
+import java.util.*
+
+
 //import com.google.firebase.quickstart.auth.R
 
 class RegisterActivity : AppCompatActivity (){
@@ -36,60 +47,268 @@ class RegisterActivity : AppCompatActivity (){
         val activityRegisterEditPasswordEditText = findViewById<EditText>(R.id.activity_register_edit_password)
         val activityRegisterSignInButton = findViewById<Button>(R.id.activity_register_sign_in)
 
-        activityRegisterSignInButton.setOnClickListener {
-            val loginToText = activityRegisterEditLoginEditText.text.toString().trim { it <= ' ' }
-            val mailToText = activityRegisterEditMailEditText.text.toString().trim { it <= ' ' }
-            val passwordToText = activityRegisterEditPasswordEditText.text.toString().trim { it <= ' ' }
-            if (TextUtils.isEmpty(loginToText) || TextUtils.isEmpty(mailToText) || TextUtils.isEmpty(passwordToText)){
-                Toast.makeText(
-                    this,
-                    "Please enter your details",
-                    Toast.LENGTH_LONG
-                ).show()
-            } else {
-                FirebaseAuth
-                    .getInstance()
-                    .createUserWithEmailAndPassword(mailToText, passwordToText)
-                    .addOnCompleteListener(
-                        OnCompleteListener <AuthResult> { task ->
-                            if (task.isSuccessful){
-                                val fireBaseUser: FirebaseUser = task.result!!.user!!
-                                val profileUpdates = userProfileChangeRequest { displayName = "$loginToText" }
+        var loginToText: String = ""
+        var isLoginValidate: Boolean = false
+        
+        val db = FirebaseDatabase.getInstance()
 
+        activityRegisterEditLoginEditText.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                loginToText = activityRegisterEditLoginEditText.text.toString().trim { it <= ' ' }
+                val firebaseRef = db.getReference("usernames/$loginToText")
+                firebaseRef.addListenerForSingleValueEvent(object : ValueEventListener{
+                    override fun onCancelled(error: DatabaseError) {
+                        Toast.makeText(this@RegisterActivity,
+                            error.message,
+                            Toast.LENGTH_LONG).show()
+                    }
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        if (snapshot.value != null){
+                            isLoginValidate = false
+                            activityRegisterEditLoginEditText.setTextColor(Color.parseColor("#FF0000"))
+                        } else {
+                            isLoginValidate = true
+                            activityRegisterEditLoginEditText.setTextColor(Color.parseColor("#008000"))
+                        }
+                    }
+                })
+            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
+
+        activityRegisterSignInButton.setOnClickListener {
+            if (isLoginValidate){
+                val mailToText = activityRegisterEditMailEditText.text.toString().trim { it <= ' ' }
+                val passwordToText = activityRegisterEditPasswordEditText.text.toString().trim { it <= ' ' }
+
+                if (TextUtils.isEmpty(loginToText) || TextUtils.isEmpty(mailToText) || TextUtils.isEmpty(passwordToText)){
+                    Toast.makeText(
+                        this,
+                        "Please enter your details",
+                        Toast.LENGTH_LONG
+                    ).show()
+                } else {
+                    //var fireBaseUser: FirebaseUser? = null
+                    FirebaseAuth
+                        .getInstance()
+                        .createUserWithEmailAndPassword(mailToText, passwordToText)
+                        .addOnCompleteListener(OnCompleteListener <AuthResult> { task ->
+                            if (task.isSuccessful){
+                                val fireBaseUser = task.result!!.user!!
+                                val profileUpdates = userProfileChangeRequest { displayName = "$loginToText" }
                                 fireBaseUser.updateProfile(profileUpdates)
                                     .addOnCompleteListener { task ->
                                         if (task.isSuccessful) {
+                                            db.getReference("users/${fireBaseUser.uid}").setValue(
+                                                MehenFirebaseDataBaseUserObject(
+                                                    fireBaseUser.email.toString(),
+                                                    1500,
+                                                    loginToText))
+                                            db.getReference("usernames/${loginToText}").setValue(
+                                                fireBaseUser.uid.toString())
                                             /*отправить письмо по эл.почте!!!!!*/
                                             fireBaseUser.sendEmailVerification()
                                                 .addOnCompleteListener { task ->
                                                     if (task.isSuccessful) {
-                                                        //println(task)
-                                                        //MehenSingleton.alertEmailSend.show(MehenSingleton.manager, "firebaseMailSend")
-                                                        Toast.makeText(
-                                                            this,
+                                                        Toast.makeText(this@RegisterActivity,
                                                             "A confirmation link has been sent to the specified email address.\n" +
                                                                     "Follow the link to complete registration.",
-                                                            Toast.LENGTH_LONG
-                                                        ).show()
+                                                            Toast.LENGTH_LONG).show()
+                                                        startActivity(MehenSingleton.activityLoginIntent)
+                                                        finish()
                                                     }
                                                 }
                                         } else {
-                                            Toast.makeText(
-                                                this,
+                                            Toast.makeText(this@RegisterActivity,
                                                 task.exception!!.message.toString(),
                                                 Toast.LENGTH_LONG).show()
                                         }
                                     }
-                                startActivity(MehenSingleton.activityLoginIntent)
-                                finish()
                             } else {
                                 Toast.makeText(
-                                    this,
+                                    this@RegisterActivity,
                                     task.exception!!.message.toString(),
                                     Toast.LENGTH_LONG).show()
                             }
+                        })
+
+                    //println(fireBaseUser?.uid)
+                    //println(fireBaseUser?.displayName)
+                    //println(fireBaseUser?.email)
+                    //val reference = db.getReference("users/$mehenGameLogin")
+                    
+                    
+                    
+                    /*val firebaseRef = FirebaseDatabase.getInstance().reference
+                    firebaseRef.child("usernames").child(loginToText).runTransaction(
+                        object : Transaction.Handler{
+                            override fun doTransaction(currentData: MutableData): Transaction.Result {
+                                if (currentData.value == null) {
+                                    println(currentData)
+                                    var fireBaseUser: FirebaseUser? = null
+                                    FirebaseAuth
+                                        .getInstance()
+                                        .createUserWithEmailAndPassword(mailToText, passwordToText)
+                                        .addOnCompleteListener(OnCompleteListener <AuthResult> { task ->
+                                            if (task.isSuccessful){
+                                                fireBaseUser = task.result!!.user!!
+                                            } else {
+                                                Toast.makeText(
+                                                    this@RegisterActivity,
+                                                    task.exception!!.message.toString(),
+                                                    Toast.LENGTH_LONG).show()
+                                            }
+                                        })
+                                    val profileUpdates = userProfileChangeRequest { displayName = "$loginToText" }
+                                    fireBaseUser?.updateProfile(profileUpdates)
+                                        ?.addOnCompleteListener { task ->
+                                            if (task.isSuccessful) {
+                                                /*отправить письмо по эл.почте!!!!!*/
+                                                fireBaseUser?.sendEmailVerification()!!
+                                                    .addOnCompleteListener { task ->
+                                                        if (task.isSuccessful) {
+                                                            Toast.makeText(this@RegisterActivity,
+                                                                "A confirmation link has been sent to the specified email address.\n" +
+                                                                    "Follow the link to complete registration.",
+                                                                Toast.LENGTH_LONG).show()
+                                                        }
+                                                    }
+                                            } else {
+                                                Toast.makeText(this@RegisterActivity,
+                                                    task.exception!!.message.toString(),
+                                                    Toast.LENGTH_LONG).show()
+                                            }
+                                        }
+                                    currentData.value = fireBaseUser?.uid
+                                    return Transaction.success(currentData)
+                                }
+                                return Transaction.abort()
+                            }
+                            override fun onComplete(
+                                error: DatabaseError?,
+                                committed: Boolean,
+                                currentData: DataSnapshot?
+                            ) {
+                                if (committed) {
+                                    println(currentData)
+                                    startActivity(MehenSingleton.activityLoginIntent)
+                                    finish()
+                                } else {
+                                    println(error)
+                                }
+                            }
+
                         }
-                    )
+                    )*/
+
+
+                    /*FirebaseAuth
+                        .getInstance()
+                        .createUserWithEmailAndPassword(mailToText, passwordToText)
+                        .addOnCompleteListener(
+                            OnCompleteListener <AuthResult> { task ->
+                                if (task.isSuccessful){
+                                    val fireBaseUser: FirebaseUser = task.result!!.user!!
+                                    val profileUpdates = userProfileChangeRequest { displayName = "$loginToText" }
+
+
+
+
+                                    val fireBase : FirebaseDatabase by lazy {
+                                        val db = FirebaseDatabase.getInstance()
+                                        db.setPersistenceEnabled(true)
+                                        db
+                                    }
+                                    val firebaseRef = fireBase.reference
+                                    firebaseRef.child("usernames").child(loginToText).runTransaction(object:
+                                        Transaction.Handler {
+                                        override fun doTransaction(mutableData: MutableData): Transaction.Result {
+                                            if (mutableData.value == null) {
+                                                mutableData.value = fireBaseUser.uid
+                                                return Transaction.success(mutableData)
+                                            }
+                                            return Transaction.abort()
+                                        }
+
+                                        override fun onComplete(
+                                            error: DatabaseError?,
+                                            committed: Boolean,
+                                            currentData: DataSnapshot?
+                                        ) {
+                                            if (committed) {
+                                                fireBaseUser.updateProfile(profileUpdates)
+                                                    .addOnCompleteListener { task ->
+                                                        if (task.isSuccessful) {
+                                                            /*отправить письмо по эл.почте!!!!!*/
+                                                            fireBaseUser.sendEmailVerification()
+                                                                .addOnCompleteListener { task ->
+                                                                    if (task.isSuccessful) {
+                                                                        /*Toast.makeText(
+                                                                            this,
+                                                                            "A confirmation link has been sent to the specified email address.\n" +
+                                                                                    "Follow the link to complete registration.",
+                                                                            Toast.LENGTH_LONG
+                                                                        ).show()*/
+                                                                    }
+                                                                }
+                                                        } else {
+                                                            /*Toast.makeText(
+                                                                this,
+                                                                task.exception!!.message.toString(),
+                                                                Toast.LENGTH_LONG
+                                                            ).show()*/
+                                                        }
+                                                    }
+                                            } else {
+                                                println("some trouble")
+                                                // username exists
+                                            }
+                                        }
+
+
+                                        /*fireBaseUser.updateProfile(profileUpdates)
+                                        .addOnCompleteListener { task ->
+                                            if (task.isSuccessful) {
+                                                /*отправить письмо по эл.почте!!!!!*/
+                                                fireBaseUser.sendEmailVerification()
+                                                    .addOnCompleteListener { task ->
+                                                        if (task.isSuccessful) {
+                                                            //println(task)
+                                                            //MehenSingleton.alertEmailSend.show(MehenSingleton.manager, "firebaseMailSend")
+                                                            Toast.makeText(
+                                                                this,
+                                                                "A confirmation link has been sent to the specified email address.\n" +
+                                                                        "Follow the link to complete registration.",
+                                                                Toast.LENGTH_LONG
+                                                            ).show()
+                                                        }
+                                                    }
+                                            } else {
+                                                Toast.makeText(
+                                                    this,
+                                                    task.exception!!.message.toString(),
+                                                    Toast.LENGTH_LONG).show()
+                                            }
+                                        }*/
+                                    })
+                                    //startActivity(MehenSingleton.activityLoginIntent)
+                                    //finish()
+                                } else {
+                                    Toast.makeText(
+                                        this,
+                                        task.exception!!.message.toString(),
+                                        Toast.LENGTH_LONG).show()
+                                }
+                            }
+                        )*/
+                }
+            } else {
+                Toast.makeText(
+                    this,
+                    "Username is taken. Please enter another name",
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
 

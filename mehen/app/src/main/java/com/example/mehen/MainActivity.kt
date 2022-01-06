@@ -21,6 +21,10 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.auth.ktx.oAuthCredential
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.ktx.Firebase
 import java.io.PrintWriter
 import java.net.ConnectException
@@ -78,24 +82,54 @@ class MainActivity() : AppCompatActivity(), MehenDelegate {
             MehenSingleton.emailVerified = currentUser.isEmailVerified
             MehenSingleton.userID = currentUser.uid
 
-            println(MehenSingleton.login)
-            println(MehenSingleton.email)
-            println(MehenSingleton.emailVerified)
-            println(MehenSingleton.userID)
-
-            if (MehenSingleton.emailVerified == true){
-                if (MehenSingleton.login == null){
-                    MehenSingleton.login = ""
-                }
-                this.title = "mehen @ ${MehenSingleton.login}"
-            } else {
-                currentUser.sendEmailVerification()
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            MehenSingleton.alertEmailSend.show(MehenSingleton.manager, "mailSend")
+            FirebaseDatabase.getInstance().getReference("users/${MehenSingleton.userID}/rating")
+                .addValueEventListener(object : ValueEventListener {
+                    override fun onCancelled(error: DatabaseError) {
+                        Toast.makeText(this@MainActivity,
+                            error.message,
+                            Toast.LENGTH_LONG).show()
+                    }
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        MehenSingleton.rating = snapshot.value.toString().toInt()
+                        if (MehenSingleton.emailVerified == true){
+                            if (MehenSingleton.login == null){
+                                MehenSingleton.login = ""
+                            }
+                            this@MainActivity.title = "${MehenSingleton.login} @ ${MehenSingleton.rating}"
+                        } else {
+                            currentUser.sendEmailVerification()
+                                .addOnCompleteListener { task ->
+                                    if (task.isSuccessful) {
+                                        MehenSingleton.alertEmailSend.show(MehenSingleton.manager, "mailSend")
+                                    }
+                                }
                         }
                     }
-            }
+                })
+            /*FirebaseDatabase.getInstance().getReference("users/${MehenSingleton.userID}/rating")
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onCancelled(error: DatabaseError) {
+                        Toast.makeText(this@MainActivity,
+                            error.message,
+                            Toast.LENGTH_LONG).show()
+                    }
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        MehenSingleton.rating = snapshot.value.toString().toInt()
+                        if (MehenSingleton.emailVerified == true){
+                            if (MehenSingleton.login == null){
+                                MehenSingleton.login = ""
+                            }
+                            this@MainActivity.title = "${MehenSingleton.login} @ ${MehenSingleton.rating}"
+                        } else {
+                            currentUser.sendEmailVerification()
+                                .addOnCompleteListener { task ->
+                                    if (task.isSuccessful) {
+                                        MehenSingleton.alertEmailSend.show(MehenSingleton.manager, "mailSend")
+                                    }
+                                }
+                        }
+                    }
+                })*/
         } else {
             MehenSingleton.login = ""
             MehenSingleton.email = ""

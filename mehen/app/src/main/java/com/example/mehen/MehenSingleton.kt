@@ -16,6 +16,7 @@ object MehenSingleton {
     var email: String? = ""
     var emailVerified: Boolean? = false
     var userID: String? = ""
+    var rating: Int = 1500
 
     const val memoryLimit: Int = 100
 
