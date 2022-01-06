@@ -16,7 +16,21 @@ object MehenSingleton {
     var email: String? = ""
     var emailVerified: Boolean? = false
     var userID: String? = ""
-    var rating: Int = 1500
+    var rating: String? = ""
+    lateinit var gameName: String
+
+    var networkGame: Boolean = false
+    var networkWhiteUserName: String = ""
+    var networkBlackUserName: String = ""
+    var networkMemoryWhite: Int = 0
+    var networkMemoryBlack: Int = 0
+    var networkCanWhiteMove: Boolean = false
+    var networkCanBlackMove: Boolean = false
+    var networkCanWhiteDiceRoll: Boolean = false
+    var networkCanBlackDiceRoll: Boolean = false
+    var networkWhiteValueDiceRoll: Int = 5
+    var networkBlackValueDiceRoll: Int = 5
+
 
     const val memoryLimit: Int = 100
 
@@ -54,6 +68,86 @@ object MehenSingleton {
     var canBlackDiceRoll: Boolean = false
     var whiteValueDiceRoll: Int = 5
     var blackValueDiceRoll: Int = 5
+
+    var networkBoard = mutableMapOf<List<Int>, String>(
+        listOf<Int>(0, 0) to "11",
+        listOf<Int>(0, 1) to "11",
+        listOf<Int>(0, 2) to "11",
+        listOf<Int>(0, 3) to "11",
+        listOf<Int>(0, 4) to "11",
+        listOf<Int>(0, 5) to "11",
+        listOf<Int>(1, 7) to "00",
+        listOf<Int>(1, 6) to "00",
+        listOf<Int>(1, 5) to "00",
+        listOf<Int>(1, 4) to "00",
+        listOf<Int>(1, 3) to "00",
+        listOf<Int>(1, 2) to "00",
+        listOf<Int>(1, 1) to "00",
+        listOf<Int>(1, 0) to "00",
+        listOf<Int>(2, 0) to "00",
+        listOf<Int>(3, 0) to "00",
+        listOf<Int>(4, 0) to "00",
+        listOf<Int>(5, 0) to "00",
+        listOf<Int>(6, 0) to "00",
+        listOf<Int>(7, 0) to "00",
+        listOf<Int>(8, 0) to "00",
+        listOf<Int>(8, 1) to "00",
+        listOf<Int>(8, 2) to "00",
+        listOf<Int>(8, 3) to "00",
+        listOf<Int>(8, 4) to "00",
+        listOf<Int>(8, 5) to "00",
+        listOf<Int>(8, 6) to "00",
+        listOf<Int>(8, 7) to "00",
+        listOf<Int>(7, 7) to "00",
+        listOf<Int>(6, 7) to "00",
+        listOf<Int>(5, 7) to "00",
+        listOf<Int>(4, 7) to "00",
+        listOf<Int>(3, 7) to "00",
+        listOf<Int>(2, 7) to "00",
+        listOf<Int>(2, 6) to "00",
+        listOf<Int>(2, 5) to "00",
+        listOf<Int>(2, 4) to "00",
+        listOf<Int>(2, 3) to "00",
+        listOf<Int>(2, 2) to "00",
+        listOf<Int>(2, 1) to "00",
+        listOf<Int>(3, 1) to "00",
+        listOf<Int>(4, 1) to "00",
+        listOf<Int>(5, 1) to "00",
+        listOf<Int>(6, 1) to "00",
+        listOf<Int>(7, 1) to "00",
+        listOf<Int>(7, 2) to "00",
+        listOf<Int>(7, 3) to "00",
+        listOf<Int>(7, 4) to "00",
+        listOf<Int>(7, 5) to "00",
+        listOf<Int>(7, 6) to "00",
+        listOf<Int>(6, 6) to "00",
+        listOf<Int>(5, 6) to "00",
+        listOf<Int>(4, 6) to "00",
+        listOf<Int>(3, 6) to "00",
+        listOf<Int>(3, 5) to "00",
+        listOf<Int>(3, 4) to "00",
+        listOf<Int>(3, 3) to "00",
+        listOf<Int>(3, 2) to "00",
+        listOf<Int>(4, 2) to "00",
+        listOf<Int>(5, 2) to "00",
+        listOf<Int>(6, 2) to "00",
+        listOf<Int>(6, 3) to "00",
+        listOf<Int>(6, 4) to "00",
+        listOf<Int>(6, 5) to "00",
+        listOf<Int>(5, 5) to "00",
+        listOf<Int>(4, 5) to "00",
+        listOf<Int>(4, 4) to "00",
+        listOf<Int>(4, 3) to "00",
+        listOf<Int>(5, 3) to "00",
+        listOf<Int>(5, 4) to "00",
+        listOf<Int>(9, 0) to "21",
+        listOf<Int>(9, 1) to "21",
+        listOf<Int>(9, 2) to "21",
+        listOf<Int>(9, 3) to "21",
+        listOf<Int>(9, 4) to "21",
+        listOf<Int>(9, 5) to "21"
+    )
+
 
     var viewPossibleDot: Boolean = false
     var possibleDots = mutableListOf<PossibleDot>()

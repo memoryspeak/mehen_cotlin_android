@@ -90,7 +90,7 @@ class MainActivity() : AppCompatActivity(), MehenDelegate {
                             Toast.LENGTH_LONG).show()
                     }
                     override fun onDataChange(snapshot: DataSnapshot) {
-                        MehenSingleton.rating = snapshot.value.toString().toInt()
+                        MehenSingleton.rating = snapshot.value.toString()
                         if (MehenSingleton.emailVerified == true){
                             if (MehenSingleton.login == null){
                                 MehenSingleton.login = ""
@@ -106,107 +106,13 @@ class MainActivity() : AppCompatActivity(), MehenDelegate {
                         }
                     }
                 })
-            /*FirebaseDatabase.getInstance().getReference("users/${MehenSingleton.userID}/rating")
-                .addListenerForSingleValueEvent(object : ValueEventListener {
-                    override fun onCancelled(error: DatabaseError) {
-                        Toast.makeText(this@MainActivity,
-                            error.message,
-                            Toast.LENGTH_LONG).show()
-                    }
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        MehenSingleton.rating = snapshot.value.toString().toInt()
-                        if (MehenSingleton.emailVerified == true){
-                            if (MehenSingleton.login == null){
-                                MehenSingleton.login = ""
-                            }
-                            this@MainActivity.title = "${MehenSingleton.login} @ ${MehenSingleton.rating}"
-                        } else {
-                            currentUser.sendEmailVerification()
-                                .addOnCompleteListener { task ->
-                                    if (task.isSuccessful) {
-                                        MehenSingleton.alertEmailSend.show(MehenSingleton.manager, "mailSend")
-                                    }
-                                }
-                        }
-                    }
-                })*/
         } else {
             MehenSingleton.login = ""
             MehenSingleton.email = ""
             MehenSingleton.emailVerified = false
             MehenSingleton.userID = ""
+            MehenSingleton.rating = ""
         }
-
-
-
-        /*//AuthUI.getInstance().signOut(this)
-        val user: FirebaseUser? = Firebase.auth.currentUser
-        if (user != null) {
-            MehenSingleton.login = user.displayName
-            MehenSingleton.email = user.email
-            MehenSingleton.emailVerified = user.isEmailVerified
-
-            println(MehenSingleton.login)
-            println(MehenSingleton.email)
-            println(MehenSingleton.emailVerified)
-
-            if (MehenSingleton.emailVerified == true){
-                //val intent = Intent(this,MainActivity::class.java); startActivity(intent); finish()
-                if (MehenSingleton.login == null){
-                    MehenSingleton.login = ""
-                }
-                this.title = "mehen @ ${MehenSingleton.login}"
-            } else {
-                user.signInWithEmailAndPassword
-            }
-        } else {
-            MehenSingleton.login = ""
-            MehenSingleton.email = ""
-            MehenSingleton.emailVerified = false
-        }*/
-
-
-
-
-//        this.title = "mehen @ ${MehenSingleton.login}"
-        /*FirebaseAuth.AuthStateListener{
-            val user = Firebase.auth.currentUser
-            if (user != null) {
-                MehenSingleton.login = user.displayName
-                MehenSingleton.email = user.email
-                MehenSingleton.emailVerified = user.isEmailVerified
-                this.title = "mehen @ ${MehenSingleton.login}"
-            } else {
-                this.title = "mehen @ ${MehenSingleton.login}"
-            } }.onAuthStateChanged(FirebaseAuth.getInstance())*/
-        /*addAuthStateListener ( FirebaseAuth.AuthStateListener{
-            val user = Firebase.auth.currentUser
-            if (user != null) {
-                MehenSingleton.login = user.displayName
-                MehenSingleton.email = user.email
-                MehenSingleton.emailVerified = user.isEmailVerified
-                this.title = "mehen @ ${MehenSingleton.login}"
-            } else {
-                this.title = "mehen @ ${MehenSingleton.login}"
-            }
-        })*/
-
-
-
-
-        /*val login = user.displayName
-        val email = user.email
-        val emailVerified = user.isEmailVerified
-        println(login)
-        println(email)
-        println(emailVerified)
-        AuthUI.getInstance().signOut(this)
-        println(login)
-        println(email)
-        println(emailVerified)*/
-
-
-
 
         setTheme(R.style.Theme_Mehen)
         super.onCreate(savedInstanceState)
@@ -230,6 +136,7 @@ class MainActivity() : AppCompatActivity(), MehenDelegate {
             }
             R.id.account -> {
                 startActivity(MehenSingleton.activityLoginIntent)
+                finish()
             }
         }
         return true

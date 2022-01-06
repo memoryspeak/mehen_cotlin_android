@@ -6,11 +6,12 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
 object MehenFirebaseDataBaseGames {
-    private val fireBase : FirebaseDatabase by lazy {
+    /*private val fireBase : FirebaseDatabase by lazy {
         val db = FirebaseDatabase.getInstance()
         db.setPersistenceEnabled(true)
         db
-    }
+    }*/
+    private val fireBase = FirebaseDatabase.getInstance()
 
     fun removeList (mehenGameID: String, function: () -> Unit) {
         val reference = fireBase.getReference("games/$mehenGameID")
@@ -18,15 +19,15 @@ object MehenFirebaseDataBaseGames {
         reference.removeValue { _, _ -> function() }
     }
 
-    fun addElement (mehenObject: MehenFirebaseDataBaseGameObject, mehenGameID: String, callError: (String) -> Unit) {
-        val reference = fireBase.getReference("games/$mehenGameID")
+    fun addElement (mehenObject: MehenFirebaseDataBaseGameObject, mehenGameName: String, callError: (String) -> Unit) {
+        val reference = fireBase.getReference("games/$mehenGameName")
         reference.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(error: DatabaseError) {
                 callError(error.toString())
             }
 
             override fun onDataChange(snapshot: DataSnapshot) {
-                reference.push().setValue(mehenObject)
+                reference.setValue(mehenObject)
             }
         })
     }
