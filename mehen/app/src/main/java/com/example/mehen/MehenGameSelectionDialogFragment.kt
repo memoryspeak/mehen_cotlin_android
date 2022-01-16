@@ -24,11 +24,12 @@ class MehenGameSelectionDialogFragment(private val robotValue: Boolean): DialogF
                 builder.setPositiveButton("OK") { dialog, id ->
                     dialog.cancel()
                     MehenSingleton.game = true
+                    MehenSingleton.networkGame = false
                     MehenSingleton.robot = true
                     MehenSingleton.canRobotMove = false
                     MehenGame.reset()
                     MehenSingleton.mehenView.invalidate()
-                    MehenSingleton.serverSocket?.close()
+                    //MehenSingleton.serverSocket?.close()
                 }
                     .setNegativeButton("Cancel") { dialog, id ->
                         dialog.cancel()
@@ -43,11 +44,12 @@ class MehenGameSelectionDialogFragment(private val robotValue: Boolean): DialogF
                         0 -> {
                             dialog.cancel()
                             MehenSingleton.game = true
+                            MehenSingleton.networkGame = false
                             MehenSingleton.robot = false
                             MehenSingleton.canRobotMove = false
                             MehenGame.reset()
                             MehenSingleton.mehenView.invalidate()
-                            MehenSingleton.serverSocket?.close()
+                            //MehenSingleton.serverSocket?.close()
 //                listenButton.isEnabled = true
                         }
                         1 -> {

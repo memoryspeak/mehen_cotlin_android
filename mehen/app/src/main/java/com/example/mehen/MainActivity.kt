@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.util.AttributeSet
 import android.util.Log
 import android.view.Gravity
 import android.view.Menu
@@ -120,6 +121,241 @@ class MainActivity() : AppCompatActivity(), MehenDelegate {
 
         MehenSingleton.mehenView = findViewById<MehenView>(R.id.mehen_view)
         MehenSingleton.mehenView.mehenDelegate = this
+
+        if (MehenSingleton.networkGame){
+            val blackPlayerLinearLayout = findViewById<LinearLayout>(R.id.black_player)
+            val whitePlayerLinearLayout = findViewById<LinearLayout>(R.id.white_player)
+
+            val blackPlayerButton: Button = Button(this)
+            blackPlayerButton.layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT)
+            val whitePlayerButton: Button = Button(this)
+            whitePlayerButton.layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT)
+
+            blackPlayerButton.text = MehenSingleton.networkBlackUserName
+            blackPlayerButton.gravity = Gravity.CENTER_VERTICAL or Gravity.LEFT
+            //blackPlayerButton.setPadding(paddingButton, paddingButton, paddingButton, paddingButton)
+            blackPlayerButton.setBackgroundColor(Color.parseColor("#FFFFFF"))
+
+            whitePlayerButton.text = MehenSingleton.networkWhiteUserName
+            whitePlayerButton.gravity = Gravity.CENTER_VERTICAL or Gravity.LEFT
+            //whitePlayerButton.setPadding(paddingButton, paddingButton, paddingButton, paddingButton)
+            whitePlayerButton.setBackgroundColor(Color.parseColor("#FFFFFF"))
+
+            blackPlayerLinearLayout.addView(blackPlayerButton)
+            whitePlayerLinearLayout.addView(whitePlayerButton)
+
+            val reference = FirebaseDatabase.getInstance().getReference("games/${MehenSingleton.gameNamePlaying}")
+            reference.child("memoryWhite")
+                .addValueEventListener(object : ValueEventListener {
+                    override fun onCancelled(error: DatabaseError) {
+                        Toast.makeText(this@MainActivity,
+                            error.message,
+                            Toast.LENGTH_LONG).show()
+                    }
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val snapshotValueToString = snapshot.value.toString()
+                        if (snapshotValueToString.isNotEmpty() && snapshotValueToString != "null"){
+                            MehenSingleton.networkMemoryWhite = snapshotValueToString.toInt()
+                            MehenSingleton.mehenView.invalidate()
+                        }
+                    }
+                })
+            reference.child("memoryBlack")
+                .addValueEventListener(object : ValueEventListener {
+                    override fun onCancelled(error: DatabaseError) {
+                        Toast.makeText(this@MainActivity,
+                            error.message,
+                            Toast.LENGTH_LONG).show()
+                    }
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val snapshotValueToString = snapshot.value.toString()
+                        if (snapshotValueToString.isNotEmpty() && snapshotValueToString != "null"){
+                            MehenSingleton.networkMemoryBlack = snapshotValueToString.toInt()
+                            MehenSingleton.mehenView.invalidate()
+                        }
+                    }
+                })
+            reference.child("canWhiteDiceRoll")
+                .addValueEventListener(object : ValueEventListener {
+                    override fun onCancelled(error: DatabaseError) {
+                        Toast.makeText(this@MainActivity,
+                            error.message,
+                            Toast.LENGTH_LONG).show()
+                    }
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val snapshotValue = snapshot.value
+                        if (snapshotValue.toString().isNotEmpty() && snapshotValue.toString() != "null"){
+                            MehenSingleton.networkCanWhiteDiceRoll = snapshotValue as Boolean
+                            MehenSingleton.mehenView.invalidate()
+                        }
+                    }
+                })
+            reference.child("canBlackDiceRoll")
+                .addValueEventListener(object : ValueEventListener {
+                    override fun onCancelled(error: DatabaseError) {
+                        Toast.makeText(this@MainActivity,
+                            error.message,
+                            Toast.LENGTH_LONG).show()
+                    }
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val snapshotValue = snapshot.value
+                        if (snapshotValue.toString().isNotEmpty() && snapshotValue.toString() != "null"){
+                            MehenSingleton.networkCanBlackDiceRoll = snapshotValue as Boolean
+                            MehenSingleton.mehenView.invalidate()
+                        }
+                    }
+                })
+            reference.child("canWhiteMove")
+                .addValueEventListener(object : ValueEventListener {
+                    override fun onCancelled(error: DatabaseError) {
+                        Toast.makeText(this@MainActivity,
+                            error.message,
+                            Toast.LENGTH_LONG).show()
+                    }
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val snapshotValue = snapshot.value
+                        if (snapshotValue.toString().isNotEmpty() && snapshotValue.toString() != "null"){
+                            /*if (MehenSingleton.networkWhiteUserName == MehenSingleton.gameNameSelf){
+                                if (MehenSingleton.networkCanWhiteMove == snapshotValue as Boolean){
+                                    MehenSingleton.networkCanBlackDiceRoll = true
+                                    //networkPush("canWhiteDiceRoll", MehenSingleton.networkCanWhiteDiceRoll)
+                                    reference.addListenerForSingleValueEvent(object :
+                                        ValueEventListener {
+                                        override fun onCancelled(error: DatabaseError) {
+                                            println(error)
+                                        }
+                                        override fun onDataChange(snapshot: DataSnapshot) {
+                                            reference.child("canBlackDiceRoll").setValue(MehenSingleton.networkCanBlackDiceRoll)
+                                        }
+                                    })
+                                }
+                            } else {
+                                MehenSingleton.networkCanWhiteMove = snapshotValue as Boolean
+                            }*/
+                            MehenSingleton.networkCanWhiteMove = snapshotValue as Boolean
+                            MehenSingleton.mehenView.invalidate()
+                        }
+                    }
+                })
+            reference.child("canBlackMove")
+                .addValueEventListener(object : ValueEventListener {
+                    override fun onCancelled(error: DatabaseError) {
+                        Toast.makeText(this@MainActivity,
+                            error.message,
+                            Toast.LENGTH_LONG).show()
+                    }
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val snapshotValue = snapshot.value
+                        if (snapshotValue.toString().isNotEmpty() && snapshotValue.toString() != "null"){
+                            /*if (MehenSingleton.networkBlackUserName == MehenSingleton.gameNameSelf){
+                                if (MehenSingleton.networkCanBlackMove == snapshotValue as Boolean){
+                                    MehenSingleton.networkCanWhiteDiceRoll = true
+                                    //networkPush("canWhiteDiceRoll", MehenSingleton.networkCanWhiteDiceRoll)
+                                    reference.addListenerForSingleValueEvent(object :
+                                        ValueEventListener {
+                                        override fun onCancelled(error: DatabaseError) {
+                                            println(error)
+                                        }
+                                        override fun onDataChange(snapshot: DataSnapshot) {
+                                            reference.child("canWhiteDiceRoll").setValue(MehenSingleton.networkCanWhiteDiceRoll)
+                                        }
+                                    })
+                                }
+                            } else {
+                                MehenSingleton.networkCanBlackMove = snapshotValue as Boolean
+                            }*/
+                            MehenSingleton.networkCanBlackMove = snapshotValue as Boolean
+                            MehenSingleton.mehenView.invalidate()
+                        }
+                    }
+                })
+            reference.child("whiteValueDiceRoll")
+                .addValueEventListener(object : ValueEventListener {
+                    override fun onCancelled(error: DatabaseError) {
+                        Toast.makeText(this@MainActivity,
+                            error.message,
+                            Toast.LENGTH_LONG).show()
+                    }
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val snapshotValueToString = snapshot.value.toString()
+                        if (snapshotValueToString.isNotEmpty() && snapshotValueToString != "null"){
+                            MehenSingleton.networkWhiteValueDiceRoll = snapshotValueToString.toInt()
+                            MehenSingleton.mehenView.invalidate()
+                        }
+                    }
+                })
+            reference.child("blackValueDiceRoll")
+                .addValueEventListener(object : ValueEventListener {
+                    override fun onCancelled(error: DatabaseError) {
+                        Toast.makeText(this@MainActivity,
+                            error.message,
+                            Toast.LENGTH_LONG).show()
+                    }
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val snapshotValueToString = snapshot.value.toString()
+                        if (snapshotValueToString.isNotEmpty() && snapshotValueToString != "null"){
+                            MehenSingleton.networkBlackValueDiceRoll = snapshotValueToString.toInt()
+                            MehenSingleton.mehenView.invalidate()
+                        }
+                    }
+                })
+            reference.child("fromColfromRowtoColtoRow")
+                .addValueEventListener(object : ValueEventListener {
+                    override fun onCancelled(error: DatabaseError) {
+                        Toast.makeText(this@MainActivity,
+                            error.message,
+                            Toast.LENGTH_LONG).show()
+                    }
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val fromColfromRowtoColtoRow = snapshot.value.toString()
+                        if (fromColfromRowtoColtoRow.isNotEmpty() && fromColfromRowtoColtoRow != "null"){
+                            if (MehenSingleton.fromColfromRowtoColtoRow != fromColfromRowtoColtoRow){
+                                val arrayOffromColfromRowtoColtoRow = fromColfromRowtoColtoRow.split("-").toTypedArray()
+                                //println("GOOOOO!!!!")
+                                movePiece(
+                                    Square(arrayOffromColfromRowtoColtoRow[0].toInt(), arrayOffromColfromRowtoColtoRow[1].toInt()),
+                                    Square(arrayOffromColfromRowtoColtoRow[2].toInt(), arrayOffromColfromRowtoColtoRow[3].toInt())
+                                )
+                                MehenSingleton.fromColfromRowtoColtoRow = snapshot.child("fromColfromRowtoColtoRow").value.toString()
+                            }
+                        }
+                    }
+                })
+            /*reference
+                .addValueEventListener(object : ValueEventListener {
+                    override fun onCancelled(error: DatabaseError) {
+                        Toast.makeText(this@MainActivity,
+                            error.message,
+                            Toast.LENGTH_LONG).show()
+                    }
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        //println(snapshot.child("canWhiteDiceRoll").value as Boolean)
+                        //snapshot.value.toString().isNotEmpty() && snapshot.value.toString() != "null"
+                        MehenSingleton.networkMemoryWhite = snapshot.child("memoryWhite").value.toString().toInt()
+                        MehenSingleton.networkMemoryBlack = snapshot.child("memoryBlack").value.toString().toInt()
+                        MehenSingleton.networkCanWhiteDiceRoll = snapshot.child("canWhiteDiceRoll").value as Boolean
+                        MehenSingleton.networkCanBlackDiceRoll = snapshot.child("canBlackDiceRoll").value as Boolean
+                        MehenSingleton.networkCanWhiteMove = snapshot.child("canWhiteMove").value as Boolean
+                        MehenSingleton.networkCanBlackMove = snapshot.child("canBlackMove").value as Boolean
+                        MehenSingleton.networkWhiteValueDiceRoll = snapshot.child("whiteValueDiceRoll").value.toString().toInt()
+                        MehenSingleton.networkBlackValueDiceRoll = snapshot.child("blackValueDiceRoll").value.toString().toInt()
+
+                        val fromColfromRowtoColtoRow = snapshot.child("fromColfromRowtoColtoRow").value.toString()
+                        if (MehenSingleton.fromColfromRowtoColtoRow != fromColfromRowtoColtoRow){
+                            val arrayOffromColfromRowtoColtoRow = fromColfromRowtoColtoRow.split("-").toTypedArray()
+                            movePiece(
+                                Square(arrayOffromColfromRowtoColtoRow[0].toInt(), arrayOffromColfromRowtoColtoRow[1].toInt()),
+                                Square(arrayOffromColfromRowtoColtoRow[2].toInt(), arrayOffromColfromRowtoColtoRow[3].toInt())
+                            )
+                            MehenSingleton.fromColfromRowtoColtoRow = snapshot.child("fromColfromRowtoColtoRow").value.toString()
+                        }
+                    }
+                })*/
+        }
 
     }
 

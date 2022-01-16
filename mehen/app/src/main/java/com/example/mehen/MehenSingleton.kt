@@ -17,8 +17,9 @@ object MehenSingleton {
     var emailVerified: Boolean? = false
     var userID: String? = ""
     var rating: String? = ""
-    lateinit var gameName: String
+    lateinit var gameNameSelf: String
 
+    var gameNamePlaying: String = ""
     var networkGame: Boolean = false
     var networkWhiteUserName: String = ""
     var networkBlackUserName: String = ""
@@ -30,46 +31,9 @@ object MehenSingleton {
     var networkCanBlackDiceRoll: Boolean = false
     var networkWhiteValueDiceRoll: Int = 5
     var networkBlackValueDiceRoll: Int = 5
-
-
-    const val memoryLimit: Int = 100
-
-    //lateinit var db: DataBaseHandler
-
-    lateinit var alertNewGame: MehenGameSelectionDialogFragment
-    lateinit var alertRobotGame: MehenGameSelectionDialogFragment
-    var selectedItemOfNewGame: Int = 0
-
-    var serverSocket: ServerSocket? = null
-    lateinit var mehenView: MehenView
-
-    var game: Boolean = false
-    var robot: Boolean = false
-    var canRobotMove: Boolean = false
-    var robotIQ: Int = 1
-
-    lateinit var manager: FragmentManager
-    lateinit var alertWhiteWon: MehenDialogFragment
-    lateinit var alertBlackWon: MehenDialogFragment
-    lateinit var alertEmailSend: MehenDialogFragment
-
-    var soundEffect: Boolean = true
-    val soundEngine = SoundEngine()
-    var magicEffect: Int = 0
-    var turnEffect: Int = 0
-    var startgameEffect: Int = 0
-    var dicerollEffect: Int = 0
-
-    var memoryWhite: Int = 0
-    var memoryBlack: Int = 0
-    var canWhiteMove: Boolean = false
-    var canBlackMove: Boolean = false
-    var canWhiteDiceRoll: Boolean = true
-    var canBlackDiceRoll: Boolean = false
-    var whiteValueDiceRoll: Int = 5
-    var blackValueDiceRoll: Int = 5
-
-    var networkBoard = mutableMapOf<List<Int>, String>(
+    var fromColfromRowtoColtoRow: String = ""
+    /*var networkBoardString: String = ""*/
+    /*var networkBoardMap = mutableMapOf<List<Int>, String>(
         listOf<Int>(0, 0) to "11",
         listOf<Int>(0, 1) to "11",
         listOf<Int>(0, 2) to "11",
@@ -146,8 +110,45 @@ object MehenSingleton {
         listOf<Int>(9, 3) to "21",
         listOf<Int>(9, 4) to "21",
         listOf<Int>(9, 5) to "21"
-    )
+    )*/
 
+
+    const val memoryLimit: Int = 100
+
+    //lateinit var db: DataBaseHandler
+
+    lateinit var alertNewGame: MehenGameSelectionDialogFragment
+    lateinit var alertRobotGame: MehenGameSelectionDialogFragment
+    var selectedItemOfNewGame: Int = 0
+
+    var serverSocket: ServerSocket? = null
+    lateinit var mehenView: MehenView
+
+    var game: Boolean = false
+    var robot: Boolean = false
+    var canRobotMove: Boolean = false
+    var robotIQ: Int = 1
+
+    lateinit var manager: FragmentManager
+    lateinit var alertWhiteWon: MehenDialogFragment
+    lateinit var alertBlackWon: MehenDialogFragment
+    lateinit var alertEmailSend: MehenDialogFragment
+
+    var soundEffect: Boolean = true
+    val soundEngine = SoundEngine()
+    var magicEffect: Int = 0
+    var turnEffect: Int = 0
+    var startgameEffect: Int = 0
+    var dicerollEffect: Int = 0
+
+    var memoryWhite: Int = 0
+    var memoryBlack: Int = 0
+    var canWhiteMove: Boolean = false
+    var canBlackMove: Boolean = false
+    var canWhiteDiceRoll: Boolean = true
+    var canBlackDiceRoll: Boolean = false
+    var whiteValueDiceRoll: Int = 5
+    var blackValueDiceRoll: Int = 5
 
     var viewPossibleDot: Boolean = false
     var possibleDots = mutableListOf<PossibleDot>()

@@ -11,7 +11,7 @@ class MehenFirebaseDataBaseGameObject (
     val canBlackDiceRoll: Boolean? = null,
     val whiteValueDiceRoll: Int? = null,
     val blackValueDiceRoll: Int? = null,
-    val board: String? = null,
+    val fromColfromRowtoColtoRow: String? = null,
     val blackUserName: String? = null,
 
 

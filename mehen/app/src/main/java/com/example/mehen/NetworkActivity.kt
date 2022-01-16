@@ -38,8 +38,9 @@ class NetworkActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_network)
 
+
         this.title = "${MehenSingleton.login} @ ${MehenSingleton.rating}"
-        MehenSingleton.gameName = MehenSingleton.login + " @ " + MehenSingleton.rating
+        MehenSingleton.gameNameSelf = MehenSingleton.login + " @ " + MehenSingleton.rating
 
         bottomNavigationView = findViewById<BottomNavigationView>(R.id.mehen_bottom_navigation)
         bottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
@@ -61,13 +62,13 @@ class NetworkActivity: AppCompatActivity() {
             }
             R.id.remove_game -> {
                 println("removeGame")
-                removeGame(MehenSingleton.gameName)
+                removeGame(MehenSingleton.gameNameSelf)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.add_game -> {
                 //println("addGame")
-                var boardString = ""
-                MehenSingleton.networkBoard.forEach { it ->
+                /*var boardString = ""
+                MehenSingleton.networkBoardMap.forEach { it ->
                     boardString += it.key[0].toString() + it.key[1].toString() + it.value
                 }
                 val obj = MehenFirebaseDataBaseGameObject(
@@ -81,12 +82,24 @@ class NetworkActivity: AppCompatActivity() {
                     5,
                     boardString,
                     "",
+                )*/
+                val obj = MehenFirebaseDataBaseGameObject(
+                    0,
+                    0,
+                    false,
+                    false,
+                    false,
+                    false,
+                    5,
+                    5,
+                    "",
+                    "",
                 )
-                MehenFirebaseDataBaseGames.addElement(obj, MehenSingleton.gameName) { e ->
+                MehenFirebaseDataBaseGames.addElement(obj, MehenSingleton.gameNameSelf) { e ->
                     //ниже прописать, как обрабатывать визуально ошибку при добавлении данных - отображать в окно, нпрмр
                     println(e)
                 }
-                val reference = FirebaseDatabase.getInstance().getReference("games/${MehenSingleton.gameName}")
+                val reference = FirebaseDatabase.getInstance().getReference("games/${MehenSingleton.gameNameSelf}")
                 reference.child("blackUserName")
                     .addValueEventListener(object : ValueEventListener {
                         override fun onCancelled(error: DatabaseError) {
@@ -98,6 +111,9 @@ class NetworkActivity: AppCompatActivity() {
                             if (snapshot.value.toString().isNotEmpty() && snapshot.value.toString() != "null"){
                                 println(snapshot)
                                 MehenSingleton.networkGame = true
+                                MehenSingleton.networkBlackUserName = snapshot.value.toString()
+                                MehenSingleton.networkWhiteUserName = MehenSingleton.gameNameSelf
+                                MehenSingleton.gameNamePlaying = MehenSingleton.gameNameSelf
                                 startActivity(MehenSingleton.activityMainIntent)
                                 finish()
                             }
@@ -123,11 +139,11 @@ class NetworkActivity: AppCompatActivity() {
 
 
         games.forEach{
-            val newButton: Button = Button(this)
-            newButton.layoutParams = LinearLayout.LayoutParams(
+            val gameButton: Button = Button(this)
+            gameButton.layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT)
-            val drawable: Drawable? = if (it.key.toString() != MehenSingleton.gameName){
+            val drawable: Drawable? = if (it.key.toString() != MehenSingleton.gameNameSelf){
                 if (it.child("blackUserName").value.toString() == ""){
                     ContextCompat.getDrawable(this, R.drawable.ic_baseline_person_add_24_green)
                 } else {
@@ -140,22 +156,22 @@ class NetworkActivity: AppCompatActivity() {
                     ContextCompat.getDrawable(this, R.drawable.ic_baseline_live_tv_24)
                 }
             }
-            newButton.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null)
+            gameButton.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null)
 
-            newButton.text = "${it.key.toString()}"
-            newButton.gravity = Gravity.CENTER_VERTICAL or Gravity.LEFT
-            newButton.setPadding(paddingButton, paddingButton, paddingButton, paddingButton)
-            newButton.setBackgroundColor(Color.parseColor("#FFFFFF"))
+            gameButton.text = "${it.key.toString()}"
+            gameButton.gravity = Gravity.CENTER_VERTICAL or Gravity.LEFT
+            gameButton.setPadding(paddingButton, paddingButton, paddingButton, paddingButton)
+            gameButton.setBackgroundColor(Color.parseColor("#FFFFFF"))
 
-            scrollNetworkLayout.addView(newButton)
+            scrollNetworkLayout.addView(gameButton)
 
             val lineButton: Button = Button(this)
             lineButton.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1)
             scrollNetworkLayout.addView(lineButton)
 
-            newButton.setOnClickListener {
-                if (newButton.text != MehenSingleton.gameName){
-                    val reference = FirebaseDatabase.getInstance().getReference("games/${newButton.text}")
+            gameButton.setOnClickListener {
+                if (gameButton.text != MehenSingleton.gameNameSelf){
+                    val reference = FirebaseDatabase.getInstance().getReference("games/${gameButton.text}")
                     reference.child("blackUserName").addListenerForSingleValueEvent(object : ValueEventListener {
                             override fun onCancelled(error: DatabaseError) {
                                 Toast.makeText(this@NetworkActivity,
@@ -163,16 +179,19 @@ class NetworkActivity: AppCompatActivity() {
                                     Toast.LENGTH_LONG).show()
                             }
                             override fun onDataChange(snapshot: DataSnapshot) {
-                                reference.child("blackUserName").setValue(MehenSingleton.gameName)
+                                reference.child("blackUserName").setValue(MehenSingleton.gameNameSelf)
                                 reference.child("canWhiteDiceRoll").setValue(true)
                                 MehenSingleton.networkCanWhiteDiceRoll = true
                                 MehenSingleton.networkGame = true
+                                MehenSingleton.networkBlackUserName = MehenSingleton.gameNameSelf
+                                MehenSingleton.networkWhiteUserName = gameButton.text as String
+                                MehenSingleton.gameNamePlaying = MehenSingleton.networkWhiteUserName
                                 startActivity(MehenSingleton.activityMainIntent)
                                 finish()
                             }
                         })
                 } else {
-                    removeGame(MehenSingleton.gameName)
+                    removeGame(MehenSingleton.gameNameSelf)
                 }
             }
         }

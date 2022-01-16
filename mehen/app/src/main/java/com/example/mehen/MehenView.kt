@@ -5,6 +5,10 @@ import android.graphics.*
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import kotlin.math.min
 import kotlin.random.Random
 
@@ -181,8 +185,45 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         event ?: return false
-        if (!MehenSingleton.game) return false
-        if (MehenSingleton.robot && MehenSingleton.canRobotMove) return false
+        val canWhiteMove: Boolean
+        val canBlackMove: Boolean
+        val canWhiteDiceRoll: Boolean
+        val canBlackDiceRoll: Boolean
+        var whiteValueDiceRoll: Int
+        var blackValueDiceRoll: Int
+        val game: Boolean
+        val memoryWhite: Int
+        val memoryBlack: Int
+        if (MehenSingleton.networkGame){
+            game = MehenSingleton.networkGame
+            if (!game) return false
+            canWhiteMove = MehenSingleton.networkCanWhiteMove
+            canBlackMove = MehenSingleton.networkCanBlackMove
+            //if (!(MehenSingleton.networkBlackUserName == (MehenSingleton.login+" @ "+MehenSingleton.rating) && canBlackMove) || !(MehenSingleton.networkWhiteUserName == (MehenSingleton.login+" @ "+MehenSingleton.rating) && canWhiteMove)) return false
+            //println("GOOO!!!")
+            canWhiteDiceRoll = MehenSingleton.networkCanWhiteDiceRoll
+            canBlackDiceRoll = MehenSingleton.networkCanBlackDiceRoll
+            whiteValueDiceRoll = MehenSingleton.networkWhiteValueDiceRoll
+            blackValueDiceRoll = MehenSingleton.networkBlackValueDiceRoll
+            memoryWhite = MehenSingleton.networkMemoryWhite
+            memoryBlack = MehenSingleton.networkMemoryBlack
+        } else {
+            game = MehenSingleton.game
+            if (!game) return false
+            if (MehenSingleton.robot && MehenSingleton.canRobotMove) return false
+            canWhiteMove = MehenSingleton.canWhiteMove
+            canBlackMove = MehenSingleton.canBlackMove
+            canWhiteDiceRoll = MehenSingleton.canWhiteDiceRoll
+            canBlackDiceRoll = MehenSingleton.canBlackDiceRoll
+            whiteValueDiceRoll = MehenSingleton.whiteValueDiceRoll
+            blackValueDiceRoll = MehenSingleton.blackValueDiceRoll
+            memoryWhite = MehenSingleton.memoryWhite
+            memoryBlack = MehenSingleton.memoryBlack
+        }
+
+        //if (!MehenSingleton.game) return false
+        //if (MehenSingleton.robot && MehenSingleton.canRobotMove) return false
+        //if (MehenSingleton.networkGame && MehenSingleton.networkCanBlackMove) return false
 
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
@@ -196,8 +237,29 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
                     MehenSingleton.possibleDots.clear()
 
                     mehenDelegate?.pieceAt(Square(fromCol, fromRow))?.let {
-                        if (it.player == Player.WHITE && MehenSingleton.canWhiteMove || it.player == Player.BLACK && MehenSingleton.canBlackMove){
-                            movingPiece = it
+                        if (it.player == Player.WHITE && canWhiteMove || it.player == Player.BLACK && canBlackMove){
+                            if (!MehenSingleton.networkGame || MehenSingleton.networkGame && MehenSingleton.networkBlackUserName == (MehenSingleton.login+" @ "+MehenSingleton.rating) && canBlackMove || MehenSingleton.networkGame && MehenSingleton.networkWhiteUserName == (MehenSingleton.login+" @ "+MehenSingleton.rating) && canWhiteMove){
+                                movingPiece = it
+                                movingPieceBitmap = bitmaps[it.resID]
+                                if (listOf<Int>(fromCol, fromRow) != MehenSingleton.selectedFigure){
+                                    MehenSingleton.selectedFigure.clear()
+                                    MehenSingleton.selectedFigure.add(fromCol)
+                                    MehenSingleton.selectedFigure.add(fromRow)
+                                    MehenSingleton.outlineList.add(fromCol)
+                                    MehenSingleton.outlineList.add(9 - fromRow)
+                                    movingPiece?.let { MehenSingleton.bindingSquare[listOf<Int>(9 - fromRow, fromCol)]?.let { it1 ->
+                                        mehenDelegate!!.findPossibleDots(it1, it.player, it.mehenman)
+                                    } }
+                                    MehenSingleton.viewPossibleDot = true
+                                } else {
+                                    MehenSingleton.viewPossibleDot = !MehenSingleton.viewPossibleDot
+                                    if (!MehenSingleton.viewPossibleDot){
+                                        MehenSingleton.selectedFigure.clear()
+                                    }
+                                }
+                            } else return false
+
+                            /*movingPiece = it
                             movingPieceBitmap = bitmaps[it.resID]
                             if (listOf<Int>(fromCol, fromRow) != MehenSingleton.selectedFigure){
                                 MehenSingleton.selectedFigure.clear()
@@ -214,50 +276,116 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
                                 if (!MehenSingleton.viewPossibleDot){
                                     MehenSingleton.selectedFigure.clear()
                                 }
-                            }
+                            }*/
                         } else return false
                     }
 
                     if (fromCol == 7 && fromRow == 9) {
-                        if (MehenSingleton.canBlackDiceRoll) {
-                            if (MehenSingleton.soundEffect){ MehenSingleton.soundEngine.play(MehenSingleton.dicerollEffect, 1f, 1f, 1, 0, 1f) }
-                            MehenSingleton.blackValueDiceRoll = randomDiceValue()
-                            if (mehenDelegate?.isFinish(Player.BLACK) ?: Int == 0) {
-                                MehenSingleton.game = false
-                                MehenSingleton.alertWhiteWon.show(MehenSingleton.manager, "whiteWon")
-                                return false
-                            }
-                            if (MehenSingleton.blackValueDiceRoll == 0) {
-                                if (MehenSingleton.memoryBlack < MehenSingleton.memoryLimit){
-                                    MehenSingleton.memoryBlack +=1
-                                    if (MehenSingleton.soundEffect){ MehenSingleton.soundEngine.play(MehenSingleton.magicEffect, 1f, 1f, 1, 0, 1f) }
+                        if (canBlackDiceRoll) {
+                            if (!MehenSingleton.networkGame || MehenSingleton.networkGame && MehenSingleton.networkBlackUserName == MehenSingleton.gameNameSelf){
+                                if (MehenSingleton.soundEffect){ MehenSingleton.soundEngine.play(MehenSingleton.dicerollEffect, 1f, 1f, 1, 0, 1f) }
+                                if (MehenSingleton.networkGame){
+                                    MehenSingleton.networkBlackValueDiceRoll = randomDiceValue()
+                                    blackValueDiceRoll = MehenSingleton.networkBlackValueDiceRoll
+                                    networkPush("blackValueDiceRoll", MehenSingleton.networkBlackValueDiceRoll)
+                                } else {
+                                    MehenSingleton.blackValueDiceRoll = randomDiceValue()
+                                    blackValueDiceRoll = MehenSingleton.blackValueDiceRoll
                                 }
-                            } else {
-                                MehenSingleton.canBlackMove = true
-                                MehenSingleton.canWhiteMove = false
-                                MehenSingleton.canBlackDiceRoll = false
+                                //blackValueDiceRoll = randomDiceValue()
+                                if (mehenDelegate?.isFinish(Player.BLACK) ?: Int == 0) {
+                                    if (MehenSingleton.networkGame){
+                                        MehenSingleton.networkGame = false
+                                    } else {
+                                        MehenSingleton.game = false
+                                    }
+                                    //game = false
+                                    MehenSingleton.alertWhiteWon.show(MehenSingleton.manager, "whiteWon")
+                                    return false
+                                }
+                                if (blackValueDiceRoll == 0) {
+                                    if (memoryBlack < MehenSingleton.memoryLimit){
+                                        if (MehenSingleton.networkGame){
+                                            MehenSingleton.networkMemoryBlack += 1
+                                            networkPush("memoryBlack", MehenSingleton.networkMemoryBlack)
+                                        } else {
+                                            MehenSingleton.memoryBlack += 1
+                                        }
+                                        //memoryBlack +=1
+                                        if (MehenSingleton.soundEffect){ MehenSingleton.soundEngine.play(MehenSingleton.magicEffect, 1f, 1f, 1, 0, 1f) }
+                                    }
+                                } else {
+                                    if (MehenSingleton.networkGame){
+                                        MehenSingleton.networkCanBlackMove = true
+                                        networkPush("canBlackMove", MehenSingleton.networkCanBlackMove)
+                                        MehenSingleton.networkCanWhiteMove = false
+                                        networkPush("canWhiteMove", MehenSingleton.networkCanWhiteMove)
+                                        MehenSingleton.networkCanBlackDiceRoll = false
+                                        networkPush("canBlackDiceRoll", MehenSingleton.networkCanBlackDiceRoll)
+                                    } else {
+                                        MehenSingleton.canBlackMove = true
+                                        MehenSingleton.canWhiteMove = false
+                                        MehenSingleton.canBlackDiceRoll = false
+                                    }
+                                    //canBlackMove = true
+                                    //canWhiteMove = false
+                                    //canBlackDiceRoll = false
+                                }
                             }
                         }
                         MehenSingleton.selectedFigure.clear()
                     }
                     if (fromCol == 7 && fromRow == 0) {
-                        if (MehenSingleton.canWhiteDiceRoll) {
-                            if (MehenSingleton.soundEffect){ MehenSingleton.soundEngine.play(MehenSingleton.dicerollEffect, 1f, 1f, 1, 0, 1f) }
-                            MehenSingleton.whiteValueDiceRoll = randomDiceValue()
-                            if (mehenDelegate?.isFinish(Player.WHITE) ?: Int == 0) {
-                                MehenSingleton.game = false
-                                MehenSingleton.alertBlackWon.show(MehenSingleton.manager, "blackWon")
-                                return false
-                            }
-                            if (MehenSingleton.whiteValueDiceRoll == 0) {
-                                if (MehenSingleton.memoryWhite < MehenSingleton.memoryLimit){
-                                    MehenSingleton.memoryWhite += 1
-                                    if (MehenSingleton.soundEffect){ MehenSingleton.soundEngine.play(MehenSingleton.magicEffect, 1f, 1f, 1, 0, 1f) }
+                        if (canWhiteDiceRoll) {
+                            if (!MehenSingleton.networkGame || MehenSingleton.networkGame && MehenSingleton.networkWhiteUserName == MehenSingleton.gameNameSelf){
+                                if (MehenSingleton.soundEffect){ MehenSingleton.soundEngine.play(MehenSingleton.dicerollEffect, 1f, 1f, 1, 0, 1f) }
+                                if (MehenSingleton.networkGame){
+                                    MehenSingleton.networkWhiteValueDiceRoll = randomDiceValue()
+                                    whiteValueDiceRoll = MehenSingleton.networkWhiteValueDiceRoll
+                                    networkPush("whiteValueDiceRoll", MehenSingleton.networkWhiteValueDiceRoll)
+                                } else {
+                                    MehenSingleton.whiteValueDiceRoll = randomDiceValue()
+                                    whiteValueDiceRoll = MehenSingleton.whiteValueDiceRoll
                                 }
-                            } else {
-                                MehenSingleton.canWhiteMove = true
-                                MehenSingleton.canBlackMove = false
-                                MehenSingleton.canWhiteDiceRoll = false
+                                //whiteValueDiceRoll = randomDiceValue()
+                                if (mehenDelegate?.isFinish(Player.WHITE) ?: Int == 0) {
+                                    if (MehenSingleton.networkGame){
+                                        MehenSingleton.networkGame = false
+                                    } else {
+                                        MehenSingleton.game = false
+                                    }
+                                    //game = false
+                                    MehenSingleton.alertBlackWon.show(MehenSingleton.manager, "blackWon")
+                                    return false
+                                }
+                                if (whiteValueDiceRoll == 0) {
+                                    if (memoryWhite < MehenSingleton.memoryLimit){
+                                        if (MehenSingleton.networkGame){
+                                            MehenSingleton.networkMemoryWhite += 1
+                                            networkPush("memoryWhite", MehenSingleton.networkMemoryWhite)
+                                        } else {
+                                            MehenSingleton.memoryWhite += 1
+                                        }
+                                        //memoryWhite += 1
+                                        if (MehenSingleton.soundEffect){ MehenSingleton.soundEngine.play(MehenSingleton.magicEffect, 1f, 1f, 1, 0, 1f) }
+                                    }
+                                } else {
+                                    if (MehenSingleton.networkGame){
+                                        MehenSingleton.networkCanWhiteMove = true
+                                        networkPush("canWhiteMove", MehenSingleton.networkCanWhiteMove)
+                                        MehenSingleton.networkCanBlackMove = false
+                                        networkPush("canBlackMove", MehenSingleton.networkCanBlackMove)
+                                        MehenSingleton.networkCanWhiteDiceRoll = false
+                                        networkPush("canWhiteDiceRoll", MehenSingleton.networkCanWhiteDiceRoll)
+                                    } else {
+                                        MehenSingleton.canWhiteMove = true
+                                        MehenSingleton.canBlackMove = false
+                                        MehenSingleton.canWhiteDiceRoll = false
+                                    }
+                                    //canWhiteMove = true
+                                    //canBlackMove = false
+                                    //canWhiteDiceRoll = false
+                                }
                             }
                         }
                         MehenSingleton.selectedFigure.clear()
@@ -309,6 +437,19 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
         return true
     }
 
+    private fun networkPush(path: String, value: Any?){
+        val reference = FirebaseDatabase.getInstance().getReference("games/${MehenSingleton.gameNamePlaying}")
+        reference.addListenerForSingleValueEvent(object :
+            ValueEventListener {
+            override fun onCancelled(error: DatabaseError) {
+                println(error)
+            }
+            override fun onDataChange(snapshot: DataSnapshot) {
+                reference.child(path).setValue(value)
+            }
+        })
+    }
+
     private fun drawPieces(canvas: Canvas) {
         for (row in 0 until 10)
             for (col in 0 until 8)
@@ -358,53 +499,97 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
     }
 
     private fun drawWhiteMemory(canvas: Canvas){
+        val memoryWhitePrivate = if (MehenSingleton.networkGame){
+            MehenSingleton.networkMemoryWhite
+        } else {
+            MehenSingleton.memoryWhite
+        }
         paint.color = blackColor
         paint.textSize = textSize
         paint.textAlign = Paint.Align.CENTER
         canvas.drawText(
-            "+${MehenSingleton.memoryWhite}",
+            "+${memoryWhitePrivate}",
             originX + 13*cellSide/2,
             originY + 19*cellSide/2 + textSize/2, paint)
     }
 
     private fun drawBlackMemory(canvas: Canvas){
+        val memoryBlackPrivate = if (MehenSingleton.networkGame){
+            MehenSingleton.networkMemoryBlack
+        } else {
+            MehenSingleton.memoryBlack
+        }
         paint.color = blackColor
         paint.textSize = textSize
         paint.textAlign = Paint.Align.CENTER
         canvas.drawText(
-            "+${MehenSingleton.memoryBlack}",
+            "+${memoryBlackPrivate}",
             originX + 13*cellSide/2,
             originY + 1*cellSide/2 + textSize/2, paint)
     }
 
     private fun drawCanWhiteMove(canvas: Canvas){
-        if (!MehenSingleton.canWhiteMove && MehenSingleton.canWhiteDiceRoll || MehenSingleton.canWhiteMove && !MehenSingleton.canWhiteDiceRoll) {
-            paint.color = greenColor
-            paint.style = Paint.Style.FILL
-            canvas.drawOval(RectF(
-                originX + 6*cellSide + 2*cellSide/3,
-                originY + 9*cellSide + 2*cellSide/3,
-                originX + 6*cellSide+5*cellSide/6,
-                originY + 9*cellSide+5*cellSide/6),
-                paint)
+        if (MehenSingleton.networkGame){
+            if (!MehenSingleton.networkCanWhiteMove && MehenSingleton.networkCanWhiteDiceRoll || MehenSingleton.networkCanWhiteMove && !MehenSingleton.networkCanWhiteDiceRoll) {
+                paint.color = greenColor
+                paint.style = Paint.Style.FILL
+                canvas.drawOval(RectF(
+                    originX + 6*cellSide + 2*cellSide/3,
+                    originY + 9*cellSide + 2*cellSide/3,
+                    originX + 6*cellSide+5*cellSide/6,
+                    originY + 9*cellSide+5*cellSide/6),
+                    paint)
+            }
+        } else {
+            if (!MehenSingleton.canWhiteMove && MehenSingleton.canWhiteDiceRoll || MehenSingleton.canWhiteMove && !MehenSingleton.canWhiteDiceRoll) {
+                paint.color = greenColor
+                paint.style = Paint.Style.FILL
+                canvas.drawOval(RectF(
+                    originX + 6*cellSide + 2*cellSide/3,
+                    originY + 9*cellSide + 2*cellSide/3,
+                    originX + 6*cellSide+5*cellSide/6,
+                    originY + 9*cellSide+5*cellSide/6),
+                    paint)
+            }
         }
     }
 
     private fun drawCanBlackMove(canvas: Canvas){
-        if (!MehenSingleton.canBlackMove && MehenSingleton.canBlackDiceRoll || MehenSingleton.canBlackMove && !MehenSingleton.canBlackDiceRoll) {
-            paint.color = greenColor
-            paint.style = Paint.Style.FILL
-            canvas.drawOval(RectF(
-                originX + 6*cellSide + 2*cellSide/3,
-                originY + 0*cellSide + 2*cellSide/3,
-                originX + 6*cellSide+5*cellSide/6,
-                originY + 0*cellSide+5*cellSide/6),
-                paint)
+        if (MehenSingleton.networkGame){
+            if (!MehenSingleton.networkCanBlackMove && MehenSingleton.networkCanBlackDiceRoll || MehenSingleton.networkCanBlackMove && !MehenSingleton.networkCanBlackDiceRoll) {
+                paint.color = greenColor
+                paint.style = Paint.Style.FILL
+                canvas.drawOval(RectF(
+                    originX + 6*cellSide + 2*cellSide/3,
+                    originY + 0*cellSide + 2*cellSide/3,
+                    originX + 6*cellSide+5*cellSide/6,
+                    originY + 0*cellSide+5*cellSide/6),
+                    paint)
+            }
+        } else {
+            if (!MehenSingleton.canBlackMove && MehenSingleton.canBlackDiceRoll || MehenSingleton.canBlackMove && !MehenSingleton.canBlackDiceRoll) {
+                paint.color = greenColor
+                paint.style = Paint.Style.FILL
+                canvas.drawOval(RectF(
+                    originX + 6*cellSide + 2*cellSide/3,
+                    originY + 0*cellSide + 2*cellSide/3,
+                    originX + 6*cellSide+5*cellSide/6,
+                    originY + 0*cellSide+5*cellSide/6),
+                    paint)
+            }
         }
     }
 
     private fun drawWhiteDiceRoll(canvas: Canvas){
-        val diceRollWhite = (bitmapsOfDiceRollWhite[MehenSingleton.whiteValueDiceRoll])
+        //val diceRollWhite = (bitmapsOfDiceRollWhite[MehenSingleton.whiteValueDiceRoll])
+
+        //println(MehenSingleton.networkWhiteValueDiceRoll)
+        val diceRollWhite = if (MehenSingleton.networkGame){
+            bitmapsOfDiceRollWhite[MehenSingleton.networkWhiteValueDiceRoll]
+        } else {
+            bitmapsOfDiceRollWhite[MehenSingleton.whiteValueDiceRoll]
+        }
+
         if (diceRollWhite != null) {
 
             canvas.drawBitmap(
@@ -421,7 +606,12 @@ class MehenView(context: Context?, attrs: AttributeSet?) : View(context, attrs){
     }
 
     private fun drawBlackDiceRoll(canvas: Canvas){
-        val diceRollBlack = (bitmapsOfDiceRollBlack[MehenSingleton.blackValueDiceRoll])
+        //val diceRollBlack = (bitmapsOfDiceRollBlack[MehenSingleton.blackValueDiceRoll])
+        val diceRollBlack = if (MehenSingleton.networkGame){
+            bitmapsOfDiceRollBlack[MehenSingleton.networkBlackValueDiceRoll]
+        } else {
+            bitmapsOfDiceRollBlack[MehenSingleton.blackValueDiceRoll]
+        }
         if (diceRollBlack != null) {
             canvas.drawBitmap(
                 diceRollBlack,
