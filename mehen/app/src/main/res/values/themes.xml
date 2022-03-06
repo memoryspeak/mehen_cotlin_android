@@ -18,7 +18,7 @@
     <style name="Theme.Mehen.Launcher">
         <item name="android:windowBackground">@drawable/launch_screen</item>
         <!-- для Android 5+ вы можете поменять цвет colorPrimaryDark, чтобы соответствовать цвету windowBackground -->
-        <!--        <item name="colorBackgroundFloating">@color/olive_drab</item>-->
+        <item name="android:navigationBarColor">@color/black</item>
     </style>
 
     <style name="Theme.Mehen.Launcher.NoActionBar">

@@ -1,15 +1,16 @@
 <?xml version ="1.0" encoding ="utf-8"?><!--  Learn More about how to use App Actions: https://developer.android.com/guide/actions/index.html -->
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android" android:opacity="opaque">
+<layer-list
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:opacity="opaque">
 
     <!-- Цвет фона, предпочтительно как в главной теме -->
-    <item android:drawable="@color/olive_drab"/>
+    <item android:drawable="@color/black"/>
 
     <!-- Лого приложения - 144dp версия иконки приложения -->
     <item>
-
         <bitmap
-            android:src="@drawable/logo"
-            android:gravity="center"/>
+            android:src="@drawable/wicca_logo_400"
+            android:gravity="center" />
 
     </item>
 

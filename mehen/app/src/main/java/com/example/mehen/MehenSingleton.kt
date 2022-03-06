@@ -12,6 +12,10 @@ object MehenSingleton {
     lateinit var activityRegisterIntent: Intent
     lateinit var activityNetworkIntent: Intent
 
+    const val HOST: String = "192.168.10.8"
+    const val PORT: Int = 8887
+    lateinit var clientSocket: ClientSocket
+
     var login: String? = ""
     var email: String? = ""
     var emailVerified: Boolean? = false
@@ -31,7 +35,7 @@ object MehenSingleton {
     var networkCanBlackDiceRoll: Boolean = false
     var networkWhiteValueDiceRoll: Int = 5
     var networkBlackValueDiceRoll: Int = 5
-    var fromColfromRowtoColtoRow: String = ""
+    //var fromColFromRowToColToRow: String = ""
     /*var networkBoardString: String = ""*/
     /*var networkBoardMap = mutableMapOf<List<Int>, String>(
         listOf<Int>(0, 0) to "11",
@@ -121,7 +125,7 @@ object MehenSingleton {
     lateinit var alertRobotGame: MehenGameSelectionDialogFragment
     var selectedItemOfNewGame: Int = 0
 
-    var serverSocket: ServerSocket? = null
+    //var serverSocket: ServerSocket? = null
     lateinit var mehenView: MehenView
 
     var game: Boolean = false

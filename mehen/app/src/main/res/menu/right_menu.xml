@@ -3,12 +3,24 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:title="@string/new_game"
-        android:id="@+id/new_game"
-        app:showAsAction="never"/>
-    <item
         android:title="@string/account"
         android:id="@+id/account"
+        app:showAsAction="never"/>
+    <item
+        android:title="@string/new_game_opposite_each_over"
+        android:id="@+id/new_game_opposite_each_over"
+        app:showAsAction="never"/>
+    <item
+        android:title="@string/new_game_with_robot"
+        android:id="@+id/new_game_with_robot"
+        app:showAsAction="never"/>
+    <item
+        android:title="@string/new_game_online"
+        android:id="@+id/new_game_online"
+        app:showAsAction="never"/>
+    <item
+        android:title="@string/settings"
+        android:id="@+id/settings"
         app:showAsAction="never"/>
 
 </menu>

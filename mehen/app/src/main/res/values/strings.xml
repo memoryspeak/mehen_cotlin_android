@@ -3,8 +3,12 @@
     <string name="listen">Listen</string>
     <string name="connect">Connect</string>
     <string name="new_game">New Game</string>
+    <string name="new_game_opposite_each_over">New Game: Opposite Each Over</string>
+    <string name="new_game_with_robot">New Game: With Robot</string>
+    <string name="new_game_online">New Game: Online</string>
     <string name="opposite">Opposite Each Over</string>
     <string name="robot">With Robot</string>
+    <string name="settings">Settings</string>
     <string name="network">Network Play</string>
     <string name="sign_in">Sign In</string>
     <string name="registration">Registration</string>

@@ -8,6 +8,8 @@ import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
 import android.view.KeyEvent
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -312,6 +314,48 @@ class RegisterActivity : AppCompatActivity (){
             }
         }
 
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.right_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            /*R.id.new_game -> {
+                MehenSingleton.selectedItemOfNewGame = 0
+                MehenSingleton.alertNewGame.show(MehenSingleton.manager, "newGame")
+            }*/
+            R.id.account -> {
+                startActivity(MehenSingleton.activityLoginIntent)
+                finish()
+            }
+            R.id.new_game_opposite_each_over -> {
+                startActivity(MehenSingleton.activityMainIntent)
+                finish()
+                MehenSingleton.selectedItemOfNewGame = 0
+                MehenSingleton.game = true
+                MehenSingleton.networkGame = false
+                MehenSingleton.robot = false
+                MehenSingleton.canRobotMove = false
+                MehenGame.reset()
+                MehenSingleton.mehenView.invalidate()
+            }
+            R.id.new_game_online -> {
+                MehenSingleton.selectedItemOfNewGame = 1
+                startActivity(MehenSingleton.activityNetworkIntent)
+                finish()
+            }
+            R.id.new_game_with_robot -> {
+                MehenSingleton.selectedItemOfNewGame = 2
+                MehenSingleton.alertRobotGame.show(MehenSingleton.manager, "newRobotGame")
+            }
+            R.id.settings ->{
+                println("settings")
+            }
+        }
+        return true
     }
 }
 

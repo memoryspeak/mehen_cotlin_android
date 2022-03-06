@@ -113,12 +113,22 @@ object MehenGame{
                     piecesBox.remove(movingPiece)
                     addPiece(movingPiece.copy(col = toCol, row = toRow))
                     if (MehenSingleton.networkGame){
-                        if (movingPiece.player == Player.WHITE && MehenSingleton.networkWhiteUserName == MehenSingleton.gameNameSelf){
+                        //networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                        if (MehenSingleton.gameNamePlaying != MehenSingleton.gameNameSelf){
+                            if (MehenSingleton.networkCanBlackMove){
+                                networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                            }
+                        } else {
+                            if (MehenSingleton.networkCanWhiteMove){
+                                networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                            }
+                        }
+                        /*if (movingPiece.player == Player.WHITE && MehenSingleton.networkWhiteUserName == MehenSingleton.gameNameSelf){
                             networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
                         }
                         if (movingPiece.player == Player.BLACK && MehenSingleton.networkBlackUserName == MehenSingleton.gameNameSelf){
                             networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
-                        }
+                        }*/
                     }
                     piecesBox.remove(itPiece)
                     addPiece(itPiece.copy(col = fromCol, row = fromRow))
@@ -126,6 +136,18 @@ object MehenGame{
                     piecesBox.remove(itPiece)
                     piecesBox.remove(movingPiece)
                     addPiece(movingPiece.copy(col = toCol, row = toRow))
+                    if (MehenSingleton.networkGame){
+                        //networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                        if (MehenSingleton.gameNamePlaying != MehenSingleton.gameNameSelf){
+                            if (MehenSingleton.networkCanBlackMove){
+                                networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                            }
+                        } else {
+                            if (MehenSingleton.networkCanWhiteMove){
+                                networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                            }
+                        }
+                    }
                 }
             } else {
                 //если ходящий игрок является пешеходом
@@ -138,12 +160,22 @@ object MehenGame{
                             piecesBox.remove(movingPiece)
                             addPiece(movingPiece.copy(col = toCol, row = toRow, mehenman = Mehenman.LION, resID = R.drawable.white_lion))
                             if (MehenSingleton.networkGame){
-                                if (movingPiece.player == Player.WHITE && MehenSingleton.networkWhiteUserName == MehenSingleton.gameNameSelf){
+                                //networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                                if (MehenSingleton.gameNamePlaying != MehenSingleton.gameNameSelf){
+                                    if (MehenSingleton.networkCanBlackMove){
+                                        networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                                    }
+                                } else {
+                                    if (MehenSingleton.networkCanWhiteMove){
+                                        networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                                    }
+                                }
+                                /*if (movingPiece.player == Player.WHITE && MehenSingleton.networkWhiteUserName == MehenSingleton.gameNameSelf){
                                     networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
                                 }
                                 if (movingPiece.player == Player.BLACK && MehenSingleton.networkBlackUserName == MehenSingleton.gameNameSelf){
                                     networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
-                                }
+                                }*/
                             }
 
                             if (MehenSingleton.networkGame){
@@ -157,6 +189,18 @@ object MehenGame{
                             //если не хватает доп.очков
                             piecesBox.remove(movingPiece)
                             addPiece(movingPiece.copy(col = toCol, row = toRow))
+                            if (MehenSingleton.networkGame){
+                                //networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                                if (MehenSingleton.gameNamePlaying != MehenSingleton.gameNameSelf){
+                                    if (MehenSingleton.networkCanBlackMove){
+                                        networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                                    }
+                                } else {
+                                    if (MehenSingleton.networkCanWhiteMove){
+                                        networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                                    }
+                                }
+                            }
                         }
                     } else {
                         //если ходящий игрок - черный
@@ -165,12 +209,22 @@ object MehenGame{
                             piecesBox.remove(movingPiece)
                             addPiece(movingPiece.copy(col = toCol, row = toRow, mehenman = Mehenman.LION, resID = R.drawable.black_lion))
                             if (MehenSingleton.networkGame){
-                                if (movingPiece.player == Player.WHITE && MehenSingleton.networkWhiteUserName == MehenSingleton.gameNameSelf){
+                                //networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                                if (MehenSingleton.gameNamePlaying != MehenSingleton.gameNameSelf){
+                                    if (MehenSingleton.networkCanBlackMove){
+                                        networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                                    }
+                                } else {
+                                    if (MehenSingleton.networkCanWhiteMove){
+                                        networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                                    }
+                                }
+                                /*if (movingPiece.player == Player.WHITE && MehenSingleton.networkWhiteUserName == MehenSingleton.gameNameSelf){
                                     networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
                                 }
                                 if (movingPiece.player == Player.BLACK && MehenSingleton.networkBlackUserName == MehenSingleton.gameNameSelf){
                                     networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
-                                }
+                                }*/
                             }
 
                             if (MehenSingleton.networkGame){
@@ -184,6 +238,18 @@ object MehenGame{
                             //если не хватает доп.очков
                             piecesBox.remove(movingPiece)
                             addPiece(movingPiece.copy(col = toCol, row = toRow))
+                            if (MehenSingleton.networkGame){
+                                //networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                                if (MehenSingleton.gameNamePlaying != MehenSingleton.gameNameSelf){
+                                    if (MehenSingleton.networkCanBlackMove){
+                                        networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                                    }
+                                } else {
+                                    if (MehenSingleton.networkCanWhiteMove){
+                                        networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                                    }
+                                }
+                            }
                         }
                     }
                     //в любом случае тот, кто был на клетке, переносится назад
@@ -195,12 +261,22 @@ object MehenGame{
                         piecesBox.remove(movingPiece)
                         addPiece(movingPiece.copy(col = toCol, row = toRow))
                         if (MehenSingleton.networkGame){
-                            if (movingPiece.player == Player.WHITE && MehenSingleton.networkWhiteUserName == MehenSingleton.gameNameSelf){
+                            //networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                            if (MehenSingleton.gameNamePlaying != MehenSingleton.gameNameSelf){
+                                if (MehenSingleton.networkCanBlackMove){
+                                    networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                                }
+                            } else {
+                                if (MehenSingleton.networkCanWhiteMove){
+                                    networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                                }
+                            }
+                            /*if (movingPiece.player == Player.WHITE && MehenSingleton.networkWhiteUserName == MehenSingleton.gameNameSelf){
                                 networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
                             }
                             if (movingPiece.player == Player.BLACK && MehenSingleton.networkBlackUserName == MehenSingleton.gameNameSelf){
                                 networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
-                            }
+                            }*/
                         }
                         piecesBox.remove(itPiece)
                         addPiece(itPiece.copy(col = fromCol, row = fromRow))
@@ -209,12 +285,22 @@ object MehenGame{
                             piecesBox.remove(movingPiece)
                             addPiece(movingPiece.copy(col = toCol, row = toRow))
                             if (MehenSingleton.networkGame){
-                                if (movingPiece.player == Player.WHITE && MehenSingleton.networkWhiteUserName == MehenSingleton.gameNameSelf){
+                                //networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                                if (MehenSingleton.gameNamePlaying != MehenSingleton.gameNameSelf){
+                                    if (MehenSingleton.networkCanBlackMove){
+                                        networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                                    }
+                                } else {
+                                    if (MehenSingleton.networkCanWhiteMove){
+                                        networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                                    }
+                                }
+                                /*if (movingPiece.player == Player.WHITE && MehenSingleton.networkWhiteUserName == MehenSingleton.gameNameSelf){
                                     networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
                                 }
                                 if (movingPiece.player == Player.BLACK && MehenSingleton.networkBlackUserName == MehenSingleton.gameNameSelf){
                                     networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
-                                }
+                                }*/
                             }
                             piecesBox.remove(itPiece)
                             addPiece(itPiece.copy(col = fromCol, row = fromRow))
@@ -228,12 +314,22 @@ object MehenGame{
                     piecesBox.remove(movingPiece)
                     addPiece(movingPiece.copy(col = toCol, row = toRow))
                     if (MehenSingleton.networkGame){
-                        if (movingPiece.player == Player.WHITE && MehenSingleton.networkWhiteUserName == MehenSingleton.gameNameSelf){
+                        //networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                        if (MehenSingleton.gameNamePlaying != MehenSingleton.gameNameSelf){
+                            if (MehenSingleton.networkCanBlackMove){
+                                networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                            }
+                        } else {
+                            if (MehenSingleton.networkCanWhiteMove){
+                                networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                            }
+                        }
+                        /*if (movingPiece.player == Player.WHITE && MehenSingleton.networkWhiteUserName == MehenSingleton.gameNameSelf){
                             networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
                         }
                         if (movingPiece.player == Player.BLACK && MehenSingleton.networkBlackUserName == MehenSingleton.gameNameSelf){
                             networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
-                        }
+                        }*/
                     }
                 } else {
                     if (movingPiece.player == Player.WHITE){
@@ -241,12 +337,22 @@ object MehenGame{
                             piecesBox.remove(movingPiece)
                             addPiece(movingPiece.copy(col = toCol, row = toRow, mehenman = Mehenman.LION, resID = R.drawable.white_lion))
                             if (MehenSingleton.networkGame){
-                                if (movingPiece.player == Player.WHITE && MehenSingleton.networkWhiteUserName == MehenSingleton.gameNameSelf){
+                                //networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                                if (MehenSingleton.gameNamePlaying != MehenSingleton.gameNameSelf){
+                                    if (MehenSingleton.networkCanBlackMove){
+                                        networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                                    }
+                                } else {
+                                    if (MehenSingleton.networkCanWhiteMove){
+                                        networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                                    }
+                                }
+                                /*if (movingPiece.player == Player.WHITE && MehenSingleton.networkWhiteUserName == MehenSingleton.gameNameSelf){
                                     networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
                                 }
                                 if (movingPiece.player == Player.BLACK && MehenSingleton.networkBlackUserName == MehenSingleton.gameNameSelf){
                                     networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
-                                }
+                                }*/
                             }
 
                             if (MehenSingleton.networkGame){
@@ -259,18 +365,40 @@ object MehenGame{
                         } else {
                             piecesBox.remove(movingPiece)
                             addPiece(movingPiece.copy(col = toCol, row = toRow))
+                            if (MehenSingleton.networkGame){
+                                //networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                                if (MehenSingleton.gameNamePlaying != MehenSingleton.gameNameSelf){
+                                    if (MehenSingleton.networkCanBlackMove){
+                                        networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                                    }
+                                } else {
+                                    if (MehenSingleton.networkCanWhiteMove){
+                                        networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                                    }
+                                }
+                            }
                         }
                     } else {
                         if (memoryBlack >= 2){
                             piecesBox.remove(movingPiece)
                             addPiece(movingPiece.copy(col = toCol, row = toRow, mehenman = Mehenman.LION, resID = R.drawable.black_lion))
                             if (MehenSingleton.networkGame){
-                                if (movingPiece.player == Player.WHITE && MehenSingleton.networkWhiteUserName == MehenSingleton.gameNameSelf){
+                                //networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                                if (MehenSingleton.gameNamePlaying != MehenSingleton.gameNameSelf){
+                                    if (MehenSingleton.networkCanBlackMove){
+                                        networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                                    }
+                                } else {
+                                    if (MehenSingleton.networkCanWhiteMove){
+                                        networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                                    }
+                                }
+                                /*if (movingPiece.player == Player.WHITE && MehenSingleton.networkWhiteUserName == MehenSingleton.gameNameSelf){
                                     networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
                                 }
                                 if (movingPiece.player == Player.BLACK && MehenSingleton.networkBlackUserName == MehenSingleton.gameNameSelf){
                                     networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
-                                }
+                                }*/
                             }
 
                             if (MehenSingleton.networkGame){
@@ -283,17 +411,41 @@ object MehenGame{
                         } else {
                             piecesBox.remove(movingPiece)
                             addPiece(movingPiece.copy(col = toCol, row = toRow))
+                            if (MehenSingleton.networkGame){
+                                //networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                                if (MehenSingleton.gameNamePlaying != MehenSingleton.gameNameSelf){
+                                    if (MehenSingleton.networkCanBlackMove){
+                                        networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                                    }
+                                } else {
+                                    if (MehenSingleton.networkCanWhiteMove){
+                                        networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                                    }
+                                }
+                            }
                         }
                     }
                 }
             } else {
                 piecesBox.remove(movingPiece)
                 addPiece(movingPiece.copy(col = toCol, row = toRow))
+                if (MehenSingleton.networkGame){
+                    //networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                    if (MehenSingleton.gameNamePlaying != MehenSingleton.gameNameSelf){
+                        if (MehenSingleton.networkCanBlackMove){
+                            networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                        }
+                    } else {
+                        if (MehenSingleton.networkCanWhiteMove){
+                            networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
+                        }
+                    }
+                }
             }
         }
-        if (MehenSingleton.networkGame){
+        /*if (MehenSingleton.networkGame){
             networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
-        }
+        }*/
 
         if (MehenSingleton.soundEffect){ MehenSingleton.soundEngine.play(MehenSingleton.turnEffect, 1f, 1f, 1, 0, 1f) }
 
@@ -519,6 +671,8 @@ object MehenGame{
         MehenSingleton.possibleDots.clear()
         MehenSingleton.viewPossibleDot = false
         MehenSingleton.outlineList.clear()
+        //MehenSingleton.fromColFromRowToColToRow = ""
+        networkPush("fromColfromRowtoColtoRow", "")
 
         /*if (MehenSingleton.networkGame){
             networkPush("fromColfromRowtoColtoRow", "$fromCol-$fromRow-$toCol-$toRow")
@@ -1109,7 +1263,7 @@ object MehenGame{
             MehenSingleton.networkCanBlackDiceRoll = false
             MehenSingleton.networkWhiteValueDiceRoll = 5
             MehenSingleton.networkBlackValueDiceRoll = 5
-            MehenSingleton.fromColfromRowtoColtoRow = ""
+            //MehenSingleton.fromColFromRowToColToRow = ""
         } else {
             MehenSingleton.memoryBlack = 0
             MehenSingleton.memoryWhite = 0

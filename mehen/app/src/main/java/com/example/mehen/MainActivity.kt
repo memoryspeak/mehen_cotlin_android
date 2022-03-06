@@ -1,11 +1,8 @@
 package com.example.mehen
 
-import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
-import android.util.AttributeSet
 import android.util.Log
 import android.view.Gravity
 import android.view.Menu
@@ -14,26 +11,16 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.core.content.ContextCompat
-import androidx.fragment.app.FragmentManager
-import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.auth.ktx.oAuthCredential
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.ktx.Firebase
-import java.io.PrintWriter
-import java.net.ConnectException
-import java.net.ServerSocket
 import java.net.Socket
-import java.net.SocketException
+import java.sql.Connection
 import java.util.*
-import java.util.concurrent.Executors
 
 //private const val TAG = "MainActivity"
 
@@ -43,6 +30,7 @@ class MainActivity() : AppCompatActivity(), MehenDelegate {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        MehenSingleton.clientSocket = ClientSocket()
         //MehenSingleton.db = DataBaseHandler(this)
         //MehenSingleton.mainActivityIntent = Intent(this, MainActivity::class.java)
         MehenSingleton.activityMainIntent = Intent(this,MainActivity::class.java)
@@ -311,16 +299,40 @@ class MainActivity() : AppCompatActivity(), MehenDelegate {
                             Toast.LENGTH_LONG).show()
                     }
                     override fun onDataChange(snapshot: DataSnapshot) {
-                        val fromColfromRowtoColtoRow = snapshot.value.toString()
-                        if (fromColfromRowtoColtoRow.isNotEmpty() && fromColfromRowtoColtoRow != "null"){
-                            if (MehenSingleton.fromColfromRowtoColtoRow != fromColfromRowtoColtoRow){
-                                val arrayOffromColfromRowtoColtoRow = fromColfromRowtoColtoRow.split("-").toTypedArray()
+                        val fromColFromRowToColToRow = snapshot.value.toString()
+                        if (fromColFromRowToColToRow.isNotEmpty() && fromColFromRowToColToRow != "null"){
+                            /*if (MehenSingleton.fromColFromRowToColToRow != fromColFromRowToColToRow){
+                                MehenSingleton.fromColFromRowToColToRow = fromColFromRowToColToRow
+                                val arrayOffromColfromRowtoColtoRow = fromColFromRowToColToRow.split("-").toTypedArray()
                                 //println("GOOOOO!!!!")
                                 movePiece(
                                     Square(arrayOffromColfromRowtoColtoRow[0].toInt(), arrayOffromColfromRowtoColtoRow[1].toInt()),
                                     Square(arrayOffromColfromRowtoColtoRow[2].toInt(), arrayOffromColfromRowtoColtoRow[3].toInt())
                                 )
-                                MehenSingleton.fromColfromRowtoColtoRow = snapshot.child("fromColfromRowtoColtoRow").value.toString()
+                                //MehenSingleton.fromColfromRowtoColtoRow = fromColfromRowtoColtoRow
+                            }*/
+                            /*val arrayOffromColfromRowtoColtoRow = fromColFromRowToColToRow.split("-").toTypedArray()
+                            //println("GOOOOO!!!!")
+                            movePiece(
+                                Square(arrayOffromColfromRowtoColtoRow[0].toInt(), arrayOffromColfromRowtoColtoRow[1].toInt()),
+                                Square(arrayOffromColfromRowtoColtoRow[2].toInt(), arrayOffromColfromRowtoColtoRow[3].toInt())
+                            )*/
+                            if (MehenSingleton.gameNamePlaying != MehenSingleton.gameNameSelf){
+                                if (MehenSingleton.networkCanWhiteMove){
+                                    val arrayOffromColfromRowtoColtoRow = fromColFromRowToColToRow.split("-").toTypedArray()
+                                    movePiece(
+                                        Square(arrayOffromColfromRowtoColtoRow[0].toInt(), arrayOffromColfromRowtoColtoRow[1].toInt()),
+                                        Square(arrayOffromColfromRowtoColtoRow[2].toInt(), arrayOffromColfromRowtoColtoRow[3].toInt())
+                                    )
+                                }
+                            } else {
+                                if (MehenSingleton.networkCanBlackMove){
+                                    val arrayOffromColfromRowtoColtoRow = fromColFromRowToColToRow.split("-").toTypedArray()
+                                    movePiece(
+                                        Square(arrayOffromColfromRowtoColtoRow[0].toInt(), arrayOffromColfromRowtoColtoRow[1].toInt()),
+                                        Square(arrayOffromColfromRowtoColtoRow[2].toInt(), arrayOffromColfromRowtoColtoRow[3].toInt())
+                                    )
+                                }
                             }
                         }
                     }
@@ -366,18 +378,157 @@ class MainActivity() : AppCompatActivity(), MehenDelegate {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
-            R.id.new_game -> {
+            /*R.id.new_game -> {
                 MehenSingleton.selectedItemOfNewGame = 0
                 MehenSingleton.alertNewGame.show(MehenSingleton.manager, "newGame")
-            }
+            }*/
             R.id.account -> {
                 startActivity(MehenSingleton.activityLoginIntent)
                 finish()
+            }
+            R.id.new_game_opposite_each_over -> {
+                startActivity(MehenSingleton.activityMainIntent)
+                finish()
+                MehenSingleton.selectedItemOfNewGame = 0
+                MehenSingleton.game = true
+                MehenSingleton.networkGame = false
+                MehenSingleton.robot = false
+                MehenSingleton.canRobotMove = false
+                MehenGame.reset()
+                MehenSingleton.mehenView.invalidate()
+            }
+            R.id.new_game_online -> {
+                MehenSingleton.selectedItemOfNewGame = 1
+                startActivity(MehenSingleton.activityNetworkIntent)
+                finish()
+            }
+            R.id.new_game_with_robot -> {
+                MehenSingleton.selectedItemOfNewGame = 2
+                MehenSingleton.alertRobotGame.show(MehenSingleton.manager, "newRobotGame")
+            }
+            R.id.settings ->{
+                println("settings")
+                MehenSingleton.clientSocket.Connection(MehenSingleton.HOST, MehenSingleton.PORT)
+                var connect = false
+                Thread {
+                    try {
+                        MehenSingleton.clientSocket.openConnection()
+                        // Разблокирование кнопок в UI потоке
+                        runOnUiThread {
+                            //mBtnSend.setEnabled(true)
+                            //mBtnClose.setEnabled(true)
+                        }
+                        println("Соединение установлено")
+                        connect = true
+
+                        println("Отправка сообщения")
+                        Thread {
+                            try {
+                                var text: String
+                                text = "{\"url\": \"http://yandex.ru\"}"
+                                if (text.trim { it <= ' ' }.isEmpty()) text = "{\"url\": \"http://yandex.ru\"}"
+                                // отправляем сообщение
+                                MehenSingleton.clientSocket.sendData(text.toByteArray())
+
+                                MehenSingleton.clientSocket.closeConnection()
+                                // Блокирование кнопок
+                                //mBtnSend .setEnabled(false)
+                                //mBtnClose.setEnabled(false)
+                                println("Соединение закрыто")
+                            } catch (e: Exception) {
+                                println(e.message!!)
+                            }
+                        }.start()
+
+                    } catch (e: Exception) {
+                        println(e.message!!)
+                        //println("Соединение не установлено")
+                        //MehenSingleton.clientSocket = null
+                        connect = false
+                    }
+                }.start()
+
+                /*if (!connect) {
+                    println("Соединение не установлено")
+                } else {
+                    println("Отправка сообщения")
+                    Thread {
+                        try {
+                            var text: String
+                            text = "{\"url\": \"http://yandex.ru\"}"
+                            if (text.trim { it <= ' ' }.isEmpty()) text = "{\"url\": \"http://yandex.ru\"}"
+                            // отправляем сообщение
+                            MehenSingleton.clientSocket.sendData(text.toByteArray())
+                        } catch (e: Exception) {
+                            println(e.message!!)
+                        }
+                    }.start()
+                }
+
+                // Закрытие соединения
+                MehenSingleton.clientSocket.closeConnection()
+                // Блокирование кнопок
+                //mBtnSend .setEnabled(false)
+                //mBtnClose.setEnabled(false)
+                println("Соединение закрыто")*/
             }
         }
         return true
     }
 
+    /*override fun connection(host: String, port: Int) {
+
+    }
+    private fun sendMessageOnServerSocket(socket: Socket) {
+
+        // Создание подключения
+        // Создание подключения
+        mConnect = connection(MehenSingleton.HOST, MehenSingleton.PORT)
+        // Открытие сокета в отдельном потоке
+        // Открытие сокета в отдельном потоке
+        Thread {
+            try {
+                mConnect.openConnection()
+                // Разблокирование кнопок в UI потоке
+                runOnUiThread {
+                    mBtnSend.setEnabled(true)
+                    mBtnClose.setEnabled(true)
+                }
+                Log.d(LOG_TAG, "Соединение установлено")
+                Log.d(
+                    LOG_TAG, "(mConnect != null) = "
+                            + (mConnect != null)
+                )
+            } catch (e: Exception) {
+                Log.e(LOG_TAG, e.message!!)
+                mConnect = null
+            }
+        }.start()
+
+        if (mConnect == null) {
+            Log.d(LOG_TAG, "Соединение не установлено")
+        } else {
+            Log.d(LOG_TAG, "Отправка сообщения")
+            Thread {
+                try {
+                    var text: String
+                    text = mEdit.getText().toString()
+                    if (text.trim { it <= ' ' }.length == 0) text = "Test message"
+                    // отправляем сообщение
+                    mConnect.sendData(text.toByteArray())
+                } catch (e: Exception) {
+                    Log.e(LOG_TAG, e.message!!)
+                }
+            }.start()
+        }
+
+        // Закрытие соединения
+        mConnect.closeConnection()
+        // Блокирование кнопок
+        mBtnSend .setEnabled(false)
+        mBtnClose.setEnabled(false)
+        Log.d(LOG_TAG, "Соединение закрыто")
+    }*/
     /*private fun receiveMove(socket: Socket) {
         val scanner = Scanner(socket.getInputStream())
         printWriter = PrintWriter(socket.getOutputStream(), true)
